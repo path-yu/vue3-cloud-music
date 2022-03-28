@@ -1,0 +1,8 @@
+{
+  "parser": "flow",
+  "tabWidth": 2,
+  // 使用单引号
+  "singleQuote": true,
+  // 强制使用分号结尾
+  "semi": true
+}
