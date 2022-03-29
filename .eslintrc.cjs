@@ -55,16 +55,6 @@ module.exports = {
     'camelcase': 'error',
     // 不允许多个空行 
     'no-multiple-empty-lines': 'error',
-    //要求每一个变量声明之后都有空行
-    'padding-line-between-statements': [
-      'error',
-      { blankLine: 'always',
-        prev: ['const', 'let', 'var'],
-        next: '*' },
-      { blankLine: 'any',
-        prev: ['const', 'let', 'var'],
-        next: ['const', 'let', 'var'] }
-    ],
     // 禁止或强制在代码块中开括号前和闭括号后有空格
     'block-spacing': 'error',
     // 强制在对象字面量的键和值之间使用一致的空格
