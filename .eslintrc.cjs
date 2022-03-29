@@ -8,6 +8,7 @@ module.exports = {
     'eslint:recommended',
     '@vue/eslint-config-typescript/recommended',
     'plugin:vue/vue3-recommended',
+    'plugin:tailwindcss/recommended'
   ],
   env: {
     'vue/setup-compiler-macros': true,
@@ -15,6 +16,7 @@ module.exports = {
     'amd': true,
     'node': true
   },
+  plugins: ['tailwindcss'],
   rules: {
     '@typescript-eslint/ban-ts-ignore': 'off',
     '@typescript-eslint/no-unused-vars': 'off',
