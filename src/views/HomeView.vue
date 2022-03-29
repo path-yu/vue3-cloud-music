@@ -1,12 +1,18 @@
 <script setup lang="ts">
+import { useI18n } from 'vue-i18n';
+const { t, locale }= useI18n();
+
+const changeLocale = () => {
+  console.log(locale.value);
+  locale.value = locale.value === 'zh-cn' ? 'en' :'zh-cn';
+};
 </script>
 
 <template>
   <main>
-    hello vue3
-    <a-button type="primary">
-      43
+    <p>{{ t("hello") }}</p>
+    <a-button @click="changeLocale">
+      改变语言
     </a-button>
-    <a-divider>With Text</a-divider>
   </main>
 </template>
