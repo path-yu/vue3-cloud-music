@@ -1,0 +1,18 @@
+{
+  "cSpell.words": [
+    "pinia"
+  ],
+   // 保存时自动启用 eslint --fix 自动修复
+   "editor.codeActionsOnSave": {
+    "source.fixAll": true
+  },
+  "files.associations": {
+    "*.json": "jsonc",
+    ".prettierrc": "jsonc"
+  },
+  //disable the lint rule of unknownAtRules.
+  "css.lint.unknownAtRules": "ignore",
+  "scss.lint.unknownAtRules": "ignore",
+  // 不折叠文件夹
+  "explorer.compactFolders": false
+}
