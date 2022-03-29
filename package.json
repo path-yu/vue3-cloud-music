@@ -10,7 +10,10 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "ant-design-vue": "^2.2.8",
+    "normalize.css": "^8.0.1",
     "pinia": "^2.0.11",
+    "unplugin-vue-components": "^0.18.5",
     "vue": "^3.2.31",
     "vue-router": "^4.0.12"
   },
