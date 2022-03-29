@@ -1,6 +1,6 @@
-import { CONSTANT } from './../assets/js/constant';
-import { useMainStore } from '@/stores/main';
+import { computed } from 'vue';
 import { createI18n, useI18n } from 'vue-i18n';
+import { CONSTANT } from './../assets/js/constant';
 import messages from './messages';
 
 
@@ -13,7 +13,8 @@ const i18n = createI18n({
 
 export function useMyI18n() {
   const { t, locale } = useI18n();
-
+  const messageTitle = computed(() => locale.value === 'en' ? 'English' :'中文');
+  
   const changeLocale = () => {
     const isEn = locale.value === 'en';
     const localeValue = isEn ? 'zh-cn' : 'en';
@@ -24,6 +25,7 @@ export function useMyI18n() {
   return {
     t,
     changeLocale,
+    messageTitle
   };
 }
 
