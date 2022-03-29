@@ -3,7 +3,7 @@ import vueJsx from '@vitejs/plugin-vue-jsx';
 import { fileURLToPath, URL } from 'url';
 import { defineConfig } from 'vite';
 import Components from 'unplugin-vue-components/vite';
-import { AntDesignVueResolver } from 'unplugin-vue-components/resolvers';
+import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
 
 // https://vitejs.dev/config/
 export default defineConfig({
@@ -11,7 +11,7 @@ export default defineConfig({
     vue(),
     vueJsx(),
     Components({
-      resolvers: [AntDesignVueResolver()],
+      resolvers: [NaiveUiResolver()],
     }),
   ],
   resolve: {
@@ -20,7 +20,19 @@ export default defineConfig({
     },
   },
   server: {
-    port: 8080,
-    open: 'http://localhost:8080',
+    port: 8081,
+    open: 'http://localhost:8081',
   },
+  css: {
+    preprocessorOptions: {
+      less: { // 如果使用less-loader@5，请移除 lessOptions 这一级直接配置选项。
+        lessOptions: {
+          modifyVars: {
+            dark: true, // 开启暗黑模式
+          },
+          javascriptEnabled: true,
+        }
+      },
+    }
+  }
 });
