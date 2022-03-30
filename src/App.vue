@@ -1,16 +1,16 @@
 <script setup lang="ts">
-import { onMounted, ref } from 'vue';
+import { onMounted, computed } from 'vue';
 import { RouterView } from 'vue-router';
 import BaseHeader from './components/BaseHeader/BaseHeader.vue';
 import { useMainStore } from './stores/main';
-const { activeTheme, initDocumentTheme } = useMainStore();
-
+const mainStore = useMainStore();
 onMounted(() => {
-  initDocumentTheme();
+  mainStore.initDocumentTheme();
 });
+
 </script>
 <template>
-  <n-config-provider :theme="activeTheme">
+  <n-config-provider :theme="mainStore.activeTheme">
     <base-header />
     <RouterView />
   </n-config-provider>

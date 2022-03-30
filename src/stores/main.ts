@@ -1,4 +1,4 @@
-import { darkTheme, lightTheme } from 'naive-ui';
+import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
 export const useMainStore = defineStore({
   id: 'main',
@@ -7,7 +7,7 @@ export const useMainStore = defineStore({
   }),
   getters: {
     activeTheme(state) {
-      return state.theme === 'dark' ? darkTheme : lightTheme;
+      return state.theme === 'dark' ? darkTheme : null;
     },
     isActiveDarkTheme(state) {
       return state.theme === 'dark';

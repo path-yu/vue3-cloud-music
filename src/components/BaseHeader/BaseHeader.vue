@@ -2,16 +2,15 @@
 import { useMyI18n } from '@/i18n';
 import { useMainStore } from '@/stores/main';
 import { Moon, SunnySharp } from '@vicons/ionicons5';
-import { ref } from 'vue';
-let { changeTheme, isActiveDarkTheme } = useMainStore();
-console.log(isActiveDarkTheme);
-
-let active = ref(isActiveDarkTheme);
+import { ref, watch } from 'vue';
+let mainStore = useMainStore();
+let active = ref(mainStore.isActiveDarkTheme);
 
 let { t, changeLocale, messageTitle } = useMyI18n();
-const handleSwitchThemeChange = () => {
-  changeTheme();
-};
+
+watch(() => active.value, () => {
+  mainStore.changeTheme();
+});
 </script>
 
 <template>
@@ -28,7 +27,6 @@ const handleSwitchThemeChange = () => {
       <n-switch
         v-model:value="active"
         size="large"
-        @change="handleSwitchThemeChange"
       >
         <template #checked-icon>
           <n-icon :component="Moon" />
