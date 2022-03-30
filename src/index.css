@@ -1,6 +1,9 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
-.darkColorOrWhite {
+.ColorDarkOrWhite {
   @apply text-black dark:text-white;
+}
+.bgColorLightOrBlack {
+  @apply bg-white dark:bg-black;
 }

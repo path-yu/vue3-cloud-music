@@ -14,15 +14,17 @@ watch(() => active.value, () => {
 </script>
 
 <template>
-  <header class="flex justify-between items-center px-6 h-14 bg-white dark:bg-black">
-    <span class="darkColorOrWhite">{{ t('title') }}</span>
+  <header
+    class="flex justify-between items-center px-6 h-20 transition-colors duration-500 bgColorLightOrBlack"
+  >
+    <span class="ColorDarkOrWhite">{{ t('title') }}</span>
    
     <div>
       <n-button
         class="mr-5"
         @click="changeLocale"
       >
-        <span class="darkColorOrWhite"> {{ messageTitle }}</span>
+        <span class="ColorDarkOrWhite"> {{ messageTitle }}</span>
       </n-button>
       <n-switch
         v-model:value="active"
