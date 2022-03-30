@@ -7,3 +7,6 @@
 .bgColorLightOrBlack {
   @apply bg-white dark:bg-black;
 }
+.bgColorLightOrSecondBlack {
+  @apply bg-white dark:bg-secondBack;
+}

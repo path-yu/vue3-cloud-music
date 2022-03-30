@@ -6,10 +6,11 @@ declare module 'vue' {
   export interface GlobalComponents {
     BaseHeader: typeof import('./src/components/BaseHeader/BaseHeader.vue')['default']
     HelloWorld: typeof import('./src/components/HelloWorld.vue')['default']
+    LayOutLeft: typeof import('./src/components/LayoutLeft/LayOutLeft.vue')['default']
     NButton: typeof import('naive-ui')['NButton']
     NConfigProvider: typeof import('naive-ui')['NConfigProvider']
     NIcon: typeof import('naive-ui')['NIcon']
-    NSpin: typeof import('naive-ui')['NSpin']
+    NInput: typeof import('naive-ui')['NInput']
     NSwitch: typeof import('naive-ui')['NSwitch']
   }
 }

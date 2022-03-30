@@ -1,7 +1,8 @@
 <script setup lang="ts">
-import { onMounted, computed } from 'vue';
+import { onMounted } from 'vue';
 import { RouterView } from 'vue-router';
 import BaseHeader from './components/BaseHeader/BaseHeader.vue';
+import LayOutLeft from './components/LayoutLeft/LayOutLeft.vue';
 import { useMainStore } from './stores/main';
 const mainStore = useMainStore();
 onMounted(() => {
@@ -12,7 +13,10 @@ onMounted(() => {
 <template>
   <n-config-provider :theme="mainStore.activeTheme">
     <base-header />
-    <RouterView />
+    <div class="flex">
+      <LayOutLeft />
+      <RouterView />
+    </div>
   </n-config-provider>
 </template>
 
