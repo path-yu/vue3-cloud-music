@@ -20,7 +20,7 @@ export default defineConfig({
     },
   },
   server: {
-    port: 8080,
-    open: 'http://localhost:8080',
+    port: 8081,
+    open: 'http://localhost:8081',
   },
 });

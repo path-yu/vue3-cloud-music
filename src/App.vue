@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { onMounted } from 'vue';
+import { onMounted, ref } from 'vue';
 import { RouterView } from 'vue-router';
 import BaseHeader from './components/BaseHeader/BaseHeader.vue';
 import { useMainStore } from './stores/main';

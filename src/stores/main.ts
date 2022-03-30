@@ -8,6 +8,9 @@ export const useMainStore = defineStore({
   getters: {
     activeTheme(state) {
       return state.theme === 'dark' ? darkTheme : lightTheme;
+    },
+    isActiveDarkTheme(state) {
+      return state.theme === 'dark';
     }
   },
   actions: {
