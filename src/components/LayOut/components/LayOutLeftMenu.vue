@@ -1,16 +1,12 @@
-<script setup lang="ts">
-import { h, ref, type Component } from 'vue';
-import { NIcon } from 'naive-ui';
+<script setup lang="tsx">
+import { useMyI18n } from '@/i18n';
+import { Music, User } from '@vicons/carbon';
+import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
-import {
-  List, VideocamOutline, SparklesOutline
-} from '@vicons/ionicons5';
-import { User, Music } from '@vicons/carbon'; 
-function renderIcon (icon: Component) {
-  return () => h(
-    NIcon, null, { default: () => h(icon) }
-  );
-}
+import { NIcon } from 'naive-ui';
+import { h, ref, type Component } from 'vue';
+import { RouterLink } from 'vue-router';
+const { t, isZhCn } = useMyI18n();
 const menuOptions: MenuOption[] = [
   {
     label: '登录',
@@ -18,31 +14,44 @@ const menuOptions: MenuOption[] = [
     icon: renderIcon(User),
   },
   {
-    label: '推荐歌单',
-    key: 'recommend',
+    label: () => <RouterLink to='songList'>{t('recommendSongsList')}</RouterLink>,
+    key: 'songList',
     icon: renderIcon(List),
   },
   {
-    label: '发现音乐',
-    key: 'find',
+    label: () => <RouterLink to='discovery'>{t('discovrMusic')}</RouterLink>,
+    key: 'discovery',
     icon: renderIcon(SparklesOutline),
   },
   {
-    label: '最新音乐',
-    key: 'list',
+    label: () => <RouterLink to='latestMusic'>{t('latestMusic')}</RouterLink>,
+    key: 'latestMusic',
     icon: renderIcon(Music),
   },
   {
-    label: '最新MV',
-    key: 'mv',
+    label: () => <RouterLink to='latestMv'>{t('latestMv')}</RouterLink>,
+    key: 'latestMv',
     icon: renderIcon(VideocamOutline),
   }
 ];
+function renderIcon(icon: Component) {
+  return () => h(
+    NIcon, null, { default: () => h(icon) }
+  );
+}
 let activeKey = ref<string | null>(null);
 let collapsed = ref(false);
 </script>
 <template>
-  <div class="pr-2 w-56 h-main bg-second-main">
+  <div
+    :class="[
+      'pr-2',
+      'h-main',
+      'bg-second-main',
+      'transition-width',
+      isZhCn ? 'w-48' : 'w-72',
+    ]"
+  >
     <n-menu
       v-model:value="activeKey"
       :collapsed="collapsed"

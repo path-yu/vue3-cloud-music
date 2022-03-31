@@ -14,6 +14,7 @@ const i18n = createI18n({
 export function useMyI18n() {
   const { t, locale } = useI18n();
   const messageTitle = computed(() => locale.value === 'en' ? 'English' :'中文');
+  const isZhCn = computed(() => locale.value === 'zh-cn');
   
   const changeLocale = () => {
     const isEn = locale.value === 'en';
@@ -25,6 +26,7 @@ export function useMyI18n() {
   return {
     t,
     changeLocale,
+    isZhCn,
     messageTitle
   };
 }

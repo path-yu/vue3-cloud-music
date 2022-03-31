@@ -12,6 +12,11 @@ module.exports = {
       },
       height: {
         'main': 'calc(100vh - 3.5rem)'
+      },
+      transitionProperty: {
+        'height': 'height',
+        'width': 'width',
+        'spacing': 'margin, padding',
       }
     },
   },
