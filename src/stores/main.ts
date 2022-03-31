@@ -18,9 +18,12 @@ export const useMainStore = defineStore({
       if (this.theme === 'dark') {
         document.documentElement.classList.remove('dark');
         this.theme = 'light';
+        document.documentElement.style.colorScheme = '';
         localStorage.theme = 'light';
       } else {
         document.documentElement.classList.add('dark');
+        // 设置网页的配色方案为dark 
+        document.documentElement.style.colorScheme = 'dark';
         this.theme = 'dark';
         localStorage.theme = 'dark';
       }
@@ -28,8 +31,10 @@ export const useMainStore = defineStore({
     initDocumentTheme() {
       if (this.theme === 'dark') {
         document.documentElement.classList.add('dark');
+        document.documentElement.style.colorScheme = 'dark';
       } else {
         document.documentElement.classList.remove('dark');
+        document.documentElement.style.colorScheme = '';
       }
     }
   },

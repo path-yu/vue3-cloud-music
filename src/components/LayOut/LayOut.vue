@@ -5,7 +5,7 @@ import { RouterView } from 'vue-router';
 </script>
 
 <template>
-  <div>
+  <div class="transition-colors duration-300">
     <base-header />
     <div class="flex">
       <LayOutLeftMenu />

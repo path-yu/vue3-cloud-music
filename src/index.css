@@ -10,3 +10,9 @@
 .bgColorLightOrSecondBlack {
   @apply bg-white dark:bg-secondBack;
 }
+
+
+::-webkit-scrollbar {
+ display: none;
+}
+

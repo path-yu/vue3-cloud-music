@@ -15,11 +15,11 @@ watch(() => active.value, () => {
 
 <template>
   <header
-    class="flex justify-between items-center px-6 h-14 bg-gray-50 dark:bg-black transition-colors duration-500 sm:px-3"
+    class="flex justify-between items-center px-6 h-14 bg-zinc-100 dark:bg-black  sm:px-3"
   >
     <div class="flex">
       <span class=" truncate ColorDarkOrWhite">{{ t('title') }}</span>
-      <div class="flex items-center ml-2 ColorDarkOrWhite">
+      <div class="flex items-center ml-8 ColorDarkOrWhite">
         <n-button
           text
           class="text-2xl"

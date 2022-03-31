@@ -1,6 +1,7 @@
 {
   "cSpell.words": [
     "pinia",
+    "sider",
     "unplugin"
   ],
    // 保存时自动启用 eslint --fix 自动修复
