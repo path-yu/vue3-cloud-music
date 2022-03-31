@@ -4,9 +4,8 @@ import { Music, User } from '@vicons/carbon';
 import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
 import { NIcon } from 'naive-ui';
-import { h, ref, type Component } from 'vue';
-import { RouterLink } from 'vue-router';
-const { t, isZhCn } = useMyI18n();
+import { h, ref, watch, type Component } from 'vue';
+import { RouterLink, useRoute } from 'vue-router';
 const menuOptions: MenuOption[] = [
   {
     label: '登录',
@@ -15,22 +14,22 @@ const menuOptions: MenuOption[] = [
   },
   {
     label: () => <RouterLink to='songList'>{t('recommendSongsList')}</RouterLink>,
-    key: 'songList',
+    key: '/songList',
     icon: renderIcon(List),
   },
   {
     label: () => <RouterLink to='discovery'>{t('discovrMusic')}</RouterLink>,
-    key: 'discovery',
+    key: '/discovery',
     icon: renderIcon(SparklesOutline),
   },
   {
     label: () => <RouterLink to='latestMusic'>{t('latestMusic')}</RouterLink>,
-    key: 'latestMusic',
+    key: '/latestMusic',
     icon: renderIcon(Music),
   },
   {
     label: () => <RouterLink to='latestMv'>{t('latestMv')}</RouterLink>,
-    key: 'latestMv',
+    key: '/latestMv',
     icon: renderIcon(VideocamOutline),
   }
 ];
@@ -39,8 +38,15 @@ function renderIcon(icon: Component) {
     NIcon, null, { default: () => h(icon) }
   );
 }
+const { t, isZhCn } = useMyI18n();
+const route = useRoute();
+
 let activeKey = ref<string | null>('');
 let collapsed = ref(false);
+
+watch(() => route.path, (newVal) => {
+  activeKey.value = newVal;
+});
 </script>
 <template>
   <div
