@@ -11,7 +11,7 @@ module.exports = {
         'sm': { 'min': '350px', 'max': '767px' },
       },
       height: {
-        'm': 'calc(100vh - 3.5rem)'
+        'main': 'calc(100vh - 3.5rem)'
       }
     },
   },
