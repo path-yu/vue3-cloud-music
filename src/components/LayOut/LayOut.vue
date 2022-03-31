@@ -12,7 +12,14 @@ import { RouterView } from 'vue-router';
       <!-- 鼠标移入缩放条 -->
       <div class="w-1 h-main cursor-ew-resize bg-main" />
       <div class="w-full h-main bg-main">
-        <RouterView />
+        <router-view v-slot="{ Component }">
+          <transition
+            name="fade-transform"
+            mode="out-in"
+          >
+            <component :is="Component" />
+          </transition>
+        </router-view>
       </div>
     </div>
   </div>

@@ -39,7 +39,7 @@ function renderIcon(icon: Component) {
     NIcon, null, { default: () => h(icon) }
   );
 }
-let activeKey = ref<string | null>(null);
+let activeKey = ref<string | null>('');
 let collapsed = ref(false);
 </script>
 <template>
