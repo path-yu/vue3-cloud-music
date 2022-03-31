@@ -42,7 +42,7 @@ let activeKey = ref<string | null>(null);
 let collapsed = ref(false);
 </script>
 <template>
-  <div class="w-56 h-main bg-zinc-200 dark:bg-secondBack ColorDarkOrWhite">
+  <div class="pr-2 w-56 h-main bg-second-main">
     <n-menu
       v-model:value="activeKey"
       :collapsed="collapsed"

@@ -9,7 +9,9 @@ import { RouterView } from 'vue-router';
     <base-header />
     <div class="flex">
       <LayOutLeftMenu />
-      <div class="w-full h-main bg-gray-50 dark:bg-black">
+      <!-- 鼠标移入缩放条 -->
+      <div class="w-1 h-main cursor-ew-resize bg-main" />
+      <div class="w-full h-main bg-main">
         <RouterView />
       </div>
     </div>

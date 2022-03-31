@@ -15,7 +15,7 @@ watch(() => active.value, () => {
 
 <template>
   <header
-    class="flex justify-between items-center px-6 h-14 bg-zinc-100 dark:bg-black  sm:px-3"
+    class="flex justify-between items-center px-6 h-14 sm:px-3  bg-main"
   >
     <div class="flex">
       <span class=" truncate ColorDarkOrWhite">{{ t('title') }}</span>

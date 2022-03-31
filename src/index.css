@@ -10,8 +10,12 @@
 .bgColorLightOrSecondBlack {
   @apply bg-white dark:bg-secondBack;
 }
-
-
+.bg-main{
+  @apply bg-zinc-50 dark:bg-black
+}
+.bg-second-main{
+  @apply bg-zinc-200 dark:bg-secondBack;
+}
 ::-webkit-scrollbar {
  display: none;
 }
