@@ -1,28 +1,12 @@
 <script setup lang="ts">
 import BaseHeader from '@/components/LayOut/components/LayOutHeader.vue';
 import LayOutLeftMenu from '@/components/LayOut/components/LayOutLeftMenu.vue';
-import { RouterView } from 'vue-router';
-
 </script>
 
 <template>
-  <div
-    :class="['transition-colors','duration-300']"
-  >
+  <div :class="['transition-colors','duration-300']">
     <base-header />
-    <div class="flex">
-      <LayOutLeftMenu />
-      <div class="w-full h-main">
-        <router-view v-slot="{ Component }">
-          <transition
-            name="fade-transform"
-            mode="out-in"
-          >
-            <component :is="Component" />
-          </transition>
-        </router-view>
-      </div>
-    </div>
+    <LayOutLeftMenu />
   </div>
 </template>
 

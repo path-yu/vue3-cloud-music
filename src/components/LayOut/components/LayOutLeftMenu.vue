@@ -4,42 +4,39 @@ import { Music, User } from '@vicons/carbon';
 import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
 import { NIcon, useThemeVars } from 'naive-ui';
-import { h, ref, watch, type Component } from 'vue';
+import { h, ref, watch, type VNode, type VNodeChild } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 import useCursorMoveResize from '../hook/useCursorMoveResize';
+import { RouterView } from 'vue-router';
 
 const menuOptions: MenuOption[] = [
   {
     label: '登录',
     key: 'login',
-    icon: renderIcon(User),
+    icon: () => <NIcon component={User} />
   },
   {
     label: () => <RouterLink to='songList'>{t('recommendSongsList')}</RouterLink>,
     key: '/songList',
-    icon: renderIcon(List),
+    icon: () => <NIcon component={List} />
   },
   {
     label: () => <RouterLink to='discovery'>{t('discovrMusic')}</RouterLink>,
     key: '/discovery',
-    icon: renderIcon(SparklesOutline),
+    icon: () => <NIcon component={SparklesOutline} />
   },
   {
     label: () => <RouterLink to='latestMusic'>{t('latestMusic')}</RouterLink>,
     key: '/latestMusic',
-    icon: renderIcon(Music),
+    icon: () => <NIcon component={Music} />
   },
   {
     label: () => <RouterLink to='latestMv'>{t('latestMv')}</RouterLink>,
     key: '/latestMv',
-    icon: renderIcon(VideocamOutline),
+    icon: () => <NIcon component={VideocamOutline} />
   }
 ];
-function renderIcon(icon: Component) {
-  return () => h(
-    NIcon, null, { default: () => h(icon) }
-  );
-}
+
 const { t, isZhCn } = useMyI18n();
 const route = useRoute();
 let themeVars = useThemeVars();
@@ -58,47 +55,47 @@ watch(() => route.path, (newVal) => {
 });
 </script>
 <template>
-  <div :class="['flex',showResizeBar && 'no-select']">
-    <div
-      class="bg-second-main"
+  <n-layout
+    has-sider
+    class="bg-second-main"
+    :class="[ 'h-main', 'transition',]"
+  >
+    <n-layout-sider
+      bordered
+      collapse-mode="width"
+      :collapsed-width="64"
+      :width="isZhCn ? 192 : 288"
+      :collapsed="collapsed"
+      show-trigger
+      @collapse="collapsed = true"
+      @expand="collapsed = false"
     >
-      <n-layout
-        has-sider
-        :class="[
-          'h-main',
-          'transition-width',
-          isZhCn ? 'w-50' : 'w-74',
-        ]"
-        :style="{width: collapsed ? '80px' : ''}"
-      >
-        <n-layout-sider
-          bordered
-          collapse-mode="width"
-          :collapsed-width="64"
-          :width="isZhCn ? 192 : 288"
-          :collapsed="collapsed"
-          show-trigger
-          @collapse="collapsed = true"
-          @expand="collapsed = false"
+      <n-menu
+        v-model:value="activeKey"
+        :collapsed="collapsed"
+        :collapsed-width="64"
+        :collapsed-icon-size="22"
+        :options="menuOptions"
+      />
+    </n-layout-sider>
+    <n-layout>
+      <router-view v-slot="{ Component }">
+        <transition
+          name="fade-transform"
+          mode="out-in"
         >
-          <n-menu
-            v-model:value="activeKey"
-            :collapsed="collapsed"
-            :collapsed-width="64"
-            :collapsed-icon-size="22"
-            :options="menuOptions"
-          />
-        </n-layout-sider>
-      </n-layout>
-    </div>
-    <!-- <div
+          <component :is="Component" />
+        </transition>
+      </router-view>
+    </n-layout>
+  </n-layout>
+  <!-- <div
       :style="{backgroundColor:showResizeBar ? primaryColor : ''}"
       :class="['w-1', ' h-main', 'cursor-ew-resize', 'bg-main']"
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
       @mousedown="handleMouseDown"
     /> -->
-  </div>
 </template>
 
 <style lang="less" scoped>
