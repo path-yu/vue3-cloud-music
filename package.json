@@ -10,6 +10,7 @@
     "lint": "eslint . --ext .vue,.js,.jsx,.cjs,.mjs,.ts,.tsx,.cts,.mts --fix --ignore-path .gitignore"
   },
   "dependencies": {
+    "@vueuse/core": "^8.2.3",
     "eslint-plugin-tailwindcss": "^3.5.0",
     "normalize.css": "^8.0.1",
     "pinia": "^2.0.11",

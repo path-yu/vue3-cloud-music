@@ -17,6 +17,10 @@ module.exports = {
         'height': 'height',
         'width': 'width',
         'spacing': 'margin, padding',
+      },
+      width: {
+        '50': '206px',
+        '74': '302px'
       }
     },
   },
