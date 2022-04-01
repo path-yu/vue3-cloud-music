@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LayOut from '@/components/LayOut/LayOut.vue';
+import LayOut from '@/components/Layout/Layout.vue';
 import { onMounted } from 'vue';
 import { useMainStore } from './stores/main';
 const mainStore = useMainStore();

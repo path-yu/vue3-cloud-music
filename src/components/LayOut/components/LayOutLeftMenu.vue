@@ -1,13 +1,11 @@
 <script setup lang="tsx">
-import { useMyI18n } from '@/i18n';
 import { Music, User } from '@vicons/carbon';
+import { useMyI18n } from '@/i18n';
 import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
-import { NIcon, useThemeVars } from 'naive-ui';
-import { h, ref, watch, type VNode, type VNodeChild } from 'vue';
+import { NIcon } from 'naive-ui';
+import { ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
-import useCursorMoveResize from '../hook/useCursorMoveResize';
-import { RouterView } from 'vue-router';
 
 const menuOptions: MenuOption[] = [
   {
@@ -39,17 +37,8 @@ const menuOptions: MenuOption[] = [
 
 const { t, isZhCn } = useMyI18n();
 const route = useRoute();
-let themeVars = useThemeVars();
-let primaryColor = themeVars.value.primaryColor;
-
-const menuRef = ref<HTMLElement | null>(null);
-const {
-  showResizeBar, handleMouseEnter, 
-  handleMouseLeave, handleMouseDown,
-  collapsed,
-} = useCursorMoveResize(menuRef, 20);
+let collapsed = ref(false);
 let activeKey = ref<string | null>('');
-
 watch(() => route.path, (newVal) => {
   activeKey.value = newVal;
 });

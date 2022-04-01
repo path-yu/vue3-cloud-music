@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import BaseHeader from '@/components/LayOut/components/LayOutHeader.vue';
-import LayOutLeftMenu from '@/components/LayOut/components/LayOutLeftMenu.vue';
+import BaseHeader from '@/components/Layout/components/LayoutHeader.vue';
+import LayoutLeftMenu from '@/components/Layout/components/LayoutLeftMenu.vue';
 </script>
 
 <template>
   <div :class="['transition-colors','duration-300']">
     <base-header />
-    <LayOutLeftMenu />
+    <layout-left-menu />
   </div>
 </template>
 
