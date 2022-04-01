@@ -1,6 +1,6 @@
 <script setup lang="tsx">
-import { Music, User } from '@vicons/carbon';
 import { useMyI18n } from '@/i18n';
+import { Music, User } from '@vicons/carbon';
 import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
 import { NIcon } from 'naive-ui';
@@ -39,6 +39,7 @@ const { t, isZhCn } = useMyI18n();
 const route = useRoute();
 let collapsed = ref(false);
 let activeKey = ref<string | null>('');
+
 watch(() => route.path, (newVal) => {
   activeKey.value = newVal;
 });
@@ -46,12 +47,11 @@ watch(() => route.path, (newVal) => {
 <template>
   <n-layout
     has-sider
-    class="bg-second-main"
-    :class="[ 'h-main', 'transition',]"
   >
     <n-layout-sider
       bordered
       collapse-mode="width"
+      class="h-main bg-second-main"
       :collapsed-width="64"
       :width="isZhCn ? 192 : 288"
       :collapsed="collapsed"
@@ -84,8 +84,13 @@ watch(() => route.path, (newVal) => {
       @mouseenter="handleMouseEnter"
       @mouseleave="handleMouseLeave"
       @mousedown="handleMouseDown"
-    /> -->
+  />-->
 </template>
 
 <style lang="less" scoped>
+.n-layout-sider {
+  transition: color 0.3s var(--n-bezier), border-color 0.3s var(--n-bezier),
+    min-width 0.3s var(--n-bezier), max-width 0.3s var(--n-bezier) ,width 0.3s var(--n-bezier),
+    transform 0.3s var(--n-bezier), background-color 0.3s var(--n-bezier);
+}
 </style>
