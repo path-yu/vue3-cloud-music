@@ -26,3 +26,4 @@ coverage
 *.njsproj
 *.sln
 *.sw?
+components.d.ts
