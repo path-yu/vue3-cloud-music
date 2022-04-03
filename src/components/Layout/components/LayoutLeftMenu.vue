@@ -67,7 +67,7 @@ watch(() => route.path, (newVal) => {
         :options="menuOptions"
       />
     </n-layout-sider>
-    <n-layout>
+    <n-layout class="bg-main">
       <router-view v-slot="{ Component }">
         <transition
           name="fade-transform"
