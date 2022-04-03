@@ -27,3 +27,4 @@ coverage
 *.sln
 *.sw?
 components.d.ts
+yarn.lock

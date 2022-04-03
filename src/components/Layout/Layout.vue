@@ -4,9 +4,14 @@ import LayoutLeftMenu from '@/components/Layout/components/LayoutLeftMenu.vue';
 </script>
 
 <template>
-  <div :class="['transition-colors','duration-300']">
+  <div
+    style="width: 75vw;margin: auto;"
+    :class="['transition-colors','duration-300']"
+  >
     <base-header />
-    <layout-left-menu />
+    <div>
+      <layout-left-menu />
+    </div>
   </div>
 </template>
 
