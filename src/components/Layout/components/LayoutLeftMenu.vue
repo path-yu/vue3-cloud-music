@@ -14,14 +14,14 @@ const menuOptions: MenuOption[] = [
     icon: () => <NIcon component={User} />
   },
   {
-    label: () => <RouterLink to='songList'>{t('recommendSongsList')}</RouterLink>,
-    key: '/songList',
-    icon: () => <NIcon component={List} />
-  },
-  {
     label: () => <RouterLink to='discovery'>{t('discovrMusic')}</RouterLink>,
     key: '/discovery',
     icon: () => <NIcon component={SparklesOutline} />
+  },
+  {
+    label: () => <RouterLink to='songList'>{t('recommendSongsList')}</RouterLink>,
+    key: '/songList',
+    icon: () => <NIcon component={List} />
   },
   {
     label: () => <RouterLink to='latestMusic'>{t('latestMusic')}</RouterLink>,
