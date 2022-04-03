@@ -1,26 +1,28 @@
 <script setup lang="ts">
 
 import { getBanner } from '@/service/index';
-import { ArrowLeft, ArrowRight } from '@vicons/carbon';
+import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
 
 const hoverRef = ref();
 const currentIndex = ref(0);
+const autoplay = ref(true);
 const { state: banners, isLoading } = useAsyncState(getBanner().then(res => res.data.banners), []);
 const isHovered = useElementHover(hoverRef)
-const showArrowClass = computed(() => isHovered.value ? 'opacity-50' : 'opacity-0')
+const showArrowClass = computed(() => isHovered.value ? 'opacity-50' : 'opacity-0');
 
 const handleArrowClick = (type: 'next' | 'prev') => {
   let index = currentIndex.value;
+
   if (type == 'next') {
-    index++;
-    currentIndex.value = index === banners.value.length ? 0 : index;
+    currentIndex.value = index === banners.value.length - 1 ? 0 : ++index;
   } else {
-    index--;
-    currentIndex.value = index === 0 ? banners.value.length - 1 : index;
+    currentIndex.value = index === 0 ? banners.value.length - 1 : --index;
   }
 }
+
+
 </script>
 
 <template>
@@ -31,7 +33,8 @@ const handleArrowClick = (type: 'next' | 'prev') => {
           effect="card"
           dot-type="line"
           draggable
-          autoplay
+          :autoplay="!isHovered"
+          :interval="3000"
           :current-index="currentIndex"
           prev-slide-style="transform: translateX(-120%) translateZ(-450px);opacity:1"
           next-slide-style="transform: translateX(20%) translateZ(-450px);opacity:1"
@@ -48,8 +51,8 @@ const handleArrowClick = (type: 'next' | 'prev') => {
             :class="[showArrowClass, 'left-40', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
             style="top: calc(250px * 0.83 / 2);"
           >
-            <n-icon size="20">
-              <ArrowLeft />
+            <n-icon size="15">
+              <ArrowBackIosSharp />
             </n-icon>
           </div>
           <div
@@ -57,13 +60,14 @@ const handleArrowClick = (type: 'next' | 'prev') => {
             :class="[showArrowClass, 'right-40', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
             style="top: calc(250px * 0.83 / 2);"
           >
-            <n-icon size="20">
-              <ArrowRight />
+            <n-icon size="15">
+              <ArrowForwardIosRound />
             </n-icon>
           </div>
         </div>
       </div>
     </n-spin>
+    <div>43</div>
   </div>
 </template>
 
@@ -80,5 +84,6 @@ const handleArrowClick = (type: 'next' | 'prev') => {
   font-size: 18px;
   box-shadow: 0 2px 4px 0px rgb(0 0 0 / 6%);
   z-index: 1;
+  user-select:none;
 }
 </style>
