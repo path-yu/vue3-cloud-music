@@ -1,14 +1,17 @@
 <script setup lang="ts">
 
-import { getBanner } from '@/service/index';
+import { getBanner, getPersonalized } from '@/service/index';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
+import { useI18n } from 'vue-i18n';
 
 const hoverRef = ref();
 const currentIndex = ref(0);
 const { state: banners, isLoading } = useAsyncState(getBanner().then(res => res.data.banners), []);
+const { state:SongsList, isLoading:SongsListIsLoading } = useAsyncState(getPersonalized().then(res => res.data.result), []);
 const isHovered = useElementHover(hoverRef)
+const { t } = useI18n();
 const showArrowClass = computed(() => isHovered.value ? 'opacity-50' : 'opacity-0');
 
 const handleArrowClick = (type: 'next' | 'prev') => {
@@ -25,44 +28,50 @@ const handleArrowClick = (type: 'next' | 'prev') => {
 </script>
 
 <template>
-  <n-spin :show="isLoading" description="载入中">
-    <div ref="hoverRef" class="relative cursor-pointer">
-      <n-carousel
-        effect="card"
-        dot-type="line"
-        draggable
-        :autoplay="!isHovered"
-        :current-index="currentIndex"
-        prev-slide-style="transform: translateX(-120%) translateZ(-450px);opacity:1"
-        next-slide-style="transform: translateX(20%) translateZ(-450px);opacity:1"
-        style="height: 250px"
-        :show-dots="true"
-      >
-        <n-carousel-item v-for="item in banners" :key="item.imageUrl" :style="{ width: '50%' }">
-          <img class="w-full h-full rounded cursor-pointer cover-banner" :src="item.imageUrl" />
-        </n-carousel-item>
-      </n-carousel>
-      <div class="absolute top-0 w-full">
-        <div
-          @click="handleArrowClick('prev')"
-          :class="[showArrowClass, 'left-40', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
+  <div class="px-6">
+    <n-spin :show="isLoading" description="载入中">
+      <div ref="hoverRef" class="relative cursor-pointer">
+        <n-carousel
+          effect="card"
+          dot-type="line"
+          draggable
+          :autoplay="!isHovered"
+          :current-index="currentIndex"
+          prev-slide-style="transform: translateX(-150%) translateZ(-450px);opacity:1"
+          next-slide-style="transform: translateX(50%) translateZ(-450px);opacity:1"
+          style="height: 250px"
+          :show-dots="true"
         >
-          <n-icon size="15">
-            <ArrowBackIosSharp />
-          </n-icon>
-        </div>
-        <div
-          @click="handleArrowClick('next')"
-          :class="[showArrowClass, 'right-40', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
-        >
-          <n-icon size="15">
-            <ArrowForwardIosRound />
-          </n-icon>
+          <n-carousel-item v-for="item in banners" :key="item.imageUrl" :style="{ width: '50%' }">
+            <img class="w-full h-full rounded cursor-pointer cover-banner" :src="item.imageUrl" />
+          </n-carousel-item>
+        </n-carousel>
+        <div class="absolute top-0 w-full">
+          <div
+            @click="handleArrowClick('prev')"
+            :class="[showArrowClass, 'left-40', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
+          >
+            <n-icon size="15">
+              <ArrowBackIosSharp />
+            </n-icon>
+          </div>
+          <div
+            @click="handleArrowClick('next')"
+            :class="[showArrowClass, 'right-40', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
+          >
+            <n-icon size="15">
+              <ArrowForwardIosRound />
+            </n-icon>
+          </div>
         </div>
       </div>
-    </div>
-  </n-spin>
-  <!-- 推荐歌单 -->
+    </n-spin>
+    <!-- 推荐歌单 -->
+    <p class="text-xl">{{ t('recommendSongsList') }}</p>
+    <n-spin :show="SongsListIsLoading">
+      <sons-List :songs="SongsList"></sons-List>
+    </n-spin>
+  </div>
 </template>
 
 <style lang="scss" scoped>
@@ -78,7 +87,7 @@ const handleArrowClick = (type: 'next' | 'prev') => {
   font-size: 18px;
   box-shadow: 0 2px 4px 0px rgb(0 0 0 / 6%);
   z-index: 1;
-  user-select:none;
+  user-select: none;
   top: calc(250px * 0.83 / 2);
 }
 </style>
