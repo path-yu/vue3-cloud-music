@@ -4,6 +4,9 @@
 .ColorDarkOrWhite {
   @apply text-black dark:text-white;
 }
+.dark-text-color {
+  @apply text-white dark:text-black;
+}
 .bgColorLightOrBlack {
   @apply bg-white dark:bg-black;
 }
@@ -15,6 +18,9 @@
 }
 .bg-second-main{
   @apply bg-zinc-100 dark:bg-secondBack;
+}
+.bg-reverse-second-main{
+   @apply bg-secondBack dark:bg-zinc-100;
 }
 ::-webkit-scrollbar {
  display: none;
