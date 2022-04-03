@@ -5,7 +5,7 @@ import LayoutLeftMenu from '@/components/Layout/components/LayoutLeftMenu.vue';
 
 <template>
   <div
-    style="width: 75vw;margin: auto;"
+    style="width: 80vw;margin: auto;"
     :class="['transition-colors','duration-300']"
   >
     <base-header />
