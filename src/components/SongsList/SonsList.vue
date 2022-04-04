@@ -1,14 +1,12 @@
 <script setup lang="ts">
+import PlayIcon from '@/components/Base/PlayIcon.vue';
 import { usePrimaryColor } from '@/stores/main';
 import { formateNumber } from '@/utils/index';
-import { Play, PlayFilledAlt } from '@vicons/carbon';
+import { Play } from '@vicons/carbon';
 import { useElementHover } from '@vueuse/core';
-import { useThemeVars } from 'naive-ui';
 import { defineProps, ref } from 'vue';
-const themeVars = useThemeVars();
+
 const { primaryColor } = usePrimaryColor();
-
-
 const props = defineProps<{
   songs?: any[]
 }>();
@@ -17,7 +15,7 @@ const isHovered = useElementHover(hoverRef);
 </script>
 
 <template>
-  <div class="pb-6">
+  <div>
     <n-grid
       cols="2 s:3 m:5 l:5 xl:5 2xl:7"
       responsive="screen"
@@ -47,15 +45,7 @@ const isHovered = useElementHover(hoverRef);
                 <n-icon :component="Play" />
                 <span class="pl-1">{{ formateNumber(item.playCount) }}</span>
               </div>
-              <div
-                class="play-icon flex-items-justify-center"
-              >
-                <n-icon
-                  :component="PlayFilledAlt"
-                  size="20"
-                  :color="primaryColor"
-                />
-              </div>
+              <play-icon />
             </div>
           </template>
           <template #footer>

@@ -1,14 +1,24 @@
 <script setup lang="ts">
 
-import { getBanner, getPersonalized } from '@/service/index';
+import { getBanner, getNewSong, getPersonalized } from '@/service/index';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
 
 const hoverRef = ref();
 const currentIndex = ref(0);
-const { state: banners, isLoading } = useAsyncState(getBanner().then(res => res.data.banners), []);
-const { state: SongsList, isLoading: SongsListIsLoading } = useAsyncState(getPersonalized().then(res => res.data.result), []);
+const {
+  state: banners,
+  isLoading
+} = useAsyncState(getBanner().then(res => res.data.banners), []);
+const {
+  state: SongsList,
+  isLoading: SongsListIsLoading
+} = useAsyncState(getPersonalized().then(res => res.data.result), []);
+const {
+  state: newSongList,
+  isLoading: newSongListIsLoading
+} = useAsyncState(getNewSong().then(res => res.data.result), []);
 const isHovered = useElementHover(hoverRef);
 const showArrowClass = computed(() => isHovered.value ? 'opacity-50' : 'opacity-0');
 
@@ -21,12 +31,14 @@ const handleArrowClick = (type: 'next' | 'prev') => {
     currentIndex.value = index === 0 ? banners.value.length - 1 : --index;
   }
 };
-
+const formateSongsAuthor = (attr: any[]) => {
+  return attr.map(item => item.name).join('/');
+};
 
 </script>
 
 <template>
-  <div class="px-6">
+  <div class="px-6 pb-10">
     <n-spin
       :show="isLoading"
       description="载入中"
@@ -82,10 +94,54 @@ const handleArrowClick = (type: 'next' | 'prev') => {
       :show="SongsListIsLoading"
       description="载入中"
     >
-      <p class="text-xl">
+      <p class="pb-4 text-xl">
         推荐歌单
       </p>
       <sons-List :songs="SongsList" />
+    </n-spin>
+    <!-- 最新音乐 -->
+    <n-spin
+      :show="SongsListIsLoading"
+      description="载入中"
+    >
+      <p class="py-4 text-xl">
+        最新音乐
+      </p>
+      <n-grid
+        x-gap="10"
+        :y-gap="10"
+        cols="2 s:2 m:3 l:3 xl:3 2xl:4"
+        responsive="screen"
+      >
+        <n-grid-item
+          v-for="item in newSongList"
+          :key="item.id"
+          class="hover:bg-zinc-300/40 dark:hover:bg-gray-700/30 rounded-md"
+        >
+          <div class="flex justify-between h-16">
+            <div class="relative">
+              <img
+                :src="item.picUrl"
+                class="w-16 h-16 rounded-md"
+                alt="music"
+              >
+              <play-icon
+                :size="15"
+                class="cursor-pointer position-center"
+                style="opacity: 1;width: 25px;height: 25px;"
+              />
+            </div>
+            <div class="flex-1 ml-2">
+              <p class="mt-1 text-base">
+                {{ item.name }}
+              </p>
+              <p class="mt-2 text-sm opacity-60">
+                <n-ellipsis>{{ formateSongsAuthor(item.song.artists) }}</n-ellipsis>
+              </p>
+            </div>
+          </div>
+        </n-grid-item>
+      </n-grid>
     </n-spin>
   </div>
 </template>
@@ -105,5 +161,7 @@ const handleArrowClick = (type: 'next' | 'prev') => {
   z-index: 1;
   user-select: none;
   top: calc(250px * 0.83 / 2);
+}
+.light-green {
 }
 </style>

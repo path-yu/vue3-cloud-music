@@ -7,3 +7,7 @@ export function getBanner() {
 export function getPersonalized() {
   return service.get('/personalized?limit=15');
 }
+// 推荐新音乐
+export function getNewSong() {
+  return service.get('/personalized/newsong');
+}
