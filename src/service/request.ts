@@ -3,7 +3,7 @@ import axios from 'axios';
 const instance = axios.create({
   baseURL: 'https://netease-cloud-music-api-path-yu.vercel.app',
   method: 'get',
-  withCredentials: true,
+  withCredentials: true
 });
 
 //add request interceptor

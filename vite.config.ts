@@ -11,16 +11,16 @@ export default defineConfig({
     vue(),
     vueJsx(),
     Components({
-      resolvers: [NaiveUiResolver()],
-    }),
+      resolvers: [NaiveUiResolver()]
+    })
   ],
   resolve: {
     alias: {
-      '@': fileURLToPath(new URL('./src', import.meta.url)),
-    },
+      '@': fileURLToPath(new URL('./src', import.meta.url))
+    }
   },
   server: {
     port: 8081,
-    open: 'http://localhost:8081',
-  },
+    open: 'http://localhost:8081'
+  }
 });

@@ -4,29 +4,29 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/discovery',
+      redirect: '/discovery'
     },
     {
       path: '/songList',
       name: 'songs',
-      component: () => import('@/views/RecommendSongListView.vue'),
+      component: () => import('@/views/RecommendSongListView.vue')
     },
     {
       path: '/discovery',
       name: 'discovery',
-      component: () => import('@/views/DiscoveryView.vue'),
+      component: () => import('@/views/DiscoveryView.vue')
     },
     {
       path: '/latestMusic',
       name: 'latestMusic',
-      component: () => import('@/views/LatestMusicView.vue'),
+      component: () => import('@/views/LatestMusicView.vue')
     },
     {
       path: '/latestMv',
       name: 'latestMv',
-      component: () => import('@/views/LatestMvView.vue'),
-    },
-  ],
+      component: () => import('@/views/LatestMvView.vue')
+    }
+  ]
 });
 
 export default router;

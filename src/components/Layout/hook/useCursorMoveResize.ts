@@ -91,6 +91,6 @@ export default function useCursorMoveResize(target:Ref<HTMLElement | null>, thre
     showResizeBar,
     handleMouseEnter,
     handleMouseLeave,
-    handleMouseDown,
+    handleMouseDown
   };
 }

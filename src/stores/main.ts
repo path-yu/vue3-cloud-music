@@ -37,5 +37,5 @@ export const useMainStore = defineStore({
         document.documentElement.style.colorScheme = '';
       }
     }
-  },
+  }
 });

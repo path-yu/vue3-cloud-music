@@ -93,8 +93,8 @@ module.exports = {
     'max-depth': 'warn',
     // 要求方法链中每个调用都有一个换行符
     'newline-per-chained-call': ['warn', { ignoreChainWithDepth: 3 }],
-    "tailwindcss/no-custom-classname": [false],
+    'tailwindcss/no-custom-classname': ['off'],
     // 禁止使用拖尾逗号 
-    "comma-dangle": ["error", "never"],
-  },
+    'comma-dangle': ['error', 'never']
+  }
 };
