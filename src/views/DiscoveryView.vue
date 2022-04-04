@@ -49,7 +49,7 @@ const handleArrowClick = (type: 'next' | 'prev') => {
         <div class="absolute top-0 w-full">
           <div
             @click="handleArrowClick('prev')"
-            :class="[showArrowClass, 'left-40', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
+            :class="[showArrowClass, 'left-20', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
           >
             <n-icon size="15">
               <ArrowBackIosSharp />
@@ -57,7 +57,7 @@ const handleArrowClick = (type: 'next' | 'prev') => {
           </div>
           <div
             @click="handleArrowClick('next')"
-            :class="[showArrowClass, 'right-40', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
+            :class="[showArrowClass, 'right-20', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
           >
             <n-icon size="15">
               <ArrowForwardIosRound />
@@ -67,8 +67,8 @@ const handleArrowClick = (type: 'next' | 'prev') => {
       </div>
     </n-spin>
     <!-- 推荐歌单 -->
-    <p class="text-xl">{{ t('recommendSongsList') }}</p>
-    <n-spin :show="SongsListIsLoading">
+    <n-spin :show="SongsListIsLoading" description="载入中">
+      <p class="text-xl">{{ t('recommendSongsList') }}</p>
       <sons-List :songs="SongsList"></sons-List>
     </n-spin>
   </div>
