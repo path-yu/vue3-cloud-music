@@ -4,7 +4,7 @@ export function formateNumber(num:number){
   if(num >= 10000 && num < 1000000000){
     return Math.round(num / 10000) + '万'
   }
-   if(num >= 1000000000 ){
+  if(num >= 1000000000 ){
     return Math.round(num / 1000000000) + '亿'
   }
 }

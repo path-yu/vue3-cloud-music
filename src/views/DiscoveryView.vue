@@ -4,14 +4,12 @@ import { getBanner, getPersonalized } from '@/service/index';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
-import { useI18n } from 'vue-i18n';
 
 const hoverRef = ref();
 const currentIndex = ref(0);
 const { state: banners, isLoading } = useAsyncState(getBanner().then(res => res.data.banners), []);
 const { state:SongsList, isLoading:SongsListIsLoading } = useAsyncState(getPersonalized().then(res => res.data.result), []);
 const isHovered = useElementHover(hoverRef)
-const { t } = useI18n();
 const showArrowClass = computed(() => isHovered.value ? 'opacity-50' : 'opacity-0');
 
 const handleArrowClick = (type: 'next' | 'prev') => {
@@ -68,7 +66,7 @@ const handleArrowClick = (type: 'next' | 'prev') => {
     </n-spin>
     <!-- 推荐歌单 -->
     <n-spin :show="SongsListIsLoading" description="载入中">
-      <p class="text-xl">{{ t('recommendSongsList') }}</p>
+      <p class="text-xl">推荐歌单</p>
       <sons-List :songs="SongsList"></sons-List>
     </n-spin>
   </div>

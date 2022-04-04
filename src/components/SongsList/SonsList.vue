@@ -4,10 +4,9 @@ import { Play } from '@vicons/carbon';
 import { defineProps } from 'vue';
 defineProps({
   songs: {
-    type: <any>[],
+    type: <any>Array,
   }
 });
-
 </script>
 
 <template>
@@ -29,7 +28,7 @@ defineProps({
             </div>
           </template>
           <template #footer>
-            <n-ellipsis>{{ item.name }}</n-ellipsis>
+            <n-ellipsis >{{ item.name }}</n-ellipsis>
           </template>
         </n-card>
       </n-grid-item>

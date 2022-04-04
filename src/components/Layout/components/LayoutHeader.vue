@@ -1,12 +1,9 @@
 <script setup lang="ts">
-import { useMyI18n } from '@/i18n';
 import { useMainStore } from '@/stores/main';
 import { ArrowRedoCircle, ArrowUndoCircleSharp, Moon, Search, SunnySharp } from '@vicons/ionicons5';
 import { ref, watch } from 'vue';
 let mainStore = useMainStore();
 let active = ref(mainStore.isActiveDarkTheme);
-
-let { t, changeLocale, messageTitle } = useMyI18n();
 
 watch(() => active.value, () => {
   mainStore.changeTheme();
@@ -18,7 +15,7 @@ watch(() => active.value, () => {
     class="flex justify-between items-center px-6 h-14 sm:px-3  bg-main"
   >
     <div class="flex">
-      <span class=" truncate ColorDarkOrWhite">{{ t('title') }}</span>
+      <span class=" truncate ColorDarkOrWhite">奇妙音乐屋!</span>
       <div class="flex items-center ml-8 ColorDarkOrWhite">
         <n-button
           text
@@ -47,13 +44,6 @@ watch(() => active.value, () => {
         </template>
       </n-input>
       <div class="flex items-center ">
-        <n-button
-          class="mr-5"
-          @click="changeLocale"
-        >
-          <span class="ColorDarkOrWhite"> {{ messageTitle }}</span>
-        </n-button>
-     
         <n-switch
           v-model:value="active"
           size="large"

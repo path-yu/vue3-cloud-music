@@ -1,5 +1,4 @@
 <script setup lang="tsx">
-import { useMyI18n } from '@/i18n';
 import { Music, User } from '@vicons/carbon';
 import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
@@ -14,28 +13,27 @@ const menuOptions: MenuOption[] = [
     icon: () => <NIcon component={User} />
   },
   {
-    label: () => <RouterLink to='discovery'>{t('discovrMusic')}</RouterLink>,
+    label: () => <RouterLink to='discovery'>发现音乐</RouterLink>,
     key: '/discovery',
     icon: () => <NIcon component={SparklesOutline} />
   },
   {
-    label: () => <RouterLink to='songList'>{t('recommendSongsList')}</RouterLink>,
+    label: () => <RouterLink to='songList'>推荐歌单</RouterLink>,
     key: '/songList',
     icon: () => <NIcon component={List} />
   },
   {
-    label: () => <RouterLink to='latestMusic'>{t('latestMusic')}</RouterLink>,
+    label: () => <RouterLink to='latestMusic'>最新音乐</RouterLink>,
     key: '/latestMusic',
     icon: () => <NIcon component={Music} />
   },
   {
-    label: () => <RouterLink to='latestMv'>{t('latestMv')}</RouterLink>,
+    label: () => <RouterLink to='latestMv'>最新MV</RouterLink>,
     key: '/latestMv',
     icon: () => <NIcon component={VideocamOutline} />
   }
 ];
 
-const { t, isZhCn } = useMyI18n();
 const route = useRoute();
 let collapsed = ref(false);
 let activeKey = ref<string | null>('');
@@ -53,7 +51,7 @@ watch(() => route.path, (newVal) => {
       collapse-mode="width"
       class="h-main bg-second-main"
       :collapsed-width="64"
-      :width="isZhCn ? 192 : 288"
+      :width="192"
       :collapsed="collapsed"
       show-trigger
       @collapse="collapsed = true"
