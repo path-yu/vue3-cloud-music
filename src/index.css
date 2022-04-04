@@ -22,6 +22,15 @@
 .bg-reverse-second-main{
    @apply bg-secondBack dark:bg-zinc-100;
 }
+/* .flex-items-justify-center{
+  @apply flex items-center justify-center;
+} */
+@layer base {
+  .flex-items-justify-center {
+    @apply flex items-center justify-center;
+  }
+
+}
 ::-webkit-scrollbar {
  display: none;
 }

@@ -1,5 +1,7 @@
-import { darkTheme } from 'naive-ui';
+
+import { darkTheme, useThemeVars } from 'naive-ui';
 import { defineStore } from 'pinia';
+import { ref, watch } from 'vue';
 export const useMainStore = defineStore({
   id: 'main',
   state: () => ({
@@ -39,3 +41,15 @@ export const useMainStore = defineStore({
     }
   }
 });
+export function usePrimaryColor() {
+  const store = useMainStore();
+  const themeVars = useThemeVars();
+  const primaryColor = ref(themeVars.value.primaryColor);
+
+  watch(() => store.theme, () => {
+    primaryColor.value = themeVars.value.primaryColor;
+  });
+  return {
+    primaryColor
+  };
+}

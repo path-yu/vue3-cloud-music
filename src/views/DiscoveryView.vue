@@ -15,7 +15,7 @@ const showArrowClass = computed(() => isHovered.value ? 'opacity-50' : 'opacity-
 const handleArrowClick = (type: 'next' | 'prev') => {
   let index = currentIndex.value;
 
-  if (type == 'next') {
+  if (type === 'next') {
     currentIndex.value = index === banners.value.length - 1 ? 0 : ++index;
   } else {
     currentIndex.value = index === 0 ? banners.value.length - 1 : --index;
