@@ -9,5 +9,9 @@ export function getPersonalized() {
 }
 // 推荐新音乐
 export function getNewSong() {
-  return service.get('/personalized/newsong');
+  return service.get('/personalized/newsong?limit=20');
+}
+// 推荐 mv
+export function getRecommendMv() {
+  return service.get('/personalized/mv?limit=3');
 }

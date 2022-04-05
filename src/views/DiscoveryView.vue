@@ -1,9 +1,10 @@
 <script setup lang="ts">
 
-import { getBanner, getNewSong, getPersonalized } from '@/service/index';
+import { getBanner, getNewSong, getPersonalized, getRecommendMv } from '@/service/index';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
+import MvList from '../components/MvList/MvList.vue';
 
 const hoverRef = ref();
 const currentIndex = ref(0);
@@ -19,6 +20,8 @@ const {
   state: newSongList,
   isLoading: newSongListIsLoading
 } = useAsyncState(getNewSong().then(res => res.data.result), []);
+const { state: MVList, isLoading: MVIsLoading }
+  = useAsyncState(getRecommendMv().then(res => res.data.result), []);
 const isHovered = useElementHover(hoverRef);
 const showArrowClass = computed(() => isHovered.value ? 'opacity-50' : 'opacity-0');
 
@@ -108,15 +111,15 @@ const formateSongsAuthor = (attr: any[]) => {
         最新音乐
       </p>
       <n-grid
-        x-gap="10"
-        :y-gap="10"
+        x-gap="20"
+        :y-gap="20"
         cols="2 s:2 m:3 l:3 xl:3 2xl:4"
         responsive="screen"
       >
         <n-grid-item
           v-for="item in newSongList"
           :key="item.id"
-          class="hover:bg-zinc-300/40 dark:hover:bg-gray-700/30 rounded-md"
+          class="hover:bg-zinc-300/40 dark:hover:bg-gray-700/30 rounded-md cursor-pointer"
         >
           <div class="flex justify-between h-16">
             <div class="relative">
@@ -131,17 +134,23 @@ const formateSongsAuthor = (attr: any[]) => {
                 style="opacity: 1;width: 25px;height: 25px;"
               />
             </div>
-            <div class="flex-1 ml-2">
+            <div class="flex-1 ml-2 truncate">
               <p class="mt-1 text-base">
                 {{ item.name }}
               </p>
-              <p class="mt-2 text-sm opacity-60">
+              <p class="mt-2 w-full text-sm opacity-60">
                 <n-ellipsis>{{ formateSongsAuthor(item.song.artists) }}</n-ellipsis>
               </p>
             </div>
           </div>
         </n-grid-item>
       </n-grid>
+    </n-spin>
+    <n-spin :show="MVIsLoading">
+      <p class="py-4 text-xl">
+        最新MV
+      </p>
+      <mv-list :list="MVList" />
     </n-spin>
   </div>
 </template>
@@ -161,7 +170,5 @@ const formateSongsAuthor = (attr: any[]) => {
   z-index: 1;
   user-select: none;
   top: calc(250px * 0.83 / 2);
-}
-.light-green {
 }
 </style>

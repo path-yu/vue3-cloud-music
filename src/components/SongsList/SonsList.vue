@@ -1,17 +1,12 @@
 <script setup lang="ts">
 import PlayIcon from '@/components/Base/PlayIcon.vue';
-import { usePrimaryColor } from '@/stores/main';
 import { formateNumber } from '@/utils/index';
 import { Play } from '@vicons/carbon';
-import { useElementHover } from '@vueuse/core';
-import { defineProps, ref } from 'vue';
+import { defineProps } from 'vue';
 
-const { primaryColor } = usePrimaryColor();
-const props = defineProps<{
+defineProps<{
   songs?: any[]
 }>();
-const hoverRef = ref();
-const isHovered = useElementHover(hoverRef);
 </script>
 
 <template>
@@ -58,15 +53,7 @@ const isHovered = useElementHover(hoverRef);
 </template>
 
 <style scoped>
-.card-mask {
-  border-bottom-right-radius: 8px;
-  border-bottom-left-radius: 8px;
-  background-image: linear-gradient(
-    0,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.8) 100%
-  );
-}
+
 .play-icon {
   @apply absolute right-4 bottom-4 w-10 h-10 bg-white
    rounded-full opacity-0 group-hover:opacity-100
