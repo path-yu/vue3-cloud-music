@@ -23,8 +23,7 @@ defineProps<{
       > 
         <div class="overflow-hidden relative"> 
           <img
-            class="w-full rounded-md"
-            style="height: 10vw;"
+            class="w-full h-full rounded-md"
             :src="item.picUrl"
             alt=""
           >
@@ -36,10 +35,16 @@ defineProps<{
           </div>
           <play-icon
             class="cursor-pointer position-center"
+            style="width: 40px;height: 40px;"
           />
           <p class="tips">
             {{ item.copywriter }}
           </p>
+          <n-time
+            class="absolute right-2 bottom-2 text-white"
+            :time="item.duration"
+            format="mm:ss"
+          />
         </div>
         <div>
           <p class="mt-1 text-base">
