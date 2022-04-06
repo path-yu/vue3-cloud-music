@@ -23,7 +23,7 @@ defineProps<{
       > 
         <div class="overflow-hidden relative"> 
           <img
-            class="w-full h-full rounded-md"
+            class="w-full h-full rounded-md group-hover-scale"
             :src="item.picUrl"
             alt=""
           >
@@ -40,11 +40,14 @@ defineProps<{
           <p class="tips">
             {{ item.copywriter }}
           </p>
-          <n-time
-            class="absolute right-2 bottom-2 text-white"
-            :time="item.duration"
-            format="mm:ss"
-          />
+         
+          <div class="absolute bottom-0 w-full text-right bg-linear-mask">
+            <n-time
+              class="mr-2 text-white"
+              :time="item.duration"
+              format="mm:ss"
+            />
+          </div>
         </div>
         <div>
           <p class="mt-1 text-base">

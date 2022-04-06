@@ -9,7 +9,7 @@ export function getPersonalized() {
 }
 // 推荐新音乐
 export function getNewSong() {
-  return service.get('/personalized/newsong?limit=20');
+  return service.get('/personalized/newsong?limit=12');
 }
 // 推荐 mv
 export function getRecommendMv() {

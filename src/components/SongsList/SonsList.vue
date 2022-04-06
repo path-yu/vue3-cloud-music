@@ -30,7 +30,7 @@ defineProps<{
             <div class="relative">
               <n-image
                 preview-disabled
-                class="w-full h-full"
+                class="w-full h-full group-hover-scale"
                 :src="item.picUrl"
               />
               <div

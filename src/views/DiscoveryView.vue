@@ -136,7 +136,7 @@ const formateSongsAuthor = (attr: any[]) => {
             </div>
             <div class="flex-1 ml-2 truncate">
               <p class="mt-1 text-base">
-                {{ item.name }}
+                <n-ellipsis> {{ item.name }}</n-ellipsis>
               </p>
               <p class="mt-2 w-full text-sm opacity-60">
                 <n-ellipsis>{{ formateSongsAuthor(item.song.artists) }}</n-ellipsis>

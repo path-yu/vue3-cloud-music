@@ -29,8 +29,14 @@
   .flex-items-justify-center {
     @apply flex items-center justify-center;
   }
-
+  .group-hover-opacity{
+   @apply group-hover:opacity-1 opacity-0 transition-opacity duration-300;
+  }
+  .group-hover-scale{
+   @apply group-hover:scale-110 scale-100 transition-transform duration-300;
+  }
 }
+
 ::-webkit-scrollbar {
  display: none;
 }
