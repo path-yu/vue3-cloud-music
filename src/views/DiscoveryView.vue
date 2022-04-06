@@ -42,116 +42,196 @@ const formateSongsAuthor = (attr: any[]) => {
 
 <template>
   <div class="px-6 pb-10">
-    <n-spin
-      :show="isLoading"
-      description="载入中"
+    <div
+      v-if="isLoading"
+      class="flex items-center"
     >
-      <div
-        ref="hoverRef"
-        class="relative cursor-pointer"
+      <n-skeleton
+        width="25%"
+        height="170px"
+        :sharp="false"
+      />
+      <n-skeleton
+        width="50%"
+        height="250px"
+        :sharp="false"
+      />
+      <n-skeleton
+        width="25%"
+        height="170px"
+        :sharp="false"
+      />
+    </div>
+    <div
+      v-else
+      ref="hoverRef"
+      class="relative cursor-pointer"
+    >
+      <n-carousel
+        effect="card"
+        dot-type="line"
+        draggable
+        :autoplay="!isHovered"
+        :current-index="currentIndex"
+        prev-slide-style="transform: translateX(-150%) translateZ(-450px);opacity:1"
+        next-slide-style="transform: translateX(50%) translateZ(-450px);opacity:1"
+        style="height: 250px"
+        :show-dots="true"
       >
-        <n-carousel
-          effect="card"
-          dot-type="line"
-          draggable
-          :autoplay="!isHovered"
-          :current-index="currentIndex"
-          prev-slide-style="transform: translateX(-150%) translateZ(-450px);opacity:1"
-          next-slide-style="transform: translateX(50%) translateZ(-450px);opacity:1"
-          style="height: 250px"
-          :show-dots="true"
+        <n-carousel-item
+          v-for="item in banners"
+          :key="item.imageUrl"
+          :style="{ width: '50%' }"
         >
-          <n-carousel-item
-            v-for="item in banners"
-            :key="item.imageUrl"
-            :style="{ width: '50%' }"
+          <img
+            class="w-full h-full rounded cursor-pointer cover-banner"
+            :src="item.imageUrl"
           >
-            <img
-              class="w-full h-full rounded cursor-pointer cover-banner"
-              :src="item.imageUrl"
-            >
-          </n-carousel-item>
-        </n-carousel>
-        <div class="absolute top-0 w-full">
-          <div
-            :class="[showArrowClass, 'left-20', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
-            @click="handleArrowClick('prev')"
-          >
-            <n-icon size="15">
-              <ArrowBackIosSharp />
-            </n-icon>
-          </div>
-          <div
-            :class="[showArrowClass, 'right-20', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
-            @click="handleArrowClick('next')"
-          >
-            <n-icon size="15">
-              <ArrowForwardIosRound />
-            </n-icon>
-          </div>
+        </n-carousel-item>
+      </n-carousel>
+      <div class="absolute top-0 w-full">
+        <div
+          :class="[showArrowClass, 'left-20', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
+          @click="handleArrowClick('prev')"
+        >
+          <n-icon size="15">
+            <ArrowBackIosSharp />
+          </n-icon>
+        </div>
+        <div
+          :class="[showArrowClass, 'right-20', 'toggle-arrow', 'bg-reverse-second-main dark-text-color']"
+          @click="handleArrowClick('next')"
+        >
+          <n-icon size="15">
+            <ArrowForwardIosRound />
+          </n-icon>
         </div>
       </div>
-    </n-spin>
+    </div>
     <!-- 推荐歌单 -->
-    <n-spin
-      :show="SongsListIsLoading"
-      description="载入中"
+    <p class="pb-4 text-xl">
+      推荐歌单
+    </p>
+    <n-grid
+      v-if="SongsListIsLoading"
+      cols="5"
+      :x-gap="12"
+      :y-gap="8"
     >
-      <p class="pb-4 text-xl">
-        推荐歌单
-      </p>
-      <sons-List :songs="SongsList" />
-    </n-spin>
-    <!-- 最新音乐 -->
-    <n-spin
-      :show="SongsListIsLoading"
-      description="载入中"
-    >
-      <p class="py-4 text-xl">
-        最新音乐
-      </p>
-      <n-grid
-        x-gap="20"
-        :y-gap="20"
-        cols="2 s:2 m:3 l:3 xl:3 2xl:4"
-        responsive="screen"
+      <n-grid-item
+        v-for="(item, index) in 15"
+        :key="index"
+        class="group cursor-pointer"
       >
-        <n-grid-item
-          v-for="item in newSongList"
-          :key="item.id"
-          class="hover:bg-zinc-300/40 dark:hover:bg-gray-700/30 rounded-md cursor-pointer"
-        >
-          <div class="flex justify-between h-16">
-            <div class="relative">
-              <img
-                :src="item.picUrl"
-                class="w-16 h-16 rounded-md"
-                alt="music"
-              >
-              <play-icon
-                :size="15"
-                class="cursor-pointer position-center"
-                style="opacity: 1;width: 25px;height: 25px;"
-              />
-            </div>
-            <div class="flex-1 ml-2 truncate">
-              <p class="mt-1 text-base">
-                <n-ellipsis> {{ item.name }}</n-ellipsis>
-              </p>
-              <p class="mt-2 w-full text-sm opacity-60">
-                <n-ellipsis>{{ formateSongsAuthor(item.song.artists) }}</n-ellipsis>
-              </p>
-            </div>
+        <n-skeleton
+          height="247px"
+          width="247px"
+          :sharp="false"
+        />
+        <n-skeleton
+          text
+        />
+      </n-grid-item>
+    </n-grid>
+    <sons-List
+      v-else
+      :songs="SongsList"
+    />
+    <!-- 最新音乐 -->
+    <p class="py-4 text-xl">
+      最新音乐
+    </p>
+    <n-grid
+      v-if="newSongListIsLoading"
+      cols="3"
+      x-gap="20"
+      :y-gap="20"
+    >
+      <n-grid-item
+        v-for="(item, index) in 12"
+        :key="index"
+      >
+        <div class="flex justify-between h-16">
+          <n-skeleton
+            height="64px"
+            width="64px"
+            :sharp="false"
+          />
+          <div class="flex-1 ml-2">
+            <n-skeleton
+              text
+              class="mt-2"
+              :repeat="2"
+            />
           </div>
-        </n-grid-item>
-      </n-grid>
-    </n-spin>
-    <n-spin :show="MVIsLoading">
-      <p class="py-4 text-xl">
-        最新MV
-      </p>
-      <mv-list :list="MVList" />
-    </n-spin>
+        </div>
+      </n-grid-item>
+    </n-grid>
+    <n-grid
+      v-else
+      x-gap="20"
+      :y-gap="20"
+      cols="2 s:2 m:3 l:3 xl:3 2xl:4"
+      responsive="screen"
+    >
+      <n-grid-item
+        v-for="item in newSongList"
+        :key="item.id"
+        class="hover:bg-zinc-300/40 dark:hover:bg-gray-700/30 rounded-md cursor-pointer"
+      >
+        <div class="flex justify-between h-16">
+          <div class="relative">
+            <img
+              :src="item.picUrl"
+              class="w-16 h-16 rounded-md"
+              alt="music"
+            >
+            <play-icon
+              :size="15"
+              class="cursor-pointer position-center"
+              style="opacity: 1;width: 25px;height: 25px;"
+            />
+          </div>
+          <div class="flex-1 ml-2 truncate">
+            <p class="mt-1 text-base">
+              <n-ellipsis>{{ item.name }}</n-ellipsis>
+            </p>
+            <p class="mt-2 w-full text-sm opacity-60">
+              <n-ellipsis>{{ formateSongsAuthor(item.song.artists) }}</n-ellipsis>
+            </p>
+          </div>
+        </div>
+      </n-grid-item>
+    </n-grid>
+    <p class="py-4 text-xl">
+      最新MV
+    </p>
+    <n-grid
+      v-if="MVIsLoading"
+      cols="4"
+      responsive="screen"
+      x-gap="20"
+      y-gap="20"
+    >
+      <n-grid-item
+        v-for="(item,index) in 4"
+        :key="index"
+      >
+        <n-skeleton
+          height="180px"
+          width="309px"
+          :sharp="false"
+        />
+        <n-skeleton
+          text
+          :repeat="2"
+        />
+      </n-grid-item>
+    </n-grid>
+    <mv-list
+      v-else
+      :list="MVList"
+    />
   </div>
 </template>
 
@@ -172,3 +252,4 @@ const formateSongsAuthor = (attr: any[]) => {
   top: calc(250px * 0.83 / 2);
 }
 </style>
+
