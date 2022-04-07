@@ -1,4 +1,4 @@
-import { createRouter, createWebHashHistory } from 'vue-router';
+import { createRouter, createWebHashHistory, type NavigationGuardWithThis } from 'vue-router';
 const router = createRouter({
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
@@ -29,4 +29,8 @@ const router = createRouter({
   ]
 });
 
+export const registerRouteHook = (beforeEachFn: NavigationGuardWithThis<undefined>, beforeResolveFn: NavigationGuardWithThis<undefined>) => {
+  router.beforeEach(beforeEachFn);
+  router.beforeResolve(beforeResolveFn);
+};
 export default router;

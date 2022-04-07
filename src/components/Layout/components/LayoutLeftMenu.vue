@@ -5,6 +5,8 @@ import type { MenuOption } from 'naive-ui';
 import { NIcon } from 'naive-ui';
 import { ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
+import { useLoadingBar } from 'naive-ui';
+import { registerRouteHook } from '@/router';
 
 const menuOptions: MenuOption[] = [
   {
@@ -35,12 +37,20 @@ const menuOptions: MenuOption[] = [
 ];
 
 const route = useRoute();
+const loadingBar = useLoadingBar();
 let collapsed = ref(false);
 let activeKey = ref<string | null>('');
 
 watch(() => route.path, (newVal) => {
   activeKey.value = newVal;
+  
 });
+registerRouteHook(() => {
+  loadingBar.start();
+}, () => {
+  loadingBar.finish();
+});
+
 </script>
 <template>
   <n-layout
