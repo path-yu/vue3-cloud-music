@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMainStore } from '@/stores/main';
-import { ArrowRedoCircle, ArrowUndoCircleSharp, Moon, Search, SunnySharp } from '@vicons/ionicons5';
+import { Moon, Search, SunnySharp } from '@vicons/ionicons5';
+import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { ref, watch } from 'vue';
 let mainStore = useMainStore();
 let active = ref(mainStore.isActiveDarkTheme);
@@ -19,15 +20,15 @@ watch(() => active.value, () => {
       <div class="flex items-center ml-8 ColorDarkOrWhite">
         <n-button
           text
-          class="text-2xl"
+          class="text-md"
         >
-          <n-icon :component="ArrowUndoCircleSharp" />
+          <n-icon :component="ArrowBackIosSharp" />
         </n-button>
         <n-button
           text
-          class="ml-2 text-2xl"
+          class="ml-2 text-md"
         >
-          <n-icon :component="ArrowRedoCircle" />
+          <n-icon :component="ArrowForwardIosRound" />
         </n-button>
       </div>
     </div>

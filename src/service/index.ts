@@ -15,3 +15,7 @@ export function getNewSong() {
 export function getRecommendMv() {
   return service.get('/personalized/mv?limit=3');
 }
+// 获取精品歌单
+export function getTopPlayList() {
+  return service.get('/top/playlist/highquality?limit=1&cat=全部');
+}
