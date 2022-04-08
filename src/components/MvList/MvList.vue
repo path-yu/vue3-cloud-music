@@ -23,7 +23,7 @@ defineProps<{
       > 
         <div class="overflow-hidden relative"> 
           <img
-            class="w-full h-full rounded-md group-hover-scale"
+            class="w-full h-32 rounded-md group-hover-scale"
             :src="item.picUrl"
             alt=""
           >

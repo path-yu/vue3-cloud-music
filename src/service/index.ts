@@ -16,6 +16,10 @@ export function getRecommendMv() {
   return service.get('/personalized/mv?limit=3');
 }
 // 获取精品歌单
-export function getTopPlayList() {
-  return service.get('/top/playlist/highquality?limit=1&cat=全部');
+export function getTopPlayList({ cat = '全部', limit = 10 }) {
+  return service.get(`/top/playlist/highquality?limit=${limit}&cat=${cat}`);
+}
+// 精品歌单标签列表
+export function getTopPlayListTags() {
+  return service.get('/playlist/highquality/tags');
 }

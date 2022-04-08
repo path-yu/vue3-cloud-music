@@ -31,7 +31,7 @@ defineProps<{
               <n-image
                 preview-disabled
                 class="w-full h-full group-hover-scale"
-                :src="item.picUrl"
+                :src="item.picUrl || item.coverImgUrl"
               />
               <div
                 ref="hoverRef"

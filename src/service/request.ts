@@ -14,10 +14,18 @@ instance.interceptors.request.use((config) => {
   return err;
 });
 //response interceptor
-instance.interceptors.response.use((data) => {
+instance.interceptors.response.use(async (data) => {
+  // await sleep();
   return data;
 }, err => {
   console.log(err);
   return err;
 });
+const sleep = () => {
+  return new Promise((resolve) => {
+    setTimeout(() => {
+      resolve(true);
+    }, 4000);
+  });
+};
 export default instance;

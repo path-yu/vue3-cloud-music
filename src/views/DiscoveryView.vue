@@ -5,6 +5,7 @@ import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import MvList from '../components/MvList/MvList.vue';
+import SongListSkeleton from '../components/SongsList/SongListSkeleton.vue';
 
 const hoverRef = ref();
 const currentIndex = ref(0);
@@ -112,27 +113,7 @@ const formateSongsAuthor = (attr: any[]) => {
     <p class="pb-4 text-xl">
       推荐歌单
     </p>
-    <n-grid
-      v-if="SongsListIsLoading"
-      cols="5"
-      :x-gap="12"
-      :y-gap="8"
-    >
-      <n-grid-item
-        v-for="(item, index) in 15"
-        :key="index"
-        class="group cursor-pointer"
-      >
-        <n-skeleton
-          height="247px"
-          width="247px"
-          :sharp="false"
-        />
-        <n-skeleton
-          text
-        />
-      </n-grid-item>
-    </n-grid>
+    <SongListSkeleton v-if="SongsListIsLoading" />
     <sons-List
       v-else
       :songs="SongsList"
