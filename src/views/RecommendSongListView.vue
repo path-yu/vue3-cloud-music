@@ -18,7 +18,7 @@ const selectValue = ref('全部');
 const selectIndex = ref(0);
 
 
-const fetchSongList = (cat = '全部', index) => {
+const fetchSongList = (cat = '全部', index=0) => {
   getTopPlayList({ cat, limit: 50 }).then(res => {
     let firstSongList = res.data.playlists[0];
     topPlaySong.name = firstSongList.name;
