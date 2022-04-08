@@ -95,6 +95,16 @@ module.exports = {
     'newline-per-chained-call': ['warn', { ignoreChainWithDepth: 3 }],
     'tailwindcss/no-custom-classname': ['off'],
     // 禁止使用拖尾逗号 
-    'comma-dangle': ['error', 'never']
+    'comma-dangle': ['error', 'never'],
+    'vue/max-attributes-per-line': [
+      'error', {
+        'singleline': {
+          'max': 3
+        },      
+        'multiline': {
+          'max': 3
+        }
+      }
+    ]
   }
 };
