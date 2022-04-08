@@ -18,12 +18,9 @@ const selectValue = ref('全部');
 const selectIndex = ref(0);
 
 
-const fetchSongList = (cat = '全部', index=0) => {
+const fetchSongList = (cat = '全部', index = 0) => {
   getTopPlayList({ cat, limit: 50 }).then(res => {
-    let firstSongList = res.data.playlists[0];
-    topPlaySong.name = firstSongList.name;
-    topPlaySong.coverImgUrl = firstSongList.coverImgUrl;
-    topPlaySong.description = firstSongList.description;
+    changeTopSong(res.data.playlists[0]);
     songList.value[index] = res.data.playlists;
     isLoading.value = false;
   });
@@ -33,8 +30,15 @@ watch(() => selectValue.value, (newVal) => {
   selectIndex.value = index;
   if (!songList.value[index]) {
     fetchSongList(selectValue.value, index);
+  } else {
+    changeTopSong(songList.value[index][0]);
   }
 });
+const changeTopSong = (song: any) => {
+  topPlaySong.name = song.name;
+  topPlaySong.coverImgUrl = song.coverImgUrl;
+  topPlaySong.description = song.description;
+};
 onBeforeMount(() => {
   fetchSongList('全部', 0);
 });
