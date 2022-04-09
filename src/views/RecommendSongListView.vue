@@ -1,17 +1,18 @@
 <script setup lang="ts">
 import { getTopPlayList, getTopPlayListTags } from '@/service/index';
-import { ArrowForwardIosRound } from '@vicons/material';
+import { useThemeColor } from '@/stores/main';
 import { useAsyncState } from '@vueuse/core';
 import { onBeforeMount, reactive, ref, watch } from 'vue';
 //精品歌单
 const topPlaySong = reactive({ coverImgUrl: '', name: '', description: '' });
 const isLoading = ref(true);
+const { scrollBarColor } = useThemeColor();
 const {
   state: songsTags,
   isLoading: songsTagsIsLoading
 } = useAsyncState<any[]>(getTopPlayListTags()
   .then(res => {
-    return [{ name: '全部' }].concat(res.data.tags.slice(0, 10));
+    return [{ name: '全部' }].concat(res.data.tags.slice(0, 20));
   }), []);
 const songList = ref<{ list: any[], loading: boolean }[]>([]);
 const selectValue = ref('全部');
@@ -51,10 +52,7 @@ const changeTopSong = (song: any) => {
 onBeforeMount(() => {
   fetchSongList('全部', 0);
 });
-const load = () => {
-  console.log('loading');
-  
-};
+
 </script>
 
 <template>
@@ -66,7 +64,7 @@ const load = () => {
         :style="{ backgroundImage: `url(${topPlaySong.coverImgUrl})` }"
       />
       <div class="flex absolute z-50 p-4 h-44 bg-black/30">
-        <img :src="topPlaySong.coverImgUrl" class="w-36 h-36 rounded-md" @load="load">
+        <img :src="topPlaySong.coverImgUrl" class="w-36 h-36 rounded-md">
         <div class="flex-1 ml-4">
           <n-tag type="success">
             精品歌单
@@ -90,14 +88,10 @@ const load = () => {
         <n-skeleton size="medium" width="700px" />
       </div>
       <div v-else class="relative">
-        <n-button
-          ghost class="absolute top-0 left-0" round
-          size="medium"
+        <n-tabs
+          ref="tabsInstRef" v-model:value="selectValue" class="min-w-3xl"
+          animated
         >
-          <span>{{ selectValue }}</span>
-          <n-icon :component="ArrowForwardIosRound" />
-        </n-button>
-        <n-tabs ref="tabsInstRef" v-model:value="selectValue" animated>
           <n-tab-pane
             v-for="(tab) in songsTags"
             :key="tab.name"
@@ -123,8 +117,24 @@ const load = () => {
 }
 :deep(.n-tabs-nav-scroll-content) {
   justify-content: flex-end;
+  margin-left: 100px;
 }
 :deep(.n-tag__content) {
   display: flex;
+}
+
+
+:deep(.n-tabs .n-tabs-nav){
+  overflow-x: scroll;
+}
+:deep(.n-tabs .n-tabs-nav::-webkit-scrollbar-thumb){
+  background-color: transparent;
+  transition: all linear 1000ms;
+}
+:deep(.n-tabs .n-tabs-nav):hover.n-tabs-nav::-webkit-scrollbar-thumb{
+  background-color: v-bind(scrollBarColor);
+}
+:deep(.n-tabs .n-tabs-nav-scroll-wrapper){
+  overflow:visible;
 }
 </style>

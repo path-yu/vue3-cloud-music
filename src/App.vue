@@ -23,7 +23,8 @@ onMounted(() => {
 @import "@/assets/base.css";
 ::-webkit-scrollbar {
   width: 5px;
- background-color: transparent;
+  height: 5px;
+  background-color: transparent;
 }
 ::-webkit-scrollbar-thumb{
   width: 5px;
