@@ -9,3 +9,22 @@ export function formateNumber(num:number) {
   }
   return num.toString();
 }
+// 图片预加载
+export const preloadImg = (src: string) => {
+  return new Promise((resolve, reject) => {
+    const img = new Image();
+    img.src = src;
+    img.onload = () => {
+      resolve(img);
+    };
+    img.onerror = () => {
+      reject(src);
+    };
+  });
+};
+export const batchLoadImg = async (list:string[]) => {
+  for (const src of list) {
+    await preloadImg(src);
+  }
+  return true;
+};
