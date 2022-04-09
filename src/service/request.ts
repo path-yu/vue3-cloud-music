@@ -25,7 +25,7 @@ const sleep = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(true);
-    }, 4000);
+    }, 400000);
   });
 };
 export default instance;

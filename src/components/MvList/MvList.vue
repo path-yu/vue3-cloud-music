@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { formateNumber } from '@/utils/index';
-import { Play } from '@vicons/carbon';
 import { defineProps } from 'vue';
 defineProps<{
   list?: any[]

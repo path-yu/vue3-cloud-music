@@ -143,6 +143,7 @@ const formateSongsAuthor = (attr: any[]) => {
               text
               class="mt-2"
               :repeat="2"
+              :sharp="false"
             />
           </div>
         </div>
@@ -199,13 +200,14 @@ const formateSongsAuthor = (attr: any[]) => {
         :key="index"
       >
         <n-skeleton
-          height="180px"
-          width="309px"
+          height="10vw"
+          width="100%"
           :sharp="false"
         />
         <n-skeleton
           text
           :repeat="2"
+          :sharp="false"
         />
       </n-grid-item>
     </n-grid>
