@@ -22,11 +22,12 @@ defineProps<{
         class="group"
       > 
         <div class="overflow-hidden relative"> 
-          <img
-            class="w-full h-32 rounded-md group-hover-scale"
-            :src="item.picUrl"
-            alt=""
-          >
+          <load-img
+            preview-disabled
+            loading-height="128px"
+            class-name="w-full h-32 rounded-md group-hover-scalee"
+            :src="item.picUrl "
+          />
           <div
             class="flex absolute top-0 right-0 justify-end items-center p-1 w-full text-white card-mask"
           >

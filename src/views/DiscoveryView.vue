@@ -84,10 +84,12 @@ const formateSongsAuthor = (attr: any[]) => {
           :key="item.imageUrl"
           :style="{ width: '50%' }"
         >
-          <img
-            class="w-full h-full rounded cursor-pointer cover-banner"
+          <load-img
+            preview-disabled
+            loading-height="250px"
+            class-name="w-full h-full rounded cursor-pointer cover-banner"
             :src="item.imageUrl"
-          >
+          />
         </n-carousel-item>
       </n-carousel>
       <div class="absolute top-0 w-full">
@@ -163,11 +165,13 @@ const formateSongsAuthor = (attr: any[]) => {
       >
         <div class="flex justify-between h-16">
           <div class="relative">
-            <img
+            <load-img
+              preview-disabled
+              loading-height="64px"
+              class-name="w-16 h-16 rounded-md"
               :src="item.picUrl"
-              class="w-16 h-16 rounded-md"
-              alt="music"
-            >
+              :show-message="false"
+            />
             <play-icon
               :size="15"
               class="cursor-pointer position-center"

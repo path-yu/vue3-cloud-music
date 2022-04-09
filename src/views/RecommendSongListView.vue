@@ -28,7 +28,6 @@ const fetchSongList = (cat = '全部', index = 0) => {
   getTopPlayList({ cat, limit: 50 }).then(res => {
     if (res.data.playlists.length !== 0) {
       changeTopSong(res.data.playlists[0]);
-      batchLoadImg(res.data.playlists.map((item: { coverImgUrl: any; }) => item.coverImgUrl));
       songList.value[index].list = res.data.playlists;
     }
     isLoading.value = false;
@@ -56,6 +55,10 @@ const changeTopSong = (song: any) => {
 onBeforeMount(() => {
   fetchSongList('全部', 0);
 });
+const load = () => {
+  console.log('loading');
+  
+};
 </script>
 
 <template>
@@ -67,7 +70,7 @@ onBeforeMount(() => {
         :style="{ backgroundImage: `url(${topPlaySong.coverImgUrl})` }"
       />
       <div class="flex absolute z-50 p-4 h-44 bg-black/30">
-        <img :src="topPlaySong.coverImgUrl" class="w-36 h-36 rounded-md">
+        <img :src="topPlaySong.coverImgUrl" class="w-36 h-36 rounded-md" @load="load">
         <div class="flex-1 ml-4">
           <n-tag type="success">
             精品歌单

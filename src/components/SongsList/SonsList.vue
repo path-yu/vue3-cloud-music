@@ -2,11 +2,15 @@
 import PlayIcon from '@/components/Base/PlayIcon.vue';
 import { formateNumber } from '@/utils/index';
 import { Play } from '@vicons/carbon';
-import { defineProps } from 'vue';
+import { defineProps, ref } from 'vue';
+import LoadImg from '../Base/LoadImg.vue';
+import BaseEmpty from '../Base/BaseEmpty.vue';
+
 
 defineProps<{
   songs?: any[]
 }>();
+
 </script>
 
 <template>
@@ -28,9 +32,10 @@ defineProps<{
         >
           <template #cover>
             <div class="relative">
-              <n-image
+              <load-img
                 preview-disabled
-                class="w-full h-full group-hover-scale"
+                loading-height="15vw"
+                class-name="w-full h-full group-hover-scale"
                 :src="item.picUrl || item.coverImgUrl"
               />
               <div
@@ -50,9 +55,7 @@ defineProps<{
       </n-grid-item>
     </n-grid>
   </div>
-  <div v-else> 
-    <n-empty description="暂无数据" />
-  </div>
+  <base-empty v-else height="300px" />
 </template>
 
 <style scoped>

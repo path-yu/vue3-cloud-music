@@ -22,9 +22,10 @@ export const preloadImg = (src: string) => {
     };
   });
 };
-export const batchLoadImg = async (list:string[]) => {
-  for (const src of list) {
-    await preloadImg(src);
-  }
+export const batchLoadImg = async (list:string[], itemCallback:{load:(index:number)=>void, error:(index:number) => void}) => {
+  list.forEach((src, index) => {
+    preloadImg(src).then(() => itemCallback.load(index)).catch(() => itemCallback.error(index));
+  });
+
   return true;
 };
