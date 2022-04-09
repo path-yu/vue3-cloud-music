@@ -41,26 +41,25 @@ export default defineComponent({
     
     const firstImgHeight = ref(props.loadingHeight);
     const handleLoad = (e:any) => {
-      isLoading.value = false;
-
-      if (firstImgHeight.value !== props.loadingHeight) {
-        firstImgHeight.value = e.path[0].height + 'px';
-      }
+      setTimeout(() => {
+        isLoading.value = false;
+      }, 5000);
     };    
  
     img.onload = handleLoad;
-
+    
     return () => {
       img.src = props.src;
-      return !isLoading.value
-        ? <n-image {...props} class={props.className} />
-        : (
-          <div
-            class='flex justify-center items-center w-full h-full'
-            style={{ height: firstImgHeight.value }} >
-            <n-spin size="small" description={props.showMessage && '努力加载图片中...'} />
-          </div>
-        );
+      return <div class="relative">
+        <n-image {...props} 
+          class={props.className+'transition-opacity duration-700'}
+          style={{ opacity: isLoading.value ? 0 : 1 }} />
+        {isLoading.value && <div
+          class='flex absolute top-0 left-0 justify-center items-center w-full h-full'
+          style={{ height: firstImgHeight.value }} >
+          <n-spin size="small" description={props.showMessage && '努力加载图片中...'} />
+        </div>}
+      </div>;
     };
   }
 });
