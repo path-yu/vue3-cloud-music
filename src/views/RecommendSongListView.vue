@@ -1,7 +1,9 @@
 <script setup lang="ts">
 import { getTopPlayList, getTopPlayListTags } from '@/service/index';
+import { batchLoadImg } from '@/utils';
 import { ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState } from '@vueuse/core';
+import tr from 'date-fns/esm/locale/tr/index.js';
 import { onBeforeMount, reactive, ref, watch } from 'vue';
 //精品歌单
 const topPlaySong = reactive({ coverImgUrl: '', name: '', description: '' });
@@ -13,16 +15,28 @@ const {
   .then(res => {
     return [{ name: '全部' }].concat(res.data.tags.slice(0, 10));
   }), []);
-const songList = ref<any[][]>([]);
+const songList = ref<{ list: any[], loading: boolean }[]>([]);
 const selectValue = ref('全部');
 const selectIndex = ref(0);
 
 
 const fetchSongList = (cat = '全部', index = 0) => {
+  songList.value[index] = {
+    list: [],
+    loading: true
+  };
   getTopPlayList({ cat, limit: 50 }).then(res => {
-    changeTopSong(res.data.playlists[0]);
-    songList.value[index] = res.data.playlists;
+    if (res.data.playlists.length !== 0) {
+      changeTopSong(res.data.playlists[0]);
+      batchLoadImg(res.data.playlists.map((item: { coverImgUrl: any; }) => item.coverImgUrl));
+      songList.value[index].list = res.data.playlists;
+    }
     isLoading.value = false;
+    songList.value[index].loading = false;
+    console.log(songList.value[0].loading);
+    
+    console.log(songList.value);
+
   });
 };
 watch(() => selectValue.value, (newVal) => {
@@ -31,7 +45,7 @@ watch(() => selectValue.value, (newVal) => {
   if (!songList.value[index]) {
     fetchSongList(selectValue.value, index);
   } else {
-    changeTopSong(songList.value[index][0]);
+    songList.value[index].list.length && changeTopSong(songList.value[index].list[0]);
   }
 });
 const changeTopSong = (song: any) => {
@@ -76,9 +90,9 @@ onBeforeMount(() => {
         <n-skeleton size="medium" width="106px" />
         <n-skeleton size="medium" width="700px" />
       </div>
-      <template v-else>
+      <div v-else class="relative">
         <n-button
-          ghost class="absolute" round
+          ghost class="absolute top-0 left-0" round
           size="medium"
         >
           <span>{{ selectValue }}</span>
@@ -86,16 +100,16 @@ onBeforeMount(() => {
         </n-button>
         <n-tabs ref="tabsInstRef" v-model:value="selectValue" animated>
           <n-tab-pane
-            v-for="(tab, index) in songsTags"
+            v-for="(tab) in songsTags"
             :key="tab.name"
             display-directive="show:lazy"
             :name="tab.name"
           >
-            <SongListSkeleton v-if="!songList[selectIndex]" />
-            <sons-list v-else :songs="songList[selectIndex]" />
+            <SongListSkeleton v-if="songList[selectIndex].loading" />
+            <sons-list v-else :songs="songList[selectIndex].list" />
           </n-tab-pane>
         </n-tabs>
-      </template>
+      </div>
     </div>
   </div>
 </template>

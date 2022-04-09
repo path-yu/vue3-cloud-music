@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { formateNumber } from '@/utils/index';
 import { defineProps } from 'vue';
+import { Play } from '@vicons/carbon';
 defineProps<{
   list?: any[]
   cols?: number;
@@ -8,7 +9,7 @@ defineProps<{
 </script>
 
 <template>
-  <div>
+  <div v-if="list && list.length !== 0">
     <n-grid
       cols="2 s:3 m:4 l:4 xl:4 2xl:4"
       responsive="screen"
@@ -58,6 +59,9 @@ defineProps<{
         </div>
       </n-grid-item>
     </n-grid>
+  </div>
+  <div v-else> 
+    <n-empty description="暂无数据" />
   </div>
 </template>
 
