@@ -1,8 +1,6 @@
-/* eslint-disable vue/require-default-prop */
 <script  lang="tsx">
-import { defineComponent, ref } from 'vue';
-import type { ImageProps } from 'naive-ui';
-type status = 'pending' | 'success' | 'fail';
+import useLazyLoad from '@/assets/hook/useLazyLoad';
+import { defineComponent, onMounted, ref } from 'vue';
 
 export default defineComponent({
   props: {
@@ -26,10 +24,6 @@ export default defineComponent({
       type: String,
       default: '12vw'
     },
-    onLoad: {
-      type: Function,
-      default: () => {}
-    },
     showMessage: {
       type: Boolean,
       default: true
@@ -37,27 +31,29 @@ export default defineComponent({
   },
   setup(props) {
     const isLoading = ref(true);
-    let img = new Image();
+
+    const handleLoad = (e: any) => {
+      isLoading.value = false;
+    };
+    const imageRef = ref<null | HTMLElement>(null);
     
-    const firstImgHeight = ref(props.loadingHeight);
-    const handleLoad = (e:any) => {
-      setTimeout(() => {
-        isLoading.value = false;
-      }, 5000);
-    };    
- 
-    img.onload = handleLoad;
-    
+    onMounted(() => {
+      console.log(imageRef.value);
+      
+    });
+    // const { imageRef, resultSrc } = useLazyLoad(props.src);
     return () => {
-      img.src = props.src;
-      return <div class="relative">
-        <n-image {...props} 
-          class={props.className+'transition-opacity duration-700'}
-          style={{ opacity: isLoading.value ? 0 : 1 }} />
+      return <div class="group relative h-full" style={{ height: props.loadingHeight }}>
+        <div ref="imageRef">
+          <n-image
+            {...props} class={props.className + ' transition-all duration-700'}
+            on-load={handleLoad}
+            style={{ opacity: isLoading.value ? 0 : 1 }} />
+        </div>
         {isLoading.value && <div
           class='flex absolute top-0 left-0 justify-center items-center w-full h-full'
-          style={{ height: firstImgHeight.value }} >
-          <n-spin size="small" description={props.showMessage && '努力加载图片中...'} />
+        >
+          <n-spin size="small" description={props.showMessage ? '努力加载图片中...' : ''} />
         </div>}
       </div>;
     };
