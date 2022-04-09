@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { formateNumber } from '@/utils/index';
-import { defineProps } from 'vue';
 import { Play } from '@vicons/carbon';
+import { defineProps } from 'vue';
 defineProps<{
   list?: any[]
   cols?: number;
@@ -21,11 +21,11 @@ defineProps<{
         :key="item.id"
         class="group"
       > 
-        <div class="overflow-hidden relative"> 
+        <div class="overflow-hidden relative rounded-md"> 
           <load-img
             preview-disabled
-            loading-height="128px"
-            class-name="w-full h-32 rounded-md group-hover-scalee"
+            loading-height="9vw"
+            class-name="w-full rounded-md group-hover-scale"
             :src="item.picUrl "
           />
           <div
