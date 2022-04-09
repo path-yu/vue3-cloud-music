@@ -1,12 +1,11 @@
 <script setup lang="tsx">
+import { registerRouteHook } from '@/router';
 import { Music, User } from '@vicons/carbon';
 import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
-import { NIcon } from 'naive-ui';
+import { NIcon, useLoadingBar } from 'naive-ui';
 import { ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
-import { useLoadingBar } from 'naive-ui';
-import { registerRouteHook } from '@/router';
 
 const menuOptions: MenuOption[] = [
   {
@@ -75,7 +74,7 @@ registerRouteHook(() => {
         :options="menuOptions"
       />
     </n-layout-sider>
-    <n-layout class="overflow-y-scroll h-main bg-main">
+    <n-layout class="h-main bg-main">
       <router-view v-slot="{ Component }">
         <transition
           name="fade-transform"

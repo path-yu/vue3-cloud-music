@@ -41,15 +41,18 @@ export const useMainStore = defineStore({
     }
   }
 });
-export function usePrimaryColor() {
+export function useThemeColor() {
   const store = useMainStore();
   const themeVars = useThemeVars();
   const primaryColor = ref(themeVars.value.primaryColor);
+  const scrollBarColor = ref(themeVars.value.scrollbarColor);
 
   watch(() => store.theme, () => {
     primaryColor.value = themeVars.value.primaryColor;
+    scrollBarColor.value = themeVars.value.scrollbarColor;
   });
   return {
-    primaryColor
+    primaryColor,
+    scrollBarColor
   };
 }

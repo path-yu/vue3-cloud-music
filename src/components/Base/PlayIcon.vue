@@ -1,8 +1,8 @@
 <script setup lang="ts">
-import { usePrimaryColor } from '@/stores/main';
+import { useThemeColor } from '@/stores/main';
 import { PlayFilledAlt } from '@vicons/carbon';
 import { defineProps, type CSSProperties } from 'vue';
-const { primaryColor } = usePrimaryColor();
+const { primaryColor } = useThemeColor();
 defineProps<{
   style?: CSSProperties;
   color?: string;
