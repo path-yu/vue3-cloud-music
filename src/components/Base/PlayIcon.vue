@@ -27,6 +27,6 @@ defineProps<{
 .play-icon {
   @apply absolute  w-10 h-10 bg-white
    rounded-full opacity-0 group-hover:opacity-100
-   transition-opacity duration-300;
+   transition-opacity duration-700;
 }
 </style>

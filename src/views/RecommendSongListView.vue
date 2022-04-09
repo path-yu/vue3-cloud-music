@@ -1,9 +1,7 @@
 <script setup lang="ts">
 import { getTopPlayList, getTopPlayListTags } from '@/service/index';
-import { batchLoadImg } from '@/utils';
 import { ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState } from '@vueuse/core';
-import tr from 'date-fns/esm/locale/tr/index.js';
 import { onBeforeMount, reactive, ref, watch } from 'vue';
 //精品歌单
 const topPlaySong = reactive({ coverImgUrl: '', name: '', description: '' });
@@ -34,8 +32,6 @@ const fetchSongList = (cat = '全部', index = 0) => {
     songList.value[index].loading = false;
     console.log(songList.value[0].loading);
     
-    console.log(songList.value);
-
   });
 };
 watch(() => selectValue.value, (newVal) => {
