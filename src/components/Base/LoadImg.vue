@@ -1,5 +1,4 @@
 <script  lang="tsx">
-import useLazyLoad from '@/assets/hook/useLazyLoad';
 import { defineComponent, onMounted, ref } from 'vue';
 
 export default defineComponent({
@@ -44,12 +43,10 @@ export default defineComponent({
     // const { imageRef, resultSrc } = useLazyLoad(props.src);
     return () => {
       return <div class="group relative h-full" style={{ height: props.loadingHeight }}>
-        <div ref="imageRef">
-          <n-image
-            {...props} class={props.className + ' transition-all duration-700'}
-            on-load={handleLoad}
-            style={{ opacity: isLoading.value ? 0 : 1 }} />
-        </div>
+        <n-image
+          {...props} class={props.className + ' transition-all duration-700 w-full warpImg h-f'}
+          on-load={handleLoad}
+          style={{ opacity: isLoading.value ? 0 : 1 }} />
         {isLoading.value && <div
           class='flex absolute top-0 left-0 justify-center items-center w-full h-full'
         >
@@ -62,4 +59,8 @@ export default defineComponent({
 </script>
 
 <style scoped>
+:deep(.warpImg>img){
+  width: 100%;
+  height: 100%;
+}
 </style>
