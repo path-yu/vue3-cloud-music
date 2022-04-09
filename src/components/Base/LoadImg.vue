@@ -1,6 +1,6 @@
-<script  lang="tsx">
-import { defineComponent, onMounted, ref } from 'vue';
-
+<script lang="tsx">
+import useLazyLoad from '@/hook/useLazyLoad.ts';
+import { defineComponent, ref } from 'vue';
 export default defineComponent({
   props: {
     src: {
@@ -30,36 +30,36 @@ export default defineComponent({
   },
   setup(props) {
     const isLoading = ref(true);
-
+    let symbol = Symbol('select');
     const handleLoad = (e: any) => {
       isLoading.value = false;
     };
-    const imageRef = ref<null | HTMLElement>(null);
+   
+    const { imageRef, resultSrc } = useLazyLoad(props.src);
     
-    onMounted(() => {
-      console.log(imageRef.value);
-      
-    });
-    // const { imageRef, resultSrc } = useLazyLoad(props.src);
     return () => {
-      return <div class="group relative h-full" style={{ height: props.loadingHeight }}>
-        <n-image
-          {...props} class={props.className + ' transition-all duration-700 w-full warpImg h-f'}
-          on-load={handleLoad}
-          style={{ opacity: isLoading.value ? 0 : 1 }} />
-        {isLoading.value && <div
-          class='flex absolute top-0 left-0 justify-center items-center w-full h-full'
-        >
-          <n-spin size="small" description={props.showMessage ? '努力加载图片中...' : ''} />
-        </div>}
-      </div>;
+      return (
+        <div ref={imageRef} class="group relative h-full" style={{ height: props.loadingHeight }}>
+          <n-image
+            {...props} 
+            class={props.className + ' transition-all duration-700 w-full warpImg h-f'}
+            on-load={handleLoad}
+            src={resultSrc.value}
+            style={{ opacity: isLoading.value ? 0 : 1 }} />
+          {isLoading.value && <div
+            class='flex absolute top-0 left-0 justify-center items-center w-full h-full'
+          >
+            <n-spin size="small" description={props.showMessage ? '努力加载图片中...' : ''} />
+          </div>}
+        </div>
+      );
     };
   }
 });
 </script>
 
 <style scoped>
-:deep(.warpImg>img){
+:deep(.warpImg > img) {
   width: 100%;
   height: 100%;
 }
