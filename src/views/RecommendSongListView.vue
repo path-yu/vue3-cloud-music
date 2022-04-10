@@ -107,14 +107,34 @@ const loadMore = (successCallback: any) => {
 
 <template>
   <div class="px-6">
-    <n-skeleton v-if="isLoading" class="w-full h-44 rounded-xl" />
+    <div v-if="!currentSongList.list[0]" class="relative">
+      <div class="flex p-4">
+        <n-skeleton class="w-36 h-36 rounded-xl" />
+        <div class="flex-1 ml-4">
+          <n-skeleton width="70px" height="28px" :sharp="false" />
+          <n-skeleton
+            class="my-2" :sharp="false"
+            type="text"
+          />
+          <n-skeleton
+            height="28px" :sharp="false"
+            type="text"
+          />
+        </div>
+      </div>
+    </div>
     <div v-else class="overflow-hidden relative h-44 rounded-xl cursor-pointer">
       <div
         class="flex absolute w-full h-44 blur-lg"
         :style="{ backgroundImage: `url(${currentSongList.list[0]?.coverImgUrl})` }"
       />
       <div class="flex absolute z-50 p-4 w-full h-44 bg-black/30">
-        <img :src="currentSongList.list[0]?.coverImgUrl" class="w-36 h-36 rounded-md">
+        <load-img
+          preview-disabled
+          loading-height="144px "
+          class-name="w-36 h-36 rounded-md"
+          :src="currentSongList.list[0]?.coverImgUrl"
+        />
         <div class="flex-1 ml-4">
           <n-tag type="success">
             精品歌单
@@ -130,8 +150,7 @@ const loadMore = (successCallback: any) => {
     </div>
     <div class="mt-4">
       <div v-if="songsTagsIsLoading" class="flex justify-between">
-        <n-skeleton size="medium" width="106px" />
-        <n-skeleton size="medium" width="700px" />
+        <n-skeleton height="28px" :sharp="false" />
       </div>
       <div v-else class="relative">
         <n-tabs ref="tabsInstRef" v-model:value="selectValue" class="min-w-3xl myTabs">
