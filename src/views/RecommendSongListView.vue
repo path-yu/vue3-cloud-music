@@ -5,8 +5,6 @@ import { useAsyncState } from '@vueuse/core';
 import { onBeforeMount, reactive, ref, watch } from 'vue';
 //精品歌单
 const topPlaySong = reactive({ coverImgUrl: '', name: '', description: '' });
-const isLoading = ref(true);
-const { scrollBarColor } = useThemeColor();
 const {
   state: songsTags,
   isLoading: songsTagsIsLoading
@@ -17,7 +15,8 @@ const {
 const songList = ref<{ list: any[], loading: boolean }[]>([]);
 const selectValue = ref('全部');
 const selectIndex = ref(0);
-
+const isLoading = ref(true);
+const { scrollBarColor } = useThemeColor();
 
 const fetchSongList = (cat = '全部', index = 0) => {
   songList.value[index] = {
@@ -31,8 +30,6 @@ const fetchSongList = (cat = '全部', index = 0) => {
     }
     isLoading.value = false;
     songList.value[index].loading = false;
-    console.log(songList.value[0].loading);
-    
   });
 };
 watch(() => selectValue.value, (newVal) => {
@@ -51,6 +48,7 @@ const changeTopSong = (song: any) => {
 };
 onBeforeMount(() => {
   fetchSongList('全部', 0);
+  console.log(scrollBarColor.value);
 });
 
 </script>
@@ -107,7 +105,7 @@ onBeforeMount(() => {
   </div>
 </template>
 
-<style lang="less" scoped>
+<style scoped>
 :deep(.n-tabs-bar) {
   display: none;
 }
@@ -128,11 +126,11 @@ onBeforeMount(() => {
   overflow-x: scroll;
 }
 :deep(.n-tabs .n-tabs-nav::-webkit-scrollbar-thumb){
+  height: 10px;
   background-color: transparent;
-  transition: all linear 1000ms;
 }
 :deep(.n-tabs .n-tabs-nav):hover.n-tabs-nav::-webkit-scrollbar-thumb{
-  background-color: v-bind(scrollBarColor);
+   background-color: v-bind(scrollBarColor);
 }
 :deep(.n-tabs .n-tabs-nav-scroll-wrapper){
   overflow:visible;

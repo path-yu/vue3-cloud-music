@@ -5,9 +5,11 @@ import { useMainStore, useThemeColor } from './stores/main';
 
 const mainStore = useMainStore();
 const { scrollBarColor } = useThemeColor();
+
 onMounted(() => {
   mainStore.initDocumentTheme();
 });
+
 </script>
 <template>
   <n-config-provider :theme="mainStore.activeTheme">
