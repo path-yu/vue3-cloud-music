@@ -26,6 +26,11 @@ let firstVisible = ref<boolean | undefined>(); // 首次显示的值
 const isReachBottom = ref(false);// 是否触底
 
 let observerCallback = (entries:IntersectionObserverEntry[]) => {
+  // 没有更多数据加载 打断!
+  if (props.noMore) {
+    loadingTarget.value && observer.disconnect();
+    return; 
+  }
   let visible = entries[0].isIntersecting;
   
   if (firstVisible.value === undefined) {
@@ -66,7 +71,7 @@ onUnmounted(() => {
     />
   </div>
   <n-divider v-else dashed>
-    已经到底了!
+    我也是有底线的!
   </n-divider>
 </template>
 

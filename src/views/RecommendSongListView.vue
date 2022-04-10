@@ -3,10 +3,9 @@ import { getTopPlayList, getTopPlayListTags } from '@/service/index';
 import { getArrLast } from '@/utils';
 import { useAsyncState } from '@vueuse/core';
 import { useLoadingBar } from 'naive-ui';
-import { nextTick, onBeforeMount, reactive, ref, watch } from 'vue';
+import { computed, nextTick, onBeforeMount, ref, watch } from 'vue';
 import ListLoading from '../components/Base/ListLoading.vue';
 //精品歌单
-const topPlaySong = reactive({ coverImgUrl: '', name: '', description: '' });
 const tabsTabSelector = '.myTabs > .n-tabs-nav .n-tabs-wrapper > .n-tabs-tab-wrapper>.n-tabs-tab';
 const {
   state: songsTags,
@@ -18,11 +17,11 @@ const {
 let tabsNavEle: Element | null = null;
 let allTabEleChildren: NodeList | null = null;
 
-const songList = ref<{ list: any[], loading: boolean }[]>([]);
+const songList = ref<{ list: any[], loading: boolean, noMore: boolean }[]>([]);
 const selectValue = ref('全部');
 const selectIndex = ref(0);
 const isLoading = ref(true);
-const noMore = ref(false);
+const currentSongList = computed(() => songList.value[selectIndex.value]);
 const loadingBar = useLoadingBar();
 
 watch(() => selectValue.value, async (newVal, oldVal) => {
@@ -38,10 +37,9 @@ watch(() => selectValue.value, async (newVal, oldVal) => {
     );
   } else {
     loadingBar.start();
-    songList.value[index].list.length && changeTopSong(songList.value[index].list[0]);
     await nextTick();
     setTimeout(() => {
-      loadingBar.finish();  
+      loadingBar.finish();
     }, 200);
   }
 });
@@ -51,43 +49,39 @@ const fetchSongList = async (
 ) => {
   songList.value[index] = {
     list: [],
-    loading: true
+    loading: true,
+    noMore: false
   };
   getTopPlayList({ cat, limit: 50 }).then(res => {
-    if (res.data.playlists.length !== 0) {
-      changeTopSong(res.data.playlists[0]);
+    let playlists = res.data.playlists;
+    if (playlists !== 0) {
       songList.value[index].list = res.data.playlists;
     }
     successCallback && successCallback();
     isLoading.value = false;
+    songList.value[index].noMore = !res.data.more;
     songList.value[index].loading = false;
   });
 };
 
-const findIndex = (val:string) => songsTags.value.findIndex((item) => item.name === val);
+const findIndex = (val: string) => songsTags.value.findIndex((item) => item.name === val);
 //点击tab时移动滚动条位置
-const changeScrollBarPosition = async (oldIndex:number, newIndex:number) => {
+const changeScrollBarPosition = async (oldIndex: number, newIndex: number) => {
   await nextTick();
   tabsNavEle = tabsNavEle === null ? document.querySelector('.myTabs>.n-tabs-nav') : tabsNavEle;
   allTabEleChildren = allTabEleChildren === null ? document.querySelectorAll(tabsTabSelector) : allTabEleChildren;
   if (tabsNavEle === null || allTabEleChildren === null) {
     console.error('dom 节点为空!');
-    return; 
+    return;
   }
   let oldChild = allTabEleChildren[oldIndex] as HTMLElement;
   let newChild = allTabEleChildren[newIndex] as HTMLElement;
   let moveDiff = newChild.offsetLeft - oldChild.offsetLeft;
-  
+
   tabsNavEle.scrollTo({
     left: moveDiff,
     behavior: 'smooth'
   });
-};
-
-const changeTopSong = (song: any) => {
-  topPlaySong.name = song.name;
-  topPlaySong.coverImgUrl = song.coverImgUrl;
-  topPlaySong.description = song.description;
 };
 
 onBeforeMount(() => {
@@ -96,16 +90,15 @@ onBeforeMount(() => {
 const loadMore = (successCallback: any) => {
   let params = {
     cat: selectValue.value,
-    limit: 200,
+    limit: 20,
     before: getArrLast(songList.value[selectIndex.value].list).updateTime
   };
   getTopPlayList(params).then(res => {
     const playlists = res.data.playlists;
-    if (playlists.length === 0) {
-      noMore.value = true;
-    } else {
+    if (playlists.length !== 0) {
       songList.value[selectIndex.value].list.push(...playlists);
     }
+    songList.value[selectIndex.value].noMore = !res.data.more;
     successCallback && successCallback();
 
   });
@@ -118,23 +111,19 @@ const loadMore = (successCallback: any) => {
     <div v-else class="overflow-hidden relative h-44 rounded-xl cursor-pointer">
       <div
         class="flex absolute w-full h-44 blur-lg"
-        :style="{ backgroundImage: `url(${topPlaySong.coverImgUrl})` }"
+        :style="{ backgroundImage: `url(${currentSongList.list[0]?.coverImgUrl})` }"
       />
       <div class="flex absolute z-50 p-4 w-full h-44 bg-black/30">
-        <img :src="topPlaySong.coverImgUrl" class="w-36 h-36 rounded-md">
+        <img :src="currentSongList.list[0]?.coverImgUrl" class="w-36 h-36 rounded-md">
         <div class="flex-1 ml-4">
           <n-tag type="success">
             精品歌单
           </n-tag>
           <p class="py-2 text-white">
-            {{ topPlaySong.name }}
+            {{ currentSongList.list[0]?.name }}
           </p>
-          <n-ellipsis
-            :line-clamp="5"
-            :tooltip="false"
-            class="text-xs text-white opacity-80"
-          >
-            {{ topPlaySong.description }}
+          <n-ellipsis :line-clamp="5" :tooltip="false" class="text-xs text-white opacity-80">
+            {{ currentSongList.list[0]?.description }}
           </n-ellipsis>
         </div>
       </div>
@@ -145,19 +134,18 @@ const loadMore = (successCallback: any) => {
         <n-skeleton size="medium" width="700px" />
       </div>
       <div v-else class="relative">
-        <n-tabs
-          ref="tabsInstRef" v-model:value="selectValue" class="min-w-3xl myTabs"
-        >
+        <n-tabs ref="tabsInstRef" v-model:value="selectValue" class="min-w-3xl myTabs">
           <n-tab-pane
-            v-for="(tab) in songsTags"
-            :key="tab.name"
-            display-directive="show:lazy"
+            v-for="(tab) in songsTags" :key="tab.name" display-directive="show:lazy"
             :name="tab.name"
           >
-            <SongListSkeleton v-if="songList[selectIndex].loading" />
+            <SongListSkeleton v-if="currentSongList.loading" />
             <div v-else>
-              <sons-list :songs="songList[selectIndex].list" />
-              <ListLoading :no-more="noMore" :load-more="loadMore" />
+              <sons-list :songs="currentSongList.list" />
+              <ListLoading
+                :no-more="currentSongList.noMore"
+                :load-more="loadMore"
+              />
             </div>
           </n-tab-pane>
         </n-tabs>
@@ -166,10 +154,10 @@ const loadMore = (successCallback: any) => {
   </div>
 </template>
 
-<style scoped>
-:deep(.n-tabs-bar) {
+<style scoped>:deep(.n-tabs-bar) {
   display: none;
 }
+
 :deep(.n-tabs .n-tabs-nav.n-tabs-nav--line-type .n-tabs-nav-scroll-content) {
   transition: border-color 0.3s var(--n-bezier);
   border: none;
@@ -180,17 +168,19 @@ const loadMore = (successCallback: any) => {
 }
 
 
-:deep(.n-tabs .n-tabs-nav){
+:deep(.n-tabs .n-tabs-nav) {
   overflow-x: scroll;
 }
-:deep(.n-tabs .n-tabs-nav::-webkit-scrollbar-thumb){
+
+:deep(.n-tabs .n-tabs-nav::-webkit-scrollbar-thumb) {
   height: 15px;
   background-color: transparent;
 }
-:deep(.n-tabs .n-tabs-nav):hover.n-tabs-nav::-webkit-scrollbar-thumb{
+
+:deep(.n-tabs .n-tabs-nav):hover.n-tabs-nav::-webkit-scrollbar-thumb {
   @apply bg-gray-400/40;
 }
-:deep(.n-tabs .n-tabs-nav-scroll-wrapper){
-  overflow:visible;
-}
-</style>
+
+:deep(.n-tabs .n-tabs-nav-scroll-wrapper) {
+  overflow: visible;
+}</style>
