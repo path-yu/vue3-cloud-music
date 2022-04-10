@@ -29,3 +29,7 @@ export const batchLoadImg = async (list:string[], itemCallback:{load:(index:numb
 
   return true;
 };
+
+export const getArrLast = (arr:any[]) => {
+  return arr[arr.length - 1];
+};

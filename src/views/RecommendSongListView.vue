@@ -1,8 +1,10 @@
 <script setup lang="ts">
 import { getTopPlayList, getTopPlayListTags } from '@/service/index';
+import { getArrLast } from '@/utils';
 import { useAsyncState } from '@vueuse/core';
 import { useLoadingBar } from 'naive-ui';
 import { nextTick, onBeforeMount, reactive, ref, watch } from 'vue';
+import ListLoading from '../components/Base/ListLoading.vue';
 //精品歌单
 const topPlaySong = reactive({ coverImgUrl: '', name: '', description: '' });
 const tabsTabSelector = '.myTabs > .n-tabs-nav .n-tabs-wrapper > .n-tabs-tab-wrapper>.n-tabs-tab';
@@ -15,10 +17,12 @@ const {
   }), []);
 let tabsNavEle: Element | null = null;
 let allTabEleChildren: NodeList | null = null;
+
 const songList = ref<{ list: any[], loading: boolean }[]>([]);
 const selectValue = ref('全部');
 const selectIndex = ref(0);
 const isLoading = ref(true);
+const noMore = ref(false);
 const loadingBar = useLoadingBar();
 
 watch(() => selectValue.value, async (newVal, oldVal) => {
@@ -89,18 +93,34 @@ const changeTopSong = (song: any) => {
 onBeforeMount(() => {
   fetchSongList('全部', 0);
 });
+const loadMore = (successCallback: any) => {
+  let params = {
+    cat: selectValue.value,
+    limit: 200,
+    before: getArrLast(songList.value[selectIndex.value].list).updateTime
+  };
+  getTopPlayList(params).then(res => {
+    const playlists = res.data.playlists;
+    if (playlists.length === 0) {
+      noMore.value = true;
+    } else {
+      songList.value[selectIndex.value].list.push(...playlists);
+    }
+    successCallback && successCallback();
 
+  });
+};
 </script>
 
 <template>
-  <div class="px-6 pb-10">
+  <div class="px-6">
     <n-skeleton v-if="isLoading" class="w-full h-44 rounded-xl" />
     <div v-else class="overflow-hidden relative h-44 rounded-xl cursor-pointer">
       <div
         class="flex absolute w-full h-44 blur-lg"
         :style="{ backgroundImage: `url(${topPlaySong.coverImgUrl})` }"
       />
-      <div class="flex absolute z-50 p-4 h-44 bg-black/30">
+      <div class="flex absolute z-50 p-4 w-full h-44 bg-black/30">
         <img :src="topPlaySong.coverImgUrl" class="w-36 h-36 rounded-md">
         <div class="flex-1 ml-4">
           <n-tag type="success">
@@ -135,7 +155,10 @@ onBeforeMount(() => {
             :name="tab.name"
           >
             <SongListSkeleton v-if="songList[selectIndex].loading" />
-            <sons-list v-else :songs="songList[selectIndex].list" />
+            <div v-else>
+              <sons-list :songs="songList[selectIndex].list" />
+              <ListLoading :no-more="noMore" :load-more="loadMore" />
+            </div>
           </n-tab-pane>
         </n-tabs>
       </div>

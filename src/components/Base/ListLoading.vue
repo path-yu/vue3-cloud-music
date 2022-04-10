@@ -1,0 +1,80 @@
+<script setup lang="ts">
+import { defineProps, onMounted, onUnmounted, ref } from 'vue';
+interface Props {
+  wrapHeight?: string;
+  strokeWidth?:number;
+  show?:boolean;
+  stroke?:string;
+  description?:string;
+  size?: 'small' | 'medium' | 'large';
+  rotate?:boolean;
+  loadMore?:(loadSuccess:() => void) => void;
+  noMore:boolean,
+}
+const props = withDefaults(defineProps<Props>(), {
+  wrapHeight: '40px',
+  show: true,
+  size: 'medium',
+  strokeWidth: undefined,
+  stroke: undefined,
+  description: '',
+  loadMore: () => {}
+});
+const loadingTarget = ref<HTMLElement | null>(null);
+let loadStatus:'pending' | 'loading' | 'done' = 'pending';// 当前加载状态锁
+let firstVisible = ref<boolean | undefined>(); // 首次显示的值
+const isReachBottom = ref(false);// 是否触底
+
+let observerCallback = (entries:IntersectionObserverEntry[]) => {
+  let visible = entries[0].isIntersecting;
+  
+  if (firstVisible.value === undefined) {
+    firstVisible.value = visible;
+  }
+
+  if (firstVisible.value === false) {
+    if (visible) {
+      // 当前正在load,打断!
+      if (loadStatus === 'loading') return;
+      loadStatus = 'loading';
+      props.loadMore(() => {
+        loadStatus = 'done';
+      });
+    }
+  }
+};
+const observer = new IntersectionObserver(observerCallback);
+
+onMounted(() => {
+  loadingTarget.value && observer.observe(loadingTarget.value);
+});
+onUnmounted(() => {
+  loadingTarget.value && observer.disconnect();
+});
+</script>
+
+<template>
+  <div
+    v-if="!noMore" ref="loadingTarget"
+    class="wrapLoading"
+    :style="{display: firstVisible ? 'none' :'flex',height:wrapHeight}"
+  >
+    <n-spin
+
+      :stroke-width="strokeWidth" :show="show" 
+      :stroke="stroke" :description="description" :size="size"
+    />
+  </div>
+  <n-divider v-else dashed>
+    已经到底了!
+  </n-divider>
+</template>
+
+<style scoped>
+.wrapLoading {
+  width: 100%;
+  height: 40px;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}</style>

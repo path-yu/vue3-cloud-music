@@ -85,8 +85,6 @@ module.exports = {
         'after': true }
     ],
     // 'object-property-newline': 'error',
-    // 禁止出现空函数
-    'no-empty-function': 'warn',
     // 禁止多余的 return 语句
     'no-useless-return': 'error',
     // 强制可嵌套的块的最大深度4

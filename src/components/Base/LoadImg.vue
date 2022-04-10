@@ -30,12 +30,12 @@ export default defineComponent({
   },
   setup(props) {
     const isLoading = ref(true);
-    let symbol = Symbol('select');
+    
     const handleLoad = (e: any) => {
       isLoading.value = false;
     };
-   
-    const { imageRef, resultSrc } = useLazyLoad(props.src);
+    
+    const { imageRef } = useLazyLoad(props.src);
     
     return () => {
       return (
@@ -44,7 +44,6 @@ export default defineComponent({
             {...props} 
             class={props.className + ' transition-all duration-700 w-full warpImg h-f'}
             on-load={handleLoad}
-            src={resultSrc.value}
             style={{ opacity: isLoading.value ? 0 : 1 }} />
           {isLoading.value && <div
             class='flex absolute top-0 left-0 justify-center items-center w-full h-full'
