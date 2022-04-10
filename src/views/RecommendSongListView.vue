@@ -2,21 +2,35 @@
 import { getTopPlayList, getTopPlayListTags } from '@/service/index';
 import { useThemeColor } from '@/stores/main';
 import { useAsyncState } from '@vueuse/core';
-import { onBeforeMount, reactive, ref, watch } from 'vue';
+import { nextTick, onBeforeMount, reactive, ref, watch } from 'vue';
 //精品歌单
 const topPlaySong = reactive({ coverImgUrl: '', name: '', description: '' });
+const tabsTabSelector = '.myTabs > .n-tabs-nav .n-tabs-wrapper > .n-tabs-tab-wrapper>.n-tabs-tab';
 const {
   state: songsTags,
   isLoading: songsTagsIsLoading
 } = useAsyncState<any[]>(getTopPlayListTags()
   .then(res => {
-    return [{ name: '全部' }].concat(res.data.tags.slice(0, 20));
+    return [{ name: '全部' }].concat(res.data.tags);
   }), []);
+let tabsNavEle: Element | null = null;
+let allTabEleChildren: NodeList | null = null;
 const songList = ref<{ list: any[], loading: boolean }[]>([]);
 const selectValue = ref('全部');
 const selectIndex = ref(0);
 const isLoading = ref(true);
 const { scrollBarColor } = useThemeColor();
+
+watch(() => selectValue.value, (newVal, oldVal) => {
+  let index = findIndex(newVal);
+  changeScrollBarPosition(findIndex(oldVal), index);
+  selectIndex.value = index;
+  if (!songList.value[index]) {
+    fetchSongList(selectValue.value, index);
+  } else {
+    songList.value[index].list.length && changeTopSong(songList.value[index].list[0]);
+  }
+});
 
 const fetchSongList = (cat = '全部', index = 0) => {
   songList.value[index] = {
@@ -32,20 +46,33 @@ const fetchSongList = (cat = '全部', index = 0) => {
     songList.value[index].loading = false;
   });
 };
-watch(() => selectValue.value, (newVal) => {
-  let index = songsTags.value.findIndex((item) => item.name === newVal);
-  selectIndex.value = index;
-  if (!songList.value[index]) {
-    fetchSongList(selectValue.value, index);
-  } else {
-    songList.value[index].list.length && changeTopSong(songList.value[index].list[0]);
+
+const findIndex = (val:string) => songsTags.value.findIndex((item) => item.name === val);
+//点击tab时移动滚动条位置
+const changeScrollBarPosition = async (oldIndex:number, newIndex:number) => {
+  await nextTick();
+  tabsNavEle = tabsNavEle === null ? document.querySelector('.myTabs>.n-tabs-nav') : tabsNavEle;
+  allTabEleChildren = allTabEleChildren === null ? document.querySelectorAll(tabsTabSelector) : allTabEleChildren;
+  if (tabsNavEle === null || allTabEleChildren === null) {
+    console.error('dom 节点为空!');
+    return; 
   }
-});
+  let oldChild = allTabEleChildren[oldIndex] as HTMLElement;
+  let newChild = allTabEleChildren[newIndex] as HTMLElement;
+  let moveDiff = newChild.offsetLeft - oldChild.offsetLeft;
+  
+  tabsNavEle?.scrollTo({
+    left: moveDiff,
+    behavior: 'smooth'
+  });
+};
+
 const changeTopSong = (song: any) => {
   topPlaySong.name = song.name;
   topPlaySong.coverImgUrl = song.coverImgUrl;
   topPlaySong.description = song.description;
 };
+
 onBeforeMount(() => {
   fetchSongList('全部', 0);
   console.log(scrollBarColor.value);
@@ -87,8 +114,7 @@ onBeforeMount(() => {
       </div>
       <div v-else class="relative">
         <n-tabs
-          ref="tabsInstRef" v-model:value="selectValue" class="min-w-3xl"
-          animated
+          ref="tabsInstRef" v-model:value="selectValue" class="min-w-3xl myTabs"
         >
           <n-tab-pane
             v-for="(tab) in songsTags"
@@ -113,10 +139,7 @@ onBeforeMount(() => {
   transition: border-color 0.3s var(--n-bezier);
   border: none;
 }
-:deep(.n-tabs-nav-scroll-content) {
-  justify-content: flex-end;
-  margin-left: 100px;
-}
+
 :deep(.n-tag__content) {
   display: flex;
 }

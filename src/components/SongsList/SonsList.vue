@@ -2,9 +2,9 @@
 import PlayIcon from '@/components/Base/PlayIcon.vue';
 import { formateNumber } from '@/utils/index';
 import { Play } from '@vicons/carbon';
-import { defineProps, ref } from 'vue';
-import LoadImg from '../Base/LoadImg.vue';
+import { defineProps } from 'vue';
 import BaseEmpty from '../Base/BaseEmpty.vue';
+import LoadImg from '../Base/LoadImg.vue';
 
 
 defineProps<{
