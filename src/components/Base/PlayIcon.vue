@@ -1,13 +1,15 @@
 <script setup lang="ts">
-import { useThemeColor } from '@/stores/main';
 import { PlayFilledAlt } from '@vicons/carbon';
+import { useThemeVars } from 'naive-ui';
 import { defineProps, type CSSProperties } from 'vue';
-const { primaryColor } = useThemeColor();
+
 defineProps<{
   style?: CSSProperties;
   color?: string;
   size?: number;
 }>();
+const themeVars = useThemeVars();
+
 </script>
 
 <template>
@@ -18,7 +20,7 @@ defineProps<{
     <n-icon
       :component="PlayFilledAlt"
       :size="size ? size : 20"
-      :color="color ? color : primaryColor"
+      :color="color ? color : themeVars.primaryColor"
     />
   </div>
 </template>

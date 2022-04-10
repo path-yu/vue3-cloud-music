@@ -1,15 +1,13 @@
 <script setup lang="ts">
 import LayOut from '@/components/Layout/Layout.vue';
 import { onMounted } from 'vue';
-import { useMainStore, useThemeColor } from './stores/main';
+import { useMainStore } from './stores/main';
 
 const mainStore = useMainStore();
-const { scrollBarColor } = useThemeColor();
 
 onMounted(() => {
   mainStore.initDocumentTheme();
 });
-
 </script>
 <template>
   <n-config-provider :theme="mainStore.activeTheme">
@@ -30,7 +28,7 @@ onMounted(() => {
 }
 ::-webkit-scrollbar-thumb{
   width: 5px;
-  background-color: v-bind(scrollBarColor);
+  @apply bg-gray-400/40;
   border-radius: 10px;
 }
 </style>

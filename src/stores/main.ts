@@ -1,7 +1,6 @@
 
-import { darkTheme, useThemeVars } from 'naive-ui';
+import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
-import { ref } from 'vue';
 
 // 主题切换时回调
 let changeThemeCallback: () => void;
@@ -34,7 +33,6 @@ export const useMainStore = defineStore({
         this.theme = 'dark';
         localStorage.theme = 'dark';
       }
-      changeThemeCallback && changeThemeCallback();
     },
     initDocumentTheme() {
       if (this.theme === 'dark') {
@@ -47,18 +45,3 @@ export const useMainStore = defineStore({
     }
   }
 });
-export function useThemeColor() {
-  const themeVars = useThemeVars();
-  const primaryColor = ref(themeVars.value.primaryColor);
-  const scrollBarColor = ref(themeVars.value.scrollbarColor);
-  
-  changeThemeCallback = () => {
-    primaryColor.value = themeVars.value.primaryColor;
-    scrollBarColor.value = themeVars.value.scrollbarColor;
-  };
-
-  return {
-    primaryColor,
-    scrollBarColor
-  };
-}

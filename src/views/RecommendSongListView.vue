@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { getTopPlayList, getTopPlayListTags } from '@/service/index';
-import { useThemeColor } from '@/stores/main';
 import { useAsyncState } from '@vueuse/core';
+import { useLoadingBar } from 'naive-ui';
 import { nextTick, onBeforeMount, reactive, ref, watch } from 'vue';
 //精品歌单
 const topPlaySong = reactive({ coverImgUrl: '', name: '', description: '' });
@@ -19,20 +19,32 @@ const songList = ref<{ list: any[], loading: boolean }[]>([]);
 const selectValue = ref('全部');
 const selectIndex = ref(0);
 const isLoading = ref(true);
-const { scrollBarColor } = useThemeColor();
+const loadingBar = useLoadingBar();
 
-watch(() => selectValue.value, (newVal, oldVal) => {
+watch(() => selectValue.value, async (newVal, oldVal) => {
   let index = findIndex(newVal);
   changeScrollBarPosition(findIndex(oldVal), index);
   selectIndex.value = index;
   if (!songList.value[index]) {
-    fetchSongList(selectValue.value, index);
+    loadingBar.start();
+    await fetchSongList(
+      selectValue.value, index, () => {
+        loadingBar.finish();
+      }
+    );
   } else {
+    loadingBar.start();
     songList.value[index].list.length && changeTopSong(songList.value[index].list[0]);
+    await nextTick();
+    setTimeout(() => {
+      loadingBar.finish();  
+    }, 200);
   }
 });
 
-const fetchSongList = (cat = '全部', index = 0) => {
+const fetchSongList = async (
+  cat = '全部', index = 0, successCallback?: (() => any) | undefined
+) => {
   songList.value[index] = {
     list: [],
     loading: true
@@ -42,6 +54,7 @@ const fetchSongList = (cat = '全部', index = 0) => {
       changeTopSong(res.data.playlists[0]);
       songList.value[index].list = res.data.playlists;
     }
+    successCallback && successCallback();
     isLoading.value = false;
     songList.value[index].loading = false;
   });
@@ -61,7 +74,7 @@ const changeScrollBarPosition = async (oldIndex:number, newIndex:number) => {
   let newChild = allTabEleChildren[newIndex] as HTMLElement;
   let moveDiff = newChild.offsetLeft - oldChild.offsetLeft;
   
-  tabsNavEle?.scrollTo({
+  tabsNavEle.scrollTo({
     left: moveDiff,
     behavior: 'smooth'
   });
@@ -75,7 +88,6 @@ const changeTopSong = (song: any) => {
 
 onBeforeMount(() => {
   fetchSongList('全部', 0);
-  console.log(scrollBarColor.value);
 });
 
 </script>
@@ -149,11 +161,11 @@ onBeforeMount(() => {
   overflow-x: scroll;
 }
 :deep(.n-tabs .n-tabs-nav::-webkit-scrollbar-thumb){
-  height: 10px;
+  height: 15px;
   background-color: transparent;
 }
 :deep(.n-tabs .n-tabs-nav):hover.n-tabs-nav::-webkit-scrollbar-thumb{
-   background-color: v-bind(scrollBarColor);
+  @apply bg-gray-400/40;
 }
 :deep(.n-tabs .n-tabs-nav-scroll-wrapper){
   overflow:visible;
