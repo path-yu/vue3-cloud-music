@@ -128,7 +128,7 @@ const loadMore = (successCallback: any) => {
         class="flex absolute w-full h-44 blur-lg"
         :style="{ backgroundImage: `url(${currentSongList.list[0]?.coverImgUrl})` }"
       />
-      <div class="flex absolute z-50 p-4 w-full h-44 bg-black/30">
+      <div class="flex absolute z-50 p-4 h-44 bg-black/30">
         <load-img
           preview-disabled
           loading-height="144px "
@@ -137,7 +137,7 @@ const loadMore = (successCallback: any) => {
         />
         <div class="flex-1 ml-4">
           <n-tag type="success">
-            精品歌单
+            {{ selectValue }}
           </n-tag>
           <p class="py-2 text-white">
             {{ currentSongList.list[0]?.name }}
