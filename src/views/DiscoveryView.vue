@@ -163,7 +163,9 @@ const formateSongsAuthor = (attr: any[]) => {
       <n-grid-item
         v-for="item in newSongList"
         :key="item.id"
-        class="hover:bg-zinc-300/40 dark:hover:bg-gray-700/30 rounded-md cursor-pointer"
+        class="hover:bg-zinc-300/40
+         dark:hover:bg-gray-700/30 rounded-md 
+         transition-colors cursor-pointer"
       >
         <div class="flex justify-between h-16">
           <div class="relative">

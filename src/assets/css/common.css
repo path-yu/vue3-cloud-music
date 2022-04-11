@@ -1,10 +1,11 @@
-.no-select{
-  -webkit-user-select:none;
-  -moz-user-select:none;
-  -ms-user-select:none;
-  user-select:none;
+.no-select {
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+  user-select: none;
 }
-.position-center{
+
+.position-center {
   top: 0;
   left: 0;
   right: 0;
@@ -15,18 +16,16 @@
 .card-mask {
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
-  background-image: linear-gradient(
-    0,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.8) 100%
-  );
+  background-image: linear-gradient(0,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0) 30%,
+      rgba(0, 0, 0, 0.6) 100%);
 }
-.bg-linear-mask{
+
+.bg-linear-mask {
   border-bottom-right-radius: 8px;
   border-bottom-left-radius: 8px;
-  background-image: linear-gradient(
-    180deg,
-    rgba(0, 0, 0, 0) 0%,
-    rgba(0, 0, 0, 0.8) 100%
-  );
+  background-image: linear-gradient(180deg,
+      rgba(0, 0, 0, 0) 0%,
+      rgba(0, 0, 0, 0.8) 100%);
 }

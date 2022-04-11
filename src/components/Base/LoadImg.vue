@@ -1,6 +1,8 @@
 <script lang="tsx">
 import useLazyLoad from '@/hook/useLazyLoad.ts';
+import { useThemeVars } from 'naive-ui';
 import { defineComponent, ref } from 'vue';
+
 export default defineComponent({
   props: {
     src: {
@@ -30,8 +32,9 @@ export default defineComponent({
   },
   setup(props) {
     const isLoading = ref(true);
+    const themeVars = useThemeVars();
     
-    const handleLoad = (e: any) => {
+    const handleLoad = () => {
       isLoading.value = false;
     };
     
@@ -39,13 +42,15 @@ export default defineComponent({
     
     return () => {
       return (
-        <div ref={imageRef} class="group relative h-full" style={{ height: props.loadingHeight }}>
+        <div 
+          ref={imageRef} class="group relative  h-full bg-neutral-100 dark:bg-black"
+          style={{ height: props.loadingHeight, zIndex: isLoading.value ? 10 : 0 }}>
           <n-image
             {...props} 
             class={props.className + ' transition-all duration-700 w-full warpImg h-f'}
             on-load={handleLoad}
             style={{ opacity: isLoading.value ? 0 : 1 }} />
-          {isLoading.value && <div
+          { isLoading.value && <div
             class='flex absolute top-0 left-0 justify-center items-center w-full h-full'
           >
             <n-spin size="small" description={props.showMessage ? '努力加载图片中...' : ''} />
