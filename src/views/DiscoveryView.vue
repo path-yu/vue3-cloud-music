@@ -1,5 +1,6 @@
 <script setup lang="ts">
 
+import { useMemoryScrollTop } from '@/hook/useMemoryScrollTop';
 import { getBanner, getNewSong, getPersonalized, getRecommendMv } from '@/service/index';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover } from '@vueuse/core';
@@ -25,6 +26,7 @@ const { state: MVList, isLoading: MVIsLoading }
   = useAsyncState(getRecommendMv().then(res => res.data.result), []);
 const isHovered = useElementHover(hoverRef);
 const showArrowClass = computed(() => isHovered.value ? 'opacity-50' : 'opacity-0');
+useMemoryScrollTop('.rightMain>.n-layout-scroll-container');
 
 const handleArrowClick = (type: 'next' | 'prev') => {
   let index = currentIndex.value;

@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useMemoryScrollTop } from '@/hook/useMemoryScrollTop';
 import { getTopPlayList, getTopPlayListTags } from '@/service/index';
 import { getArrLast } from '@/utils';
 import { useAsyncState } from '@vueuse/core';
@@ -23,7 +24,7 @@ const selectIndex = ref(0);
 const isLoading = ref(true);
 const currentSongList = computed(() => songList.value[selectIndex.value]);
 const loadingBar = useLoadingBar();
-
+useMemoryScrollTop('.rightMain>.n-layout-scroll-container');
 watch(() => selectValue.value, async (newVal, oldVal) => {
   let index = findIndex(newVal);
   changeScrollBarPosition(findIndex(oldVal), index);

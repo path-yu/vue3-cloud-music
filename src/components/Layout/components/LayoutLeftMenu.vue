@@ -74,7 +74,7 @@ registerRouteHook(() => {
         :options="menuOptions"
       />
     </n-layout-sider>
-    <n-layout class="h-main bg-main">
+    <n-layout class="h-main bg-main rightMain">
       <router-view v-slot="{ Component }">
         <transition
           name="fade-transform"

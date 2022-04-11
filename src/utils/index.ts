@@ -33,3 +33,15 @@ export const batchLoadImg = async (list:string[], itemCallback:{load:(index:numb
 export const getArrLast = (arr:any[]) => {
   return arr[arr.length - 1];
 };
+
+// 节流
+export const throttle = (fn:Function, delay:number) => {
+  let timer:any = null;
+  return function () {
+    if (timer) return;
+    timer = setTimeout((...rest) => {
+      fn(...rest);
+      timer = null;
+    }, delay);
+  };
+};

@@ -13,6 +13,7 @@ export default function useLazyLoad(src:string) {
       img.src = src;
       resultSrc.value = src;
       observer?.unobserve(imageRef.value!);
+      observer?.disconnect();
       observer = null;
     }
   }
