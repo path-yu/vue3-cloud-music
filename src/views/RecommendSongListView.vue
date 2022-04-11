@@ -162,6 +162,7 @@ const loadMore = (successCallback: any) => {
             <div v-else>
               <sons-list :songs="currentSongList.list" />
               <ListLoading
+                v-if="currentSongList.list.length"
                 :no-more="currentSongList.noMore"
                 :load-more="loadMore"
               />
