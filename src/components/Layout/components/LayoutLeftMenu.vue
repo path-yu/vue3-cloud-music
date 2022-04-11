@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { registerRouteHook } from '@/router';
-import { Music, User } from '@vicons/carbon';
+import { BackToTop, Music, User } from '@vicons/carbon';
 import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
 import { NIcon, useLoadingBar } from 'naive-ui';
@@ -80,7 +80,12 @@ registerRouteHook(() => {
           name="fade-transform"
           mode="out-in"
         >
-          <component :is="Component" />
+          <div>
+            <n-back-top right="7vw" :bottom="220" :visibility-height="800">
+              <n-icon :component="BackToTop" />
+            </n-back-top>
+            <component :is="Component" />
+          </div>
         </transition>
       </router-view>
     </n-layout>
