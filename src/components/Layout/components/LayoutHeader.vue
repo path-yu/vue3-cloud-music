@@ -44,7 +44,7 @@ watch(() => active.value, () => {
           <n-icon :component="Search" />
         </template>
       </n-input>
-      <div class="flex items-center ">
+      <div class="flex items-center">
         <n-switch
           v-model:value="active"
           size="large"

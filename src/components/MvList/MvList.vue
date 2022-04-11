@@ -23,7 +23,6 @@ defineProps<{
       > 
         <div class="overflow-hidden relative rounded-md"> 
           <load-img
-            preview-disabled
             loading-height="9vw"
             class-name="w-full rounded-md group-hover-scale"
             :src="item.picUrl "

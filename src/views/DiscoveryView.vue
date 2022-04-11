@@ -87,7 +87,6 @@ const formateSongsAuthor = (attr: any[]) => {
           :style="{ width: '50%' }"
         >
           <load-img
-            preview-disabled
             loading-height="250px"
             class-name="w-full h-full rounded cursor-pointer cover-banner"
             :src="item.imageUrl"
@@ -170,7 +169,6 @@ const formateSongsAuthor = (attr: any[]) => {
         <div class="flex justify-between h-16">
           <div class="relative">
             <load-img
-              preview-disabled
               loading-height="64px"
               class-name="w-16 h-16 rounded-md"
               :src="item.picUrl"

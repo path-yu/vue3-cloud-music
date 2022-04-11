@@ -131,7 +131,6 @@ const loadMore = (successCallback: any) => {
       />
       <div class="box-border flex absolute z-50 p-4 w-full h-44 bg-black/30">
         <load-img
-          preview-disabled
           loading-height="144px "
           class-name="w-36 h-36 rounded-md"
           :src="currentSongList.list[0]?.coverImgUrl"
@@ -163,7 +162,7 @@ const loadMore = (successCallback: any) => {
             <div v-else>
               <sons-list :songs="currentSongList.list" />
               <ListLoading
-                v-if="currentSongList.list.length"
+                v-if="currentSongList.list.length > 15"
                 :no-more="currentSongList.noMore"
                 :load-more="loadMore"
               />

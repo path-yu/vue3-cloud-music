@@ -27,13 +27,12 @@ defineProps<{
         class="group cursor-pointer"
       >
         <n-card
-          footer-style="padding: 0 10px 5px"
+          footer-style="padding: 5px 10px"
           size="small"
         >
           <template #cover>
             <div class="relative">
               <load-img
-                preview-disabled
                 loading-height="12vw"
                 class-name="w-full h-full group-hover-scale"
                 :src="item.picUrl || item.coverImgUrl"

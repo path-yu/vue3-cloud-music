@@ -1,7 +1,6 @@
 <script lang="tsx">
 import useLazyLoad from '@/hook/useLazyLoad.ts';
-import { useThemeVars } from 'naive-ui';
-import { defineComponent, ref } from 'vue';
+import { defineComponent, nextTick, ref } from 'vue';
 
 export default defineComponent({
   props: {
@@ -15,7 +14,7 @@ export default defineComponent({
     },
     previewDisabled: {
       type: Boolean,
-      default: false
+      default: true
     },
     fallbackSrc: {
       type: String,
@@ -28,27 +27,44 @@ export default defineComponent({
     showMessage: {
       type: Boolean,
       default: true
+    },
+    doubleClickPreview: {
+      type: Boolean,
+      default: true
     }
   },
   setup(props) {
     const isLoading = ref(true);
-    const themeVars = useThemeVars();
+    let myPreviewDisabled = ref(props.doubleClickPreview && props.previewDisabled ? true : false);
     
     const handleLoad = () => {
       isLoading.value = false;
     };
-    
+    const getClickPreview = () => {
+      return myPreviewDisabled.value && {
+        ondblclick: async (e:MouseEvent) => {
+          myPreviewDisabled.value = false;
+          await nextTick();
+          (e.target as HTMLElement).click();
+          setTimeout(() => {
+            myPreviewDisabled.value = true;
+          }, 1000);
+        }
+      };
+    };
     const { imageRef } = useLazyLoad(props.src);
     
     return () => {
       return (
         <div 
           ref={imageRef} class="group relative  h-full bg-neutral-100 dark:bg-black"
+          {...getClickPreview()}
           style={{ height: props.loadingHeight, zIndex: isLoading.value ? 10 : 0 }}>
           <n-image
             {...props} 
             class={props.className + ' transition-all duration-700 w-full warpImg h-f'}
             on-load={handleLoad}
+            preview-disabled={myPreviewDisabled.value}
             style={{ opacity: isLoading.value ? 0 : 1 }} />
           { isLoading.value && <div
             class='flex absolute top-0 left-0 justify-center items-center w-full h-full'
