@@ -1,3 +1,4 @@
+
 // 格式化数字
 export function formateNumber(num:number) {
   if (num < 99999) return num.toString();
@@ -43,5 +44,19 @@ export const throttle = (fn:Function, delay:number) => {
       fn(...rest);
       timer = null;
     }, delay);
+  };
+};
+
+// 根据不同类型记忆函数
+export const memorize = (fn:Function) => {
+  const cache = new Map();
+  return (...args:any[]) => {
+    const key = JSON.stringify(args);
+    if (cache.has(key)) {
+      return cache.get(key);
+    }
+    const result = fn(...args);
+    cache.set(key, result);
+    return result;
   };
 };

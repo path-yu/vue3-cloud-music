@@ -23,3 +23,7 @@ export function getTopPlayList({ cat = '全部', limit = 10, before='' }) {
 export function getTopPlayListTags() {
   return service.get('/playlist/highquality/tags');
 }
+// 全部mv 列表
+export function getMvList({ limit = 50, offset=0, area='全部', order='最热' }) {
+  return service.get(`/mv/all?limit=${limit}&offset=${offset}&area=${area}&order=${order}`);
+}

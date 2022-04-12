@@ -25,7 +25,7 @@ defineProps<{
           <load-img
             loading-height="9vw"
             class-name="w-full rounded-md group-hover-scale"
-            :src="item.picUrl "
+            :src="item.picUrl || item.cover"
           />
           <div
             class="flex absolute top-0 right-0 justify-end items-center p-1 w-full text-white card-mask"
@@ -37,7 +37,7 @@ defineProps<{
             class="cursor-pointer position-center"
             style="width: 40px;height: 40px;"
           />
-          <p class="tips">
+          <p v-if="item.copywriter" class="tips">
             {{ item.copywriter }}
           </p>
          

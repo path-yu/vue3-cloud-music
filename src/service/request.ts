@@ -10,7 +10,6 @@ const instance = axios.create({
 instance.interceptors.request.use((config) => {
   return config;
 }, err => {
-  console.log(err);
   return err;
 });
 //response interceptor
@@ -21,14 +20,14 @@ instance.interceptors.response.use(async (data) => {
   }
   return data;
 }, err => {
-  window.$message.error(err);
+  window.$message.error('network error');
   return err;
 });
 const sleep = () => {
   return new Promise((resolve) => {
     setTimeout(() => {
       resolve(true);
-    }, 400000);
+    }, 4000);
   });
 };
 export default instance;

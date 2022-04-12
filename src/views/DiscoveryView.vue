@@ -194,29 +194,7 @@ const formateSongsAuthor = (attr: any[]) => {
     <p class="py-4 text-xl">
       最新MV
     </p>
-    <n-grid
-      v-if="MVIsLoading"
-      cols="4"
-      responsive="screen"
-      x-gap="20"
-      y-gap="20"
-    >
-      <n-grid-item
-        v-for="(item,index) in 4"
-        :key="index"
-      >
-        <n-skeleton
-          height="10vw"
-          width="100%"
-          :sharp="false"
-        />
-        <n-skeleton
-          text
-          :repeat="2"
-          :sharp="false"
-        />
-      </n-grid-item>
-    </n-grid>
+    <MvListSkeleton v-if="MVIsLoading" />
     <mv-list
       v-else
       :list="MVList"
