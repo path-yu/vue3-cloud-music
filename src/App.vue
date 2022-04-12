@@ -7,13 +7,16 @@ const mainStore = useMainStore();
 
 onMounted(() => {
   mainStore.initDocumentTheme();
+  
 });
 </script>
 <template>
   <n-config-provider :theme="mainStore.activeTheme">
     <n-loading-bar-provider>
       <div class="w-100vw bg-main">
-        <LayOut />
+        <n-message-provider>
+          <LayOut />
+        </n-message-provider>
       </div>
     </n-loading-bar-provider>
   </n-config-provider>

@@ -16,9 +16,12 @@ instance.interceptors.request.use((config) => {
 //response interceptor
 instance.interceptors.response.use(async (data) => {
   // await sleep();
+  if (data.data.code !== 200) {
+    window.$message.error('network error');
+  }
   return data;
 }, err => {
-  console.log(err);
+  window.$message.error(err);
   return err;
 });
 const sleep = () => {

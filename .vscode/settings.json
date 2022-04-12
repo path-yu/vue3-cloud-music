@@ -20,5 +20,6 @@
   "css.lint.unknownAtRules": "ignore",
   "scss.lint.unknownAtRules": "ignore",
   // 不折叠文件夹
-  "explorer.compactFolders": false
+  "explorer.compactFolders": false,
+  "typescript.tsdk": "node_modules/typescript/lib"
 }
