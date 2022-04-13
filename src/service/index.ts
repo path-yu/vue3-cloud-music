@@ -27,3 +27,7 @@ export function getTopPlayListTags() {
 export function getMvList({ limit = 50, offset=0, area='全部', order='最热' }) {
   return service.get(`/mv/all?limit=${limit}&offset=${offset}&area=${area}&order=${order}`);
 }
+// 新歌速递
+export function getTopSong({ type=0 }) {
+  return service.get(`/top/song?type=${type}`);
+}

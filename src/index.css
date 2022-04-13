@@ -14,7 +14,7 @@
   @apply bg-white dark:bg-secondBack;
 }
 .bg-main{
-  @apply bg-zinc-50 dark:bg-black
+  @apply bg-zinc-50/40 dark:bg-black
 }
 .bg-second-main{
   @apply bg-zinc-100 dark:bg-secondBack;
