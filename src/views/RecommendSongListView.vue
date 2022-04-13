@@ -5,7 +5,6 @@ import { getArrLast } from '@/utils';
 import { useAsyncState } from '@vueuse/core';
 import { useLoadingBar } from 'naive-ui';
 import { computed, nextTick, onBeforeMount, ref, watch } from 'vue';
-import ListLoading from '../components/Base/ListLoading.vue';
 //精品歌单
 const tabsTabSelector = '.myTabs > .n-tabs-nav .n-tabs-wrapper > .n-tabs-tab-wrapper>.n-tabs-tab';
 const {
@@ -178,7 +177,7 @@ const loadMore = (successCallback: any) => {
           >
             <SongListSkeleton v-if="currentSongList.loading" />
             <div v-else>
-              <sons-list :songs="currentSongList.list" />
+              <SongList :songs="currentSongList.list" />
               <ListLoading
                 v-if="currentSongList.list.length > 15"
                 :no-more="currentSongList.noMore"

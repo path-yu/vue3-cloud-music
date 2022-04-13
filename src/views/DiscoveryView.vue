@@ -5,7 +5,7 @@ import {
   getBanner,
   getNewSong,
   getPersonalized,
-  getRecommendMv 
+  getRecommendMv
 } from '@/service/index';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
@@ -135,7 +135,7 @@ const formateSongsAuthor = (attr: any[]) => {
       推荐歌单
     </p>
     <SongListSkeleton v-if="SongsListIsLoading" />
-    <sons-List
+    <SongList
       v-else
       :songs="SongsList"
     />
