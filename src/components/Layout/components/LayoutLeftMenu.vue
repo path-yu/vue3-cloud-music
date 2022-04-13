@@ -40,15 +40,19 @@ const loadingBar = useLoadingBar();
 let collapsed = ref(false);
 let activeKey = ref<string | null>('');
 
-watch(() => route.path, (newVal) => {
-  activeKey.value = newVal;
+watch(
+  () => route.path, (newVal) => {
+    activeKey.value = newVal;
   
-});
-registerRouteHook(() => {
-  loadingBar.start();
-}, () => {
-  loadingBar.finish();
-});
+  }
+);
+registerRouteHook(
+  () => {
+    loadingBar.start();
+  }, () => {
+    loadingBar.finish();
+  }
+);
 
 </script>
 <template>

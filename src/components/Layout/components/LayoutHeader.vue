@@ -6,9 +6,11 @@ import { ref, watch } from 'vue';
 let mainStore = useMainStore();
 let active = ref(mainStore.isActiveDarkTheme);
 
-watch(() => active.value, () => {
-  mainStore.changeTheme();
-});
+watch(
+  () => active.value, () => {
+    mainStore.changeTheme();
+  }
+);
 </script>
 
 <template>

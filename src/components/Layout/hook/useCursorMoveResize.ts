@@ -5,7 +5,9 @@ import { ref, type Ref, onMounted, onUnmounted, nextTick } from 'vue';
  * @param  {number} threshold 触发阈值
  * @description 鼠标在元素上移动缩放目标元素
  */
-export default function useCursorMoveResize(target:Ref<HTMLElement | null>, threshold:number) {
+export default function useCursorMoveResize(
+  target:Ref<HTMLElement | null>, threshold:number
+) {
   let isHovered = false; //鼠标是否在元素上
   let isClick = false;// 鼠标是否在元素上点击
   const moveDiff = { x: 0, y: 0 };
@@ -19,11 +21,13 @@ export default function useCursorMoveResize(target:Ref<HTMLElement | null>, thre
     isHovered = true;
     clearTimeout(timer);
     // 鼠标进入后 开启定时器,判断1.5s 后鼠标是否离开
-    timer = setTimeout(() => {
-      if (isHovered) {
-        showResizeBar.value = true;
-      }
-    }, 500);
+    timer = setTimeout(
+      () => {
+        if (isHovered) {
+          showResizeBar.value = true;
+        }
+      }, 500
+    );
   };
   
   // 鼠标离开
@@ -43,7 +47,9 @@ export default function useCursorMoveResize(target:Ref<HTMLElement | null>, thre
     isClick = true;
     mousePosition.x = e.clientX;
     triggerTargetEl = e.target as HTMLElement;
-    target.value!.setAttribute('data-rawWidth', target.value!.offsetWidth.toString());
+    target.value!.setAttribute(
+      'data-rawWidth', target.value!.offsetWidth.toString()
+    );
   };
   // 鼠标抬起
   const handleMouseUp = (e:MouseEvent) => {
@@ -78,12 +84,20 @@ export default function useCursorMoveResize(target:Ref<HTMLElement | null>, thre
     }
   };
   onMounted(() => {
-    document.body.addEventListener('mousemove', handleMouseMove);
-    document.body.addEventListener('mouseup', handleMouseUp);
+    document.body.addEventListener(
+      'mousemove', handleMouseMove
+    );
+    document.body.addEventListener(
+      'mouseup', handleMouseUp
+    );
   });
   onUnmounted(() => {
-    document.body.removeEventListener('mousemove', handleMouseMove);
-    document.body.removeEventListener('mouseup', handleMouseUp);
+    document.body.removeEventListener(
+      'mousemove', handleMouseMove
+    );
+    document.body.removeEventListener(
+      'mouseup', handleMouseUp
+    );
   });
   return {
     isClick,

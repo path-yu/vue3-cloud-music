@@ -3,9 +3,9 @@ import { defineProps } from 'vue';
 interface Props {
   count?:number;
 }
-withDefaults(defineProps<Props>(), {
-  count: 0
-});
+withDefaults(
+  defineProps<Props>(), { count: 0 }
+);
 </script>
 
 <template>

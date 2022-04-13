@@ -11,10 +11,12 @@ const tabsTabSelector = '.myTabs > .n-tabs-nav .n-tabs-wrapper > .n-tabs-tab-wra
 const {
   state: songsTags,
   isLoading: songsTagsIsLoading
-} = useAsyncState<any[]>(getTopPlayListTags()
-  .then(res => {
-    return [{ name: '全部' }].concat(res.data.tags);
-  }), []);
+} = useAsyncState<any[]>(
+  getTopPlayListTags()
+    .then(res => {
+      return [{ name: '全部' }].concat(res.data.tags);
+    }), []
+);
 let tabsNavEle: Element | null = null;
 let allTabEleChildren: NodeList | null = null;
 
@@ -25,25 +27,33 @@ const isLoading = ref(true);
 const currentSongList = computed(() => songList.value[selectIndex.value]);
 const loadingBar = useLoadingBar();
 useMemoryScrollTop('.rightMain>.n-layout-scroll-container');
-watch(() => selectValue.value, async (newVal, oldVal) => {
-  let index = findIndex(newVal);
-  changeScrollBarPosition(findIndex(oldVal), index);
-  selectIndex.value = index;
-  if (!songList.value[index]) {
-    loadingBar.start();
-    await fetchSongList(
-      selectValue.value, index, () => {
-        loadingBar.finish();
-      }
+watch(
+  () => selectValue.value, async (
+    newVal, oldVal
+  ) => {
+    let index = findIndex(newVal);
+    changeScrollBarPosition(
+      findIndex(oldVal), index
     );
-  } else {
-    loadingBar.start();
-    await nextTick();
-    setTimeout(() => {
-      loadingBar.finish();
-    }, 200);
+    selectIndex.value = index;
+    if (!songList.value[index]) {
+      loadingBar.start();
+      await fetchSongList(
+        selectValue.value, index, () => {
+          loadingBar.finish();
+        }
+      );
+    } else {
+      loadingBar.start();
+      await nextTick();
+      setTimeout(
+        () => {
+          loadingBar.finish();
+        }, 200
+      );
+    }
   }
-});
+);
 
 const fetchSongList = async (
   cat = '全部', index = 0, successCallback?: (() => any) | undefined
@@ -67,10 +77,16 @@ const fetchSongList = async (
 
 const findIndex = (val: string) => songsTags.value.findIndex((item) => item.name === val);
 //点击tab时移动滚动条位置
-const changeScrollBarPosition = async (oldIndex: number, newIndex: number) => {
+const changeScrollBarPosition = async (
+  oldIndex: number, newIndex: number
+) => {
   await nextTick();
-  tabsNavEle = tabsNavEle === null ? document.querySelector('.myTabs>.n-tabs-nav') : tabsNavEle;
-  allTabEleChildren = allTabEleChildren === null ? document.querySelectorAll(tabsTabSelector) : allTabEleChildren;
+  tabsNavEle = tabsNavEle === null
+    ? document.querySelector('.myTabs>.n-tabs-nav')
+    : tabsNavEle;
+  allTabEleChildren = allTabEleChildren === null
+    ? document.querySelectorAll(tabsTabSelector)
+    : allTabEleChildren;
   if (tabsNavEle === null || allTabEleChildren === null) {
     console.error('dom 节点为空!');
     return;
@@ -86,7 +102,9 @@ const changeScrollBarPosition = async (oldIndex: number, newIndex: number) => {
 };
 
 onBeforeMount(() => {
-  fetchSongList('全部', 0);
+  fetchSongList(
+    '全部', 0
+  );
 });
 const loadMore = (successCallback: any) => {
   let params = {

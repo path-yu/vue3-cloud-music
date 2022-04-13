@@ -12,7 +12,9 @@ export function formateNumber(num:number) {
 }
 // 图片预加载
 export const preloadImg = (src: string) => {
-  return new Promise((resolve, reject) => {
+  return new Promise((
+    resolve, reject
+  ) => {
     const img = new Image();
     img.src = src;
     img.onload = () => {
@@ -23,9 +25,14 @@ export const preloadImg = (src: string) => {
     };
   });
 };
-export const batchLoadImg = async (list:string[], itemCallback:{load:(index:number)=>void, error:(index:number) => void}) => {
-  list.forEach((src, index) => {
-    preloadImg(src).then(() => itemCallback.load(index)).catch(() => itemCallback.error(index));
+export const batchLoadImg = async (
+  list:string[], itemCallback:{load:(index:number)=>void, error:(index:number) => void}
+) => {
+  list.forEach((
+    src, index
+  ) => {
+    preloadImg(src).then(() => itemCallback.load(index))
+      .catch(() => itemCallback.error(index));
   });
 
   return true;
@@ -36,14 +43,18 @@ export const getArrLast = (arr:any[]) => {
 };
 
 // 节流
-export const throttle = (fn:Function, delay:number) => {
+export const throttle = (
+  fn:Function, delay:number
+) => {
   let timer:any = null;
   return function () {
     if (timer) return;
-    timer = setTimeout((...rest) => {
-      fn(...rest);
-      timer = null;
-    }, delay);
+    timer = setTimeout(
+      (...rest) => {
+        fn(...rest);
+        timer = null;
+      }, delay
+    );
   };
 };
 
@@ -56,7 +67,9 @@ export const memorize = (fn:Function) => {
       return cache.get(key);
     }
     const result = fn(...args);
-    cache.set(key, result);
+    cache.set(
+      key, result
+    );
     return result;
   };
 };

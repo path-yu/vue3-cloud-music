@@ -46,8 +46,10 @@ module.exports = {
     'consistent-return': 'error',
     //在数组开括号后和闭括号前强制换行
     'array-bracket-newline': [
-      'error', { 'minItems': 4,
-        multiline: true }
+      'error', {
+        'minItems': 4,
+        multiline: true 
+      }
     ],
     // 大括号后必须换行
     'brace-style': 'error',
@@ -59,14 +61,16 @@ module.exports = {
     'block-spacing': 'error',
     // 强制在对象字面量的键和值之间使用一致的空格
     'key-spacing': ['error', { 'mode': 'strict' }],
-    // 强制在函数括号内使用一致的换行, 函数参数超过三个换行
-    'function-paren-newline': ['error', { 'minItems': 3 }],
+    // 强制在函数括号内使用一致的换行, 函数参数超过2个换行
+    'function-paren-newline': ['error', { 'minItems': 2 }],
     // 强制回调函数最大嵌套深度
     'max-nested-callbacks': ['warn', 3],
     // 强制关键字周围空格的一致性 关键字前后必须有空格
     'keyword-spacing': [
-      'error', { 'before': true,
-        'after': true }
+      'error', {
+        'before': true,
+        'after': true 
+      }
     ],
     // 强制分号之后有空格，禁止分号之前有空格。
     'semi-spacing': 'error',
@@ -81,8 +85,10 @@ module.exports = {
     'arrow-spacing': 'error',
     // 强制在逗号周围使用空格
     'comma-spacing': [
-      'error', { 'before': false,
-        'after': true }
+      'error', {
+        'before': false,
+        'after': true 
+      }
     ],
     // 'object-property-newline': 'error',
     // 禁止多余的 return 语句
@@ -90,19 +96,17 @@ module.exports = {
     // 强制可嵌套的块的最大深度4
     'max-depth': 'warn',
     // 要求方法链中每个调用都有一个换行符
-    'newline-per-chained-call': ['warn', { ignoreChainWithDepth: 3 }],
+    'newline-per-chained-call': ['warn', { ignoreChainWithDepth: 2 }],
     'tailwindcss/no-custom-classname': ['off'],
     // 禁止使用拖尾逗号 
     'comma-dangle': ['error', 'never'],
     'vue/max-attributes-per-line': [
       'error', {
-        'singleline': {
-          'max': 3
-        },      
-        'multiline': {
-          'max': 3
-        }
+        'singleline': { 'max': 3 },      
+        'multiline': { 'max': 3 } 
       }
-    ]
+    ],
+    'multiline-ternary': ['error', 'always'],
+    'object-curly-newline': ['error', { 'multiline': true }]
   }
 };

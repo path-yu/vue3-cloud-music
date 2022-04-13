@@ -1,6 +1,9 @@
-<script setup lang="ts">
+<script  lang="ts">
 import { getMvList } from '@/service';
-import { nextTick, reactive, ref, toRaw, watch } from 'vue';
+import {
+  nextTick,
+  reactive, ref, toRaw, watch 
+} from 'vue';
 
 const areaList = [
   '全部', '内地', '港台', '欧美', '日本', '韩国'
@@ -9,6 +12,7 @@ const typeList = [
   '全部', '官方版', '现场版', '原生', '网易出品'
 ];
 const orderList = ['最热', '最新', '上升最快'];
+
 
 const params = reactive({
   area: areaList[0],
@@ -32,9 +36,8 @@ const fetchList = (setPageCount = true) => {
   list.value = [];
   getMvList(data).then((res: { data: { data: never[]; count: number; }; }) => {
     listIsLoading.value = false;
-
     list.value = res.data.data;
-    
+
     if (!firstFetchDataSuccess.value) {
       firstFetchDataSuccess.value = true;
     }
@@ -45,8 +48,6 @@ const fetchList = (setPageCount = true) => {
         pageParams.pageCount = 50;
       }
     }
-    console.log(pageParams);
-
 
   });
 };
@@ -61,16 +62,20 @@ const getParams = () => {
 
 fetchList();
 
-watch(params, () => {
-  fetchList();
-});
+watch(
+  params, () => {
+    fetchList();
+  }
+);
 
-watch([() => pageParams.page, () => pageParams.pageSize], async () => {
-  fetchList(false);
-  // 回到顶部
-  await nextTick();
-  (document.querySelector('.n-back-top') as HTMLElement).click();
-});
+watch(
+  [() => pageParams.page, () => pageParams.pageSize], async () => {
+    fetchList(false);
+    // 回到顶部
+    await nextTick();
+    (document.querySelector('.n-back-top') as HTMLElement).click();
+  }
+);
 
 </script>
 

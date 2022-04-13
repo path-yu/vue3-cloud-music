@@ -1,42 +1,60 @@
 <script setup lang="ts">
 
 import { useMemoryScrollTop } from '@/hook/useMemoryScrollTop';
-import { getBanner, getNewSong, getPersonalized, getRecommendMv } from '@/service/index';
-import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
+import {
+  getBanner,
+  getNewSong,
+  getPersonalized,
+  getRecommendMv 
+} from '@/service/index';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
-import MvList from '../components/MvList/MvList.vue';
-import SongListSkeleton from '../components/SongsList/SongListSkeleton.vue';
 
 const hoverRef = ref();
 const currentIndex = ref(0);
 const {
   state: banners,
-  isLoading
-} = useAsyncState(getBanner().then(res => res.data.banners), []);
+  isLoading 
+} = useAsyncState(
+  getBanner().then(res => res.data.banners), []
+);
 const {
   state: SongsList,
-  isLoading: SongsListIsLoading
-} = useAsyncState(getPersonalized().then(res => res.data.result), []);
+  isLoading: SongsListIsLoading 
+} = useAsyncState(
+  getPersonalized().then(res => res.data.result), []
+);
 const {
   state: newSongList,
-  isLoading: newSongListIsLoading
-} = useAsyncState(getNewSong().then(res => res.data.result), []);
+  isLoading: newSongListIsLoading 
+} = useAsyncState(
+  getNewSong().then(res => res.data.result), []
+);
 const { state: MVList, isLoading: MVIsLoading }
-  = useAsyncState(getRecommendMv().then(res => res.data.result), []);
+  = useAsyncState(
+    getRecommendMv().then(res => res.data.result), []
+  );
 const isHovered = useElementHover(hoverRef);
-const showArrowClass = computed(() => isHovered.value ? 'opacity-50' : 'opacity-0');
+const showArrowClass = computed(() => isHovered.value
+  ? 'opacity-50'
+  : 'opacity-0');
 useMemoryScrollTop('.rightMain>.n-layout-scroll-container');
 
 const handleArrowClick = (type: 'next' | 'prev') => {
   let index = currentIndex.value;
 
   if (type === 'next') {
-    currentIndex.value = index === banners.value.length - 1 ? 0 : ++index;
+    currentIndex.value = index === banners.value.length - 1
+      ? 0
+      : ++index;
   } else {
-    currentIndex.value = index === 0 ? banners.value.length - 1 : --index;
+    currentIndex.value = index === 0
+      ? banners.value.length - 1
+      : --index;
   }
 };
+
+
 const formateSongsAuthor = (attr: any[]) => {
   return attr.map(item => item.name).join('/');
 };

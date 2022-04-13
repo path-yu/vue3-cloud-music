@@ -7,27 +7,33 @@ const instance = axios.create({
 });
 
 //add request interceptor
-instance.interceptors.request.use((config) => {
-  return config;
-}, err => {
-  return err;
-});
-//response interceptor
-instance.interceptors.response.use(async (data) => {
-  // await sleep();
-  if (data.data.code !== 200) {
-    window.$message.error('network error');
+instance.interceptors.request.use(
+  (config) => {
+    return config;
+  }, err => {
+    return err;
   }
-  return data;
-}, err => {
-  window.$message.error('network error');
-  return err;
-});
+);
+//response interceptor
+instance.interceptors.response.use(
+  async (data) => {
+  // await sleep();
+    if (data.data.code !== 200) {
+      window.$message.error('network error');
+    }
+    return data;
+  }, err => {
+    window.$message.error('network error');
+    return err;
+  }
+);
 const sleep = () => {
   return new Promise((resolve) => {
-    setTimeout(() => {
-      resolve(true);
-    }, 4000);
+    setTimeout(
+      () => {
+        resolve(true);
+      }, 4000
+    );
   });
 };
 export default instance;
