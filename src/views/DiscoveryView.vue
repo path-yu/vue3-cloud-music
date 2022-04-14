@@ -7,9 +7,9 @@ import {
   getPersonalized,
   getRecommendMv
 } from '@/service/index';
+import { formateSongsAuthor } from '@/utils/index';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
-
 const hoverRef = ref();
 const currentIndex = ref(0);
 const {
@@ -53,12 +53,6 @@ const handleArrowClick = (type: 'next' | 'prev') => {
       : --index;
   }
 };
-
-
-const formateSongsAuthor = (attr: any[]) => {
-  return attr.map(item => item.name).join('/');
-};
-
 </script>
 
 <template>

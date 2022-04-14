@@ -73,3 +73,6 @@ export const memorize = (fn:Function) => {
     return result;
   };
 };
+export const formateSongsAuthor = (attr: any[]) => {
+  return attr.map(item => item.name).join('/');
+};
