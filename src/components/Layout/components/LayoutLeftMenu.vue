@@ -62,7 +62,7 @@ registerRouteHook(
     <n-layout-sider
       bordered
       collapse-mode="width"
-      class="h-main bg-second-main"
+      class="h-main"
       :collapsed-width="64"
       :width="192"
       :collapsed="collapsed"
@@ -78,7 +78,7 @@ registerRouteHook(
         :options="menuOptions"
       />
     </n-layout-sider>
-    <n-layout class="h-main bg-main rightMain">
+    <n-layout class="h-main rightMain">
       <router-view v-slot="{ Component }">
         <transition
           name="fade-transform"
@@ -94,13 +94,6 @@ registerRouteHook(
       </router-view>
     </n-layout>
   </n-layout>
-  <!-- <div
-      :style="{backgroundColor:showResizeBar ? primaryColor : ''}"
-      :class="['w-1', ' h-main', 'cursor-ew-resize', 'bg-main']"
-      @mouseenter="handleMouseEnter"
-      @mouseleave="handleMouseLeave"
-      @mousedown="handleMouseDown"
-  />-->
 </template>
 
 <style lang="less" scoped>
