@@ -14,32 +14,22 @@ watch(
 </script>
 
 <template>
-  <header
-    class="flex justify-between items-center px-6 h-14 sm:px-3  bg-main"
-  >
+  <n-layout-header bordered class="flex justify-between items-center px-6 h-14 sm:px-3">
     <div class="flex">
-      <span class=" truncate ColorDarkOrWhite">奇妙音乐屋!</span>
-      <div class="flex items-center ml-8 ColorDarkOrWhite">
-        <n-button
-          text
-          class="text-md"
-        >
+      <span class=" truncate">奇妙音乐屋!</span>
+      <div class="flex items-center ml-8">
+        <n-button text class="text-md">
           <n-icon :component="ArrowBackIosSharp" />
         </n-button>
-        <n-button
-          text
-          class="ml-2 text-md"
-        >
+        <n-button text class="ml-2 text-md">
           <n-icon :component="ArrowForwardIosRound" />
         </n-button>
       </div>
     </div>
-    
+
     <div class="flex items-center">
       <n-input
-        size="small"
-        round
-        class="mr-5"
+        size="small" round class="mr-5"
         placeholder="请输入"
       >
         <template #prefix>
@@ -47,10 +37,7 @@ watch(
         </template>
       </n-input>
       <div class="flex items-center">
-        <n-switch
-          v-model:value="active"
-          size="large"
-        >
+        <n-switch v-model:value="active" size="large">
           <template #checked-icon>
             <n-icon :component="Moon" />
           </template>
@@ -60,5 +47,5 @@ watch(
         </n-switch>
       </div>
     </div>
-  </header>
+  </n-layout-header>
 </template>

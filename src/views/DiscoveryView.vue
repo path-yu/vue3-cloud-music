@@ -10,6 +10,7 @@ import {
 import { formateSongsAuthor } from '@/utils/index';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
+import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 const hoverRef = ref();
 const currentIndex = ref(0);
 const {
