@@ -75,7 +75,7 @@ export default defineComponent({
     return () => {
       return (
         <div
-          ref={imageRef} class={'group relative  h-full transition-all' + props.className}
+          ref={imageRef} class={'group relative  h-full ' + props.className}
           {...getClickPreviewMethod()}
           style={{
             height: props.loadingHeight,
@@ -85,7 +85,7 @@ export default defineComponent({
           }}>
           <n-image
             {...imageProps}
-            class={props.className + 'w-full warpImg transition-opacity h-full group-hover-scale duration-500'}
+            class={props.className + 'w-full warpImg transition-all h-full group-hover-scale duration-500'}
             on-load={handleLoad}
             preview-disabled={myPreviewDisabled.value}
             style={{

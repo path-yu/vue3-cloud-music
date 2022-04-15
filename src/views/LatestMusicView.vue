@@ -1,8 +1,7 @@
 <script setup lang="tsx">
 import { formateSongsAuthor } from '@/utils';
-import { useAsyncState } from '@vueuse/core';
 import type { DataTableColumns } from 'naive-ui';
-import { h, ref, watchEffect } from 'vue';
+import { ref, watchEffect, Transition } from 'vue';
 import { getTopSong } from '../service';
 
 const activeTab = ref<'topSong' | 'newAlbum'>('topSong');
@@ -100,44 +99,51 @@ const columns: DataTableColumns = [
       </n-tabs>
     </div>
     <!-- 新歌速递列表 -->
-   
-    <div v-show="activeTab === 'topSong'" class="mt-4">
-      <template v-if="isLoading">
-        <div v-for="item in 15" :key="item" class="flex justify-between items-center">
-          <div class="flex items-center">
+    <transition name="fade" appear>
+      <div v-show="activeTab === 'topSong'" class="mt-4">
+        <div v-show="isLoading">
+          <div v-for="item in 15" :key="item" class="flex justify-between items-center">
+            <div class="flex items-center">
+              <n-skeleton
+                width="15px"
+                class="mt-2" type="text"
+              />
+              <n-skeleton
+                class="mt-2 ml-2" height="64px" width="64px"
+                :sharp="false"
+              />
+            </div>
             <n-skeleton
-              width="20px"
-              class="mt-2" type="text"
+              width="30%"
+              height="30px"
+              class="m-4" type="text"
+              :repeat="3"
             />
             <n-skeleton
-              class="mt-2 ml-2" height="64px" width="64px"
-              :sharp="false"
+              width="5%"
+              height="30px"
+              class="m-2" type="text"
             />
           </div>
-          <n-skeleton
-            width="20%"
-            height="30px"
-            class="m-2" type="text"
-            :repeat="4"
-          />
         </div>
-      </template>
-      <n-data-table
-        v-show="!isLoading"
-        striped :data="newSongList"
-        :columns="columns" :bordered="false"
-      />
-    </div>
+        <n-data-table
+          v-show="!isLoading"
+          striped :data="newSongList"
+          :columns="columns" :bordered="false"
+        />
+      </div>
+    </transition>
+    <!-- 新碟上架 -->
   </div>
 </template>
 
 <style scoped>
 :deep(.n-tabs .n-tabs-rail) {
-  border-radius: 40px;
+  border-radius: 30px;
 }
 
 :deep(.n-tabs .n-tabs-rail .n-tabs-tab-wrapper > .n-tabs-tab) {
-  border-radius: 40px;
+  border-radius: 30px;
 }
 
 :deep(.n-data-table-thead) {
