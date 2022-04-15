@@ -61,7 +61,7 @@ export default defineComponent({
     return () => {
       return (
         <div 
-          ref={imageRef} class="group relative  h-full bg-neutral-100 dark:bg-black"
+          ref={imageRef} class={'group relative  h-full bg-neutral-100 dark:bg-black'+ props.className}
           {...getClickPreview()}
           style={{
             height: props.loadingHeight, zIndex: isLoading.value

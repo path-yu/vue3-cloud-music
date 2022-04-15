@@ -17,7 +17,7 @@ instance.interceptors.request.use(
 //response interceptor
 instance.interceptors.response.use(
   async (data) => {
-  // await sleep();
+    await sleep();
     if (data.data.code !== 200) {
       window.$message.error('network error');
     }
