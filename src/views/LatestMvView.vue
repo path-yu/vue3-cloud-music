@@ -80,7 +80,7 @@ watch(
 </script>
 
 <template>
-  <div class="px-6">
+  <div class="p-6">
     <n-space vertical :size="20">
       <category-tab v-model="params.area" name="地区" :list="areaList" />
       <category-tab v-model="params.type" name="类型" :list="typeList" />

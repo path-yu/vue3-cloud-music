@@ -34,7 +34,7 @@ defineProps<{
             <div class="relative">
               <load-img
                 loading-height="12vw"
-                class-name="w-full h-full group-hover-scale"
+                class-name="w-full h-full"
                 :src="item.picUrl || item.coverImgUrl"
               />
               <div

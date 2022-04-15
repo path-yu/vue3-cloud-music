@@ -57,7 +57,7 @@ const handleArrowClick = (type: 'next' | 'prev') => {
 </script>
 
 <template>
-  <div class="px-6 pb-10">
+  <div class="p-6">
     <div
       v-if="isLoading"
       class="flex items-center"
@@ -207,7 +207,7 @@ const handleArrowClick = (type: 'next' | 'prev') => {
     <p class="py-4 text-xl">
       最新MV
     </p>
-    <MvListSkeleton v-if="MVIsLoading" />
+    <MvListSkeleton v-if="MVIsLoading" :count="4" />
     <mv-list
       v-else
       :list="MVList"

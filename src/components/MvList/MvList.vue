@@ -24,11 +24,11 @@ defineProps<{
         <div class="overflow-hidden relative rounded-md"> 
           <load-img
             loading-height="9vw"
-            class-name="w-full rounded-md group-hover-scale"
+            class-name="w-full rounded-md"
             :src="item.picUrl || item.cover"
           />
           <div
-            class="flex absolute top-0 right-0 justify-end items-center p-1 w-full text-white card-mask"
+            class="flex absolute top-0 right-0 justify-end  items-center p-1 w-full text-white rounded-t-md card-mask"
           >
             <n-icon :component="Play" />
             <span class="pl-1">{{ formateNumber(item.playCount) }}</span>
@@ -41,7 +41,7 @@ defineProps<{
             {{ item.copywriter }}
           </p>
          
-          <div class="absolute bottom-0 w-full text-right bg-linear-mask">
+          <div class="absolute bottom-0 w-full text-right rounded-b-md bg-linear-mask">
             <n-time
               class="mr-2 text-white"
               :time="item.duration"
