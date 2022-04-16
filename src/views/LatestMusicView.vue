@@ -1,20 +1,29 @@
 <script setup lang="tsx">
-import { formateSongsAuthor } from '@/utils';
+import { formateSongsAuthor, sliceArr } from '@/utils';
 import type { DataTableColumns } from 'naive-ui';
 import { ref, watchEffect, Transition } from 'vue';
-import { getTopSong } from '../service';
+import { getTopSong, getNewTopAlbum } from '../service';
 
 const activeTab = ref<'topSong' | 'newAlbum'>('topSong');
 const isLoading = ref(true);
 const newSongList = ref([]);
+const albumList = ref([]);
+const albumListIsLoading = ref(true);
 
-getTopSong({ type: 0 })
+getTopSong(0)
   .then(res => {
     newSongList.value = res.data.data;
     console.log(res);
     isLoading.value = false;
   });
-
+getNewTopAlbum({}).then(res => {
+  console.log(sliceArr(
+    10, res.data.monthData
+  ));
+  albumListIsLoading.value = false;
+  // 数组切片
+  // albumList.value.slice
+});
 watchEffect(() => {
   console.log(activeTab.value);
 });

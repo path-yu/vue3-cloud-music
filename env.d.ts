@@ -5,13 +5,12 @@ export * from 'naive-ui/volar';
 export { };
 
 type localValue = 'zh-cn' | 'en';
-
 declare global {
   interface Window {
     $message: MessageApiInjection;
   }
 }
-declare module 'vue'{
+declare module 'vue' {
   export interface Window {
     $message: MessageApiInjection;
   }
@@ -20,3 +19,11 @@ declare module 'vue'{
 export type AnyObject = {
   [key: string]: any;
 };
+export interface TopAlbumParams {
+  limit?: number;
+  offset?: number;
+  area?: '全部' | '华语' | '欧美' | '韩国' | '日本';
+  type?: '全部' | '热门' | '全部'='全部',
+  year?: number;
+  month?: number;
+}
