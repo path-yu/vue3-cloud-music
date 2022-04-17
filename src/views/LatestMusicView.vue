@@ -1,38 +1,51 @@
 <script setup lang="tsx">
-import { formateSongsAuthor, sliceArr } from '@/utils';
-import type { DataTableColumns } from 'naive-ui';
-import { ref, watchEffect, Transition } from 'vue';
-import { getTopSong, getNewTopAlbum } from '../service';
+import { formateSongsAuthor } from '@/utils';
+import { useThemeVars, type DataTableColumns } from 'naive-ui';
+import { computed, ref, type CSSProperties } from 'vue';
+import { getTopSong } from '../service';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import PlayIcon from '@/components/Base/PlayIcon.vue';
-let sliceRawAlbumList = [];
-const activeTab = ref<'topSong' | 'newAlbum'>('topSong');
+import {} from '@vueuse/core';
+const typeList = [
+  {
+    value: '0',
+    name: '全部'
+  },
+  {
+    value: '7',
+    name: '华语'
+  },
+  {
+    value: '96',
+    name: '欧美'
+  },
+  {
+    value: '8',
+    name: '日本'
+  },
+  {
+    value: '16',
+    name: '韩国'
+  }
+];
 const isLoading = ref(true);
 const newSongList = ref([]);
-const albumList = ref([]);
-const albumListIsLoading = ref(true);
-const page = ref(1); // 当前页码
-const scrollBottom = ref(false);//是否滚动到底部
-const pageSize = ref(20); // 每页条数;
+const activeType = ref('0');
+const themeVars = useThemeVars();
 
-getTopSong(0)
-  .then(res => {
-    newSongList.value = res.data.data;
-    console.log(res);
-    isLoading.value = false;
-  });
-getNewTopAlbum({}).then(res => {
- 
-  sliceRawAlbumList = sliceArr(
-    pageSize.value, res.data.monthData
-  );
-  albumListIsLoading.value = false;
-  // 数组切片
-  // albumList.value.slice
-});
-watchEffect(() => {
-  console.log(activeTab.value);
-});
+const activeStyle = (value: string):CSSProperties => {
+  return {
+    color: value === activeType.value
+      ? themeVars.value.primaryColor
+      : themeVars.value.textColorBase,
+    opacity: value === activeType.value
+      ? 1
+      : '0.5',
+    fontSize: value === activeType.value
+      ? '0.9rem'
+      : '0.8rem'
+  };
+};
 
 const columns: DataTableColumns = [
   {
@@ -66,7 +79,7 @@ const columns: DataTableColumns = [
     key: 'name',
     render(row: any) {
       return (
-        <n-ellipsis class="">{row.name}</n-ellipsis>
+        <n-ellipsis class="w-xs text-sm">{row.name}</n-ellipsis>
       );
     }
   },
@@ -74,7 +87,7 @@ const columns: DataTableColumns = [
     key: 'author',
     render(row: any) {
       return (
-        <p class="opacity-50">
+        <p class="w-xs text-sm opacity-50">
           <n-ellipsis>{formateSongsAuthor(row.artists)}</n-ellipsis>
         </p>
       );
@@ -84,7 +97,7 @@ const columns: DataTableColumns = [
     key: 'albumName',
     render(row: any) {
       return (
-        <p class="flex-1 opacity-50">
+        <p class="flex-1 w-xs text-sm opacity-50">
           <n-ellipsis>{row.album.name}</n-ellipsis>
         </p>
       );
@@ -95,7 +108,7 @@ const columns: DataTableColumns = [
     render(row: any) {
       return (
         <n-time
-          class="pl-4 mr-2  opacity-50"
+          class="pl-4 mr-2 text-sm opacity-50"
           time={row.bMusic.playTime}
           format="mm:ss"
         />
@@ -103,62 +116,76 @@ const columns: DataTableColumns = [
     }
   }
 ];
+const fetchData = () => {
+  isLoading.value = true;
+  getTopSong(activeType.value as any)
+    .then(res => {
+      newSongList.value = res.data.data;
+      console.log(res);
+      isLoading.value = false;
+    });
+};
+
+const handleTypeClick = (value:string) => {
+  activeType.value = value;
+  fetchData();
+};
+const handlMouseEnter = (
+  e:MouseEvent, value:string
+) => {
+  if (value === activeType.value) return;
+  (e.target as HTMLElement).style.opacity = '1';
+};
+const handleMouseLeave = (
+  e:MouseEvent, value:string
+) => {
+  if (value === activeType.value) return;
+  (e.target as HTMLElement).style.opacity = '0.5';
+};
+fetchData();
+
 </script>
 
 <template>
   <div class="p-6">
-    <div class="flex-items-justify-center">
-      <n-tabs v-model:value="activeTab" type="segment" class="w-80">
-        <n-tab name="topSong" tab="新歌速递" />
-        <n-tab name="newAlbum" tab="新碟上架" />
-      </n-tabs>
+    <div>
+      <span
+        v-for="item in typeList"
+        :key="item.value" class="px-2 rounded-md opacity-50 transition duration-150 ease-in-out cursor-pointer"
+        :style="activeStyle(item.value)"
+        @mouseenter="handlMouseEnter($event,item.value)"
+        @mouseleave="handleMouseLeave($event,item.value)"
+        @click="handleTypeClick(item.value)"
+      >{{ item.name }}</span>
     </div>
     <!-- 新歌速递列表 -->
-    <transition name="fade" appear>
-      <div v-show="activeTab === 'topSong'" class="mt-4">
-        <div v-show="isLoading">
-          <div v-for="item in 15" :key="item" class="flex justify-between items-center">
-            <div class="flex items-center">
-              <n-skeleton
-                width="15px"
-                class="mt-2" type="text"
-              />
-              <n-skeleton
-                class="mt-2 ml-2" height="64px" width="64px"
-                :sharp="false"
-              />
-            </div>
+    <div class="mt-4">
+      <div v-show="isLoading">
+        <div v-for="item in 15" :key="item" class="flex justify-between items-center">
+          <div class="flex items-center">
+            <n-skeleton width="15px" class="mt-2" type="text" />
             <n-skeleton
-              width="30%"
-              height="30px"
-              class="m-4" type="text"
-              :repeat="3"
-            />
-            <n-skeleton
-              width="5%"
-              height="30px"
-              class="m-2" type="text"
+              class="mt-2 ml-2" height="64px" width="64px"
+              :sharp="false"
             />
           </div>
+          <n-skeleton
+            width="30%" height="30px" class="m-4"
+            type="text" :repeat="3"
+          />
+          <n-skeleton
+            width="5%" height="30px" class="m-2"
+            type="text"
+          />
         </div>
-        <n-data-table
-          v-show="!isLoading"
-          style="100%"
-          striped :data="newSongList"
-          :columns="columns" :bordered="false"
-        />
       </div>
-    </transition>
-    <!-- 新碟上架 -->
-    <transition name="fade" appear>
-      <n-grid v-show="activeTab === 'newAlbum'" cols="2 400:4 600:6" class="mt-4">
-        <n-grid-item>
-          <div>
-            1
-          </div>
-        </n-grid-item>
-      </n-grid>
-    </transition>
+      <transition name="fade" appear>
+        <n-data-table
+          v-show="!isLoading" style="100%" striped
+          :data="newSongList" :columns="columns" :bordered="false"
+        />
+      </transition>
+    </div>
   </div>
 </template>
 

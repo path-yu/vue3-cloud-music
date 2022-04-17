@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMemoryScrollTop } from '@/hook/useMemoryScrollTop';
-import { getTopPlayList, getTopPlayListTags } from '@/service/index';
+import { getTopPlayList, getTopPlayListTags } from '@/service';
 import { getArrLast } from '@/utils';
 import { useAsyncState } from '@vueuse/core';
 import { useLoadingBar } from 'naive-ui';
@@ -31,7 +31,7 @@ watch(
     newVal, oldVal
   ) => {
     let index = findIndex(newVal);
-    changeScrollBarPosition(
+    await changeScrollBarPosition(
       findIndex(oldVal), index
     );
     selectIndex.value = index;
@@ -86,7 +86,7 @@ const changeScrollBarPosition = async (
   allTabEleChildren = allTabEleChildren === null
     ? document.querySelectorAll(tabsTabSelector)
     : allTabEleChildren;
-  if (tabsNavEle === null || allTabEleChildren === null) {
+  if (tabsNavEle === null || allTabEleChildren.length !== 0) {
     console.error('dom 节点为空!');
     return;
   }

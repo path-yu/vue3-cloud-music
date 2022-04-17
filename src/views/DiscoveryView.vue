@@ -6,8 +6,8 @@ import {
   getNewSong,
   getPersonalized,
   getRecommendMv
-} from '@/service/index';
-import { formateSongsAuthor } from '@/utils/index';
+} from '@/service';
+import { formateSongsAuthor } from '@/utils';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
@@ -54,6 +54,7 @@ const handleArrowClick = (type: 'next' | 'prev') => {
       : --index;
   }
 };
+
 </script>
 
 <template>

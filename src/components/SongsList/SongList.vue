@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import PlayIcon from '@/components/Base/PlayIcon.vue';
-import { formateNumber } from '@/utils/index';
+import { formateNumber } from '@/utils';
 import { Play } from '@vicons/carbon';
 import { defineProps } from 'vue';
 import BaseEmpty from '../Base/BaseEmpty.vue';

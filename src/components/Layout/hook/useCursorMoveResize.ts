@@ -12,7 +12,7 @@ export default function useCursorMoveResize(
   let isClick = false;// 鼠标是否在元素上点击
   const moveDiff = { x: 0, y: 0 };
   const mousePosition = { y: 0, x: 0 };// 鼠标坐标 
-  let timer: NodeJS.Timeout;
+  let timer: any;
   const showResizeBar = ref(false); // 是否显示缩放条
   const collapsed = ref(false);// 是否收起 
   let triggerTargetEl: HTMLElement | null = null;

@@ -1,5 +1,6 @@
 import { createRouter, createWebHashHistory, type NavigationGuardWithThis } from 'vue-router';
 const router = createRouter({
+  // @ts-ignore
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
