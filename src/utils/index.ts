@@ -59,7 +59,7 @@ export const sliceArr = (
   let nextSliceIndex = 0;
   while (index < list.length) {
     const item = list.slice(
-      nextSliceIndex, nextSliceIndex+count+1
+      nextSliceIndex, nextSliceIndex+count
     );
     arr.push(item);
     index++;

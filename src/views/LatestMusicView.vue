@@ -3,12 +3,17 @@ import { formateSongsAuthor, sliceArr } from '@/utils';
 import type { DataTableColumns } from 'naive-ui';
 import { ref, watchEffect, Transition } from 'vue';
 import { getTopSong, getNewTopAlbum } from '../service';
-
+import LoadImg from '@/components/Base/LoadImg.vue';
+import PlayIcon from '@/components/Base/PlayIcon.vue';
+let sliceRawAlbumList = [];
 const activeTab = ref<'topSong' | 'newAlbum'>('topSong');
 const isLoading = ref(true);
 const newSongList = ref([]);
 const albumList = ref([]);
 const albumListIsLoading = ref(true);
+const page = ref(1); // 当前页码
+const scrollBottom = ref(false);//是否滚动到底部
+const pageSize = ref(20); // 每页条数;
 
 getTopSong(0)
   .then(res => {
@@ -17,9 +22,10 @@ getTopSong(0)
     isLoading.value = false;
   });
 getNewTopAlbum({}).then(res => {
-  console.log(sliceArr(
-    10, res.data.monthData
-  ));
+ 
+  sliceRawAlbumList = sliceArr(
+    pageSize.value, res.data.monthData
+  );
   albumListIsLoading.value = false;
   // 数组切片
   // albumList.value.slice
@@ -35,21 +41,21 @@ const columns: DataTableColumns = [
       row: any, rowIndex: number
     ) => {
       return (
-        <div class="flex items-center">
+        <div class="flex items-center" style={{ width: '120px' }}>
           {<span class="text-sm opacity-80">{rowIndex < 9
             ? '0' + (rowIndex + 1)
             : (rowIndex + 1)}</span>}
           <div class="relative ml-4 w-16 h-16 rounded-md">
-            <load-img
+            <LoadImg
               loading-height="64px"
               class-name="w-16 h-16 rounded-md"
               src={row.album.picUrl}
               show-message={false}
             />
-            <play-icon
+            <PlayIcon
               size={15}
               class="cursor-pointer position-center"
-              style="opacity: 1;width: 25px;height: 25px;"
+              style={{ opacity: '1', width: '25px', height: '25px' }}
             />
           </div>
         </div>
@@ -60,7 +66,7 @@ const columns: DataTableColumns = [
     key: 'name',
     render(row: any) {
       return (
-        <n-ellipsis class="max-w-xs"> {row.name}</n-ellipsis>
+        <n-ellipsis class="">{row.name}</n-ellipsis>
       );
     }
   },
@@ -68,8 +74,8 @@ const columns: DataTableColumns = [
     key: 'author',
     render(row: any) {
       return (
-        <p class="max-w-xs opacity-50">
-          <n-ellipsis> {formateSongsAuthor(row.artists)}</n-ellipsis>
+        <p class="opacity-50">
+          <n-ellipsis>{formateSongsAuthor(row.artists)}</n-ellipsis>
         </p>
       );
     }
@@ -78,8 +84,8 @@ const columns: DataTableColumns = [
     key: 'albumName',
     render(row: any) {
       return (
-        <p class="flex-1 max-w-xs opacity-50">
-          <n-ellipsis> {row.album.name}</n-ellipsis>
+        <p class="flex-1 opacity-50">
+          <n-ellipsis>{row.album.name}</n-ellipsis>
         </p>
       );
     }
@@ -137,12 +143,22 @@ const columns: DataTableColumns = [
         </div>
         <n-data-table
           v-show="!isLoading"
+          style="100%"
           striped :data="newSongList"
           :columns="columns" :bordered="false"
         />
       </div>
     </transition>
     <!-- 新碟上架 -->
+    <transition name="fade" appear>
+      <n-grid v-show="activeTab === 'newAlbum'" cols="2 400:4 600:6" class="mt-4">
+        <n-grid-item>
+          <div>
+            1
+          </div>
+        </n-grid-item>
+      </n-grid>
+    </transition>
   </div>
 </template>
 
