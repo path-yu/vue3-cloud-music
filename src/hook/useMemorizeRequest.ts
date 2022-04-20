@@ -1,9 +1,9 @@
-import { onUnmounted } from 'vue';
+import { onUnmounted, ref } from 'vue';
 import type { AxiosResponse } from 'axios';
 import { cloneDeep } from 'lodash';
 export const useMemorizeRequest = (requestFn:(params:any) => Promise<AxiosResponse<any, any>>) => {
   const cacheResponseMap = new Map();
-  let isRepeat = false;
+  const isRepeat = ref(false);
   const wrapRequest = (params?:any) => {
     const cloneParams = cloneDeep(params || 'key');
     const key = JSON.stringify(cloneParams);
@@ -13,10 +13,10 @@ export const useMemorizeRequest = (requestFn:(params:any) => Promise<AxiosRespon
       cacheResponseMap.set(
         key, requestData
       );
-      isRepeat = false;
+      isRepeat.value = false;
       return requestData;
     } else {
-      isRepeat = true;
+      isRepeat.value = true;
       return cacheResponseMap.get(key);
     }
   };
@@ -25,5 +25,8 @@ export const useMemorizeRequest = (requestFn:(params:any) => Promise<AxiosRespon
     cacheResponseMap.clear();
   });
 
-  return { wrapRequest, isRepeat };
+  return {
+    wrapRequest,
+    isRepeat 
+  };
 };

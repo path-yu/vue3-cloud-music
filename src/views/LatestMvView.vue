@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
 import { getMvList } from '@/service';
 import {
   nextTick,
@@ -28,13 +29,14 @@ const pageParams = reactive({
   page: 1,
   pageSize: 50
 });
+const { wrapRequest } = useMemorizeRequest(getMvList);
 const fetchList = (setPageCount = true) => {
   listIsLoading.value = true;
   let data = getParams();
   console.log(data);
   
   list.value = [];
-  getMvList(data).then((res: { data: { data: never[]; count: number; }; }) => {
+  wrapRequest(data).then((res: { data: { data: never[]; count: number; }; }) => {
     listIsLoading.value = false;
     list.value = res.data.data;
 

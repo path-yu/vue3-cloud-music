@@ -1,6 +1,6 @@
 <script lang="tsx">
 import useLazyLoad from '@/hook/useLazyLoad.ts';
-import { defineComponent, nextTick, ref } from 'vue';
+import { defineComponent, nextTick, ref, watch } from 'vue';
 
 export default defineComponent({
   props: {
@@ -46,7 +46,6 @@ export default defineComponent({
     let myPreviewDisabled = ref(props.doubleClickPreview && props.previewDisabled
       ? true
       : false);
-
     const handleLoad = () => {
       isLoading.value = false;
     };
@@ -69,9 +68,9 @@ export default defineComponent({
     let imageProps = {
       previewDisabled: props.previewDisabled,
       fallbackSrc: props.fallbackSrc,
-      src: props.src,
       class: props.className
     };
+   
     return () => {
       return (
         <div
@@ -87,6 +86,7 @@ export default defineComponent({
             {...imageProps}
             class={props.className + 'w-full warpImg transition-all h-full group-hover-scale duration-500'}
             on-load={handleLoad}
+            src={props.src}
             preview-disabled={myPreviewDisabled.value}
             style={{
               opacity: isLoading.value

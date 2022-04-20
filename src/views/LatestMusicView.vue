@@ -1,11 +1,12 @@
 <script setup lang="tsx">
 import { formateSongsAuthor } from '@/utils';
-import { useThemeVars, type DataTableColumns } from 'naive-ui';
-import { computed, ref, type CSSProperties } from 'vue';
+import { useThemeVars, type DataTableColumns, NTime, NEllipsis } from 'naive-ui';
+import { ref, type CSSProperties } from 'vue';
 import { getTopSong } from '../service';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import PlayIcon from '@/components/Base/PlayIcon.vue';
 import {} from '@vueuse/core';
+import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
 const typeList = [
   {
     value: '0',
@@ -32,7 +33,6 @@ const isLoading = ref(true);
 const newSongList = ref([]);
 const activeType = ref('0');
 const themeVars = useThemeVars();
-
 const activeStyle = (value: string):CSSProperties => {
   return {
     color: value === activeType.value
@@ -79,7 +79,7 @@ const columns: DataTableColumns = [
     key: 'name',
     render(row: any) {
       return (
-        <n-ellipsis class="w-xs text-sm">{row.name}</n-ellipsis>
+        <NEllipsis class="w-xs text-sm">{row.name}</NEllipsis>
       );
     }
   },
@@ -88,7 +88,7 @@ const columns: DataTableColumns = [
     render(row: any) {
       return (
         <p class="w-xs text-sm opacity-50">
-          <n-ellipsis>{formateSongsAuthor(row.artists)}</n-ellipsis>
+          <NEllipsis>{formateSongsAuthor(row.artists)}</NEllipsis>
         </p>
       );
     }
@@ -98,7 +98,7 @@ const columns: DataTableColumns = [
     render(row: any) {
       return (
         <p class="flex-1 w-xs text-sm opacity-50">
-          <n-ellipsis>{row.album.name}</n-ellipsis>
+          <NEllipsis>{row.album.name}</NEllipsis>
         </p>
       );
     }
@@ -107,7 +107,7 @@ const columns: DataTableColumns = [
     key: 'time',
     render(row: any) {
       return (
-        <n-time
+        <NTime
           class="pl-4 mr-2 text-sm opacity-50"
           time={row.bMusic.playTime}
           format="mm:ss"
@@ -116,13 +116,24 @@ const columns: DataTableColumns = [
     }
   }
 ];
+const { wrapRequest, isRepeat } = useMemorizeRequest(getTopSong);
 const fetchData = () => {
   isLoading.value = true;
-  getTopSong(activeType.value as any)
-    .then(res => {
-      newSongList.value = res.data.data;
-      console.log(res);
-      isLoading.value = false;
+  newSongList.value = [];
+  wrapRequest(activeType.value as any)
+    .then(async (res: { data: { data: never[]; }; }) => {
+      if (isRepeat.value) {
+        setTimeout(
+          () => {
+            newSongList.value = res.data.data;
+            isLoading.value = false;
+          }, 600
+        );
+      } else {
+        newSongList.value = res.data.data;
+        isLoading.value = false;
+      }
+     
     });
 };
 
@@ -179,7 +190,10 @@ fetchData();
           />
         </div>
       </div>
-      <transition name="fade" appear>
+      <transition
+        name="fade"
+        appear
+      >
         <n-data-table
           v-show="!isLoading" style="100%" striped
           :data="newSongList" :columns="columns" :bordered="false"

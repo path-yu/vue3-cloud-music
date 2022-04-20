@@ -26,8 +26,8 @@ export function getTopPlayListTags() {
   return service.get('/playlist/highquality/tags');
 }
 // 全部mv 列表
-export function getMvList({ limit = 50, offset = 0, area = '全部', order = '最热' }) {
-  return service.get(`/mv/all?limit=${limit}&offset=${offset}&area=${area}&order=${order}`);
+export function getMvList({ limit = 50, offset = 0, area = '全部', order = '最热', type = '全部' }) {
+  return service.get(`/mv/all?limit=${limit}&offset=${offset}&area=${area}&order=${order}&type=${type}`);
 }
 // 新歌速递
 export function getTopSong(type: 0 | 7 | 96 |8 | 16=0) {
