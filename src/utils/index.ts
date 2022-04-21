@@ -52,7 +52,7 @@ export const formateSongsAuthor = (attr: any[]) => {
 };
 // 根据指定的数量将数组切片
 export const sliceArr = (
-  count=20, list:[]
+  count=20, list:any[]
 ) => {
   const arr = [];
   let index = 0;

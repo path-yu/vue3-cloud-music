@@ -119,21 +119,20 @@ const columns: DataTableColumns = [
 const { wrapRequest, isRepeat } = useMemorizeRequest(getTopSong);
 const fetchData = () => {
   isLoading.value = true;
-  newSongList.value = [];
   wrapRequest(activeType.value as any)
     .then(async (res: { data: { data: never[]; }; }) => {
       if (isRepeat.value) {
         setTimeout(
           () => {
-            newSongList.value = res.data.data;
             isLoading.value = false;
+            newSongList.value = res.data.data;
           }, 600
         );
       } else {
-        newSongList.value = res.data.data;
         isLoading.value = false;
+        newSongList.value = res.data.data;
       }
-     
+
     });
 };
 
@@ -195,7 +194,7 @@ fetchData();
         appear
       >
         <n-data-table
-          v-show="!isLoading" style="100%" striped
+          v-show="!isLoading"
           :data="newSongList" :columns="columns" :bordered="false"
         />
       </transition>
