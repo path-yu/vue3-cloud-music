@@ -44,7 +44,7 @@ export function useMemoryScrollTop(ref:Ref<HTMLElement> | string) {
 
   };
   const throttleFn = throttle(
-    handleListenScroll, 300
+    handleListenScroll, 500
   );
   
   onMounted(() => {

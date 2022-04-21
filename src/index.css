@@ -9,9 +9,7 @@
 .bg-reverse-second-main{
    @apply bg-secondBack dark:bg-zinc-100;
 }
-/* .flex-items-justify-center{
-  @apply flex items-center justify-center;
-} */
+
 @layer base {
   .flex-items-justify-center {
     @apply flex items-center justify-center;
@@ -23,7 +21,6 @@
    @apply group-hover:scale-110 scale-100 transition-transform duration-300;
   }
 }
-
 
 p{
   margin: 0;

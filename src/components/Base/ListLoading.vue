@@ -25,7 +25,6 @@ const props = withDefaults(
 const loadingTarget = ref<HTMLElement | null>(null);
 let loadStatus:'pending' | 'loading' | 'done' = 'pending';// 当前加载状态锁
 let firstVisible = ref<boolean | undefined>(); // 首次显示的值
-const isReachBottom = ref(false);// 是否触底
 
 let observerCallback = (entries:IntersectionObserverEntry[]) => {
   // 没有更多数据加载 打断!

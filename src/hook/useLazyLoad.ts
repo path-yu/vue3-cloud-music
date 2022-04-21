@@ -3,7 +3,6 @@ import { onMounted, onUnmounted, ref } from 'vue';
 
 export default function useLazyLoad(src:string) {
   const imageRef = ref<HTMLElement | null >(null);
-  const resultSrc = ref('');
  
   let observer: null | IntersectionObserver = new IntersectionObserver(callback);
 
@@ -11,10 +10,10 @@ export default function useLazyLoad(src:string) {
     if (entries[0].isIntersecting) {
       const img = new Image();
       img.src = src;
-      resultSrc.value = src;
       observer?.unobserve(imageRef.value!);
       observer?.disconnect();
       observer = null;
+      imageRef.value = null;
     }
   }
 
@@ -26,8 +25,5 @@ export default function useLazyLoad(src:string) {
     imageRef.value && observer?.unobserve(imageRef.value);
     observer = null;
   });
-  return {
-    resultSrc,
-    imageRef
-  };
+  return { imageRef };
 }
