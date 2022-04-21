@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
 import { getMvList } from '@/service';
+import { useThemeVars } from 'naive-ui';
 import {
   nextTick,
   reactive, ref, toRaw, watch 
@@ -30,6 +31,7 @@ const pageParams = reactive({
   pageSize: 50
 });
 const { wrapRequest } = useMemorizeRequest(getMvList);
+const themeVars = useThemeVars();
 const fetchList = (setPageCount = true) => {
   listIsLoading.value = true;
   let data = getParams();
@@ -83,7 +85,10 @@ watch(
 
 <template>
   <div class="p-6">
-    <n-space vertical :size="20">
+    <n-space
+      vertical class="sticky top-0 z-40 py-4" :style="{background:themeVars.bodyColor}"
+      :size="20"
+    >
       <category-tab v-model="params.area" name="地区" :list="areaList" />
       <category-tab v-model="params.type" name="类型" :list="typeList" />
       <category-tab v-model="params.order" name="排序" :list="orderList" />

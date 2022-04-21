@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { formateSongsAuthor } from '@/utils';
-import { useThemeVars, type DataTableColumns, NTime, NEllipsis } from 'naive-ui';
+import { useThemeVars, type DataTableColumns, NTime, NEllipsis, NAffix } from 'naive-ui';
 import { ref, type CSSProperties } from 'vue';
 import { getTopSong } from '../service';
 import LoadImg from '@/components/Base/LoadImg.vue';
@@ -159,7 +159,7 @@ fetchData();
 
 <template>
   <div class="p-6">
-    <div>
+    <div class="sticky top-0 z-40 py-4" :style="{background:themeVars.bodyColor}">
       <span
         v-for="item in typeList"
         :key="item.value" class="px-2 rounded-md opacity-50 transition duration-150 ease-in-out cursor-pointer"

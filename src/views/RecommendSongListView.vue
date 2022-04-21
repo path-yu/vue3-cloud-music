@@ -3,7 +3,7 @@ import { useMemoryScrollTop } from '@/hook/useMemoryScrollTop';
 import { getTopPlayList, getTopPlayListTags } from '@/service';
 import { getArrLast } from '@/utils';
 import { useAsyncState } from '@vueuse/core';
-import { useLoadingBar } from 'naive-ui';
+import { useLoadingBar, useThemeVars } from 'naive-ui';
 import { computed, nextTick, onBeforeMount, ref, watch } from 'vue';
 //精品歌单
 const tabsTabSelector = '.myTabs > .n-tabs-nav .n-tabs-wrapper > .n-tabs-tab-wrapper>.n-tabs-tab';
@@ -25,6 +25,8 @@ const selectIndex = ref(0);
 const isLoading = ref(true);
 const currentSongList = computed(() => songList.value[selectIndex.value]);
 const loadingBar = useLoadingBar();
+const themeVars = useThemeVars();
+const bodyColor = computed(() => themeVars.value.bodyColor);
 useMemoryScrollTop('.rightMain>.n-layout-scroll-container');
 watch(
   () => selectValue.value, async (
@@ -86,7 +88,7 @@ const changeScrollBarPosition = async (
   allTabEleChildren = allTabEleChildren === null
     ? document.querySelectorAll(tabsTabSelector)
     : allTabEleChildren;
-  if (tabsNavEle === null || allTabEleChildren.length !== 0) {
+  if (tabsNavEle === null || allTabEleChildren.length === 0) {
     console.error('dom 节点为空!');
     return;
   }
@@ -141,7 +143,7 @@ const loadMore = (successCallback: any) => {
         </div>
       </div>
     </div>
-    <div v-else class="overflow-hidden relative h-44 rounded-xl cursor-pointer">
+    <div v-else class="overflow-hidden relative mt-4 h-44 rounded-xl cursor-pointer">
       <div
         class="flex absolute w-full h-44 blur-lg"
         :style="{ backgroundImage: `url(${currentSongList.list[0]?.coverImgUrl})` }"
@@ -165,7 +167,7 @@ const loadMore = (successCallback: any) => {
         </div>
       </div>
     </div>
-    <div class="mt-4">
+    <div>
       <div v-if="songsTagsIsLoading" class="flex justify-between">
         <n-skeleton height="28px" :sharp="false" />
       </div>
@@ -191,7 +193,8 @@ const loadMore = (successCallback: any) => {
   </div>
 </template>
 
-<style scoped>:deep(.n-tabs-bar) {
+<style scoped>
+:deep(.n-tabs-bar) {
   display: none;
 }
 
@@ -204,9 +207,16 @@ const loadMore = (successCallback: any) => {
   display: flex;
 }
 
-
+:deep(.n-tabs .n-tab-pane){
+  padding-top: 0;
+}
 :deep(.n-tabs .n-tabs-nav) {
   overflow-x: scroll;
+  position: sticky;
+  top: 0px;
+  z-index: 999;
+  padding: 10px 0;
+  background-color: v-bind(bodyColor);
 }
 
 :deep(.n-tabs .n-tabs-nav::-webkit-scrollbar-thumb) {

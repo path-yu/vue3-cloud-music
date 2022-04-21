@@ -23,6 +23,7 @@ export default function useLazyLoad(src:string) {
 
   onUnmounted(() => {
     imageRef.value && observer?.unobserve(imageRef.value);
+    observer?.disconnect();
     observer = null;
   });
   return { imageRef };
