@@ -126,12 +126,12 @@ fetchData();
         <ul v-show="!isLoading" class="songList">
           <li v-for="(item,index) in newSongList" :key="item.id" class="flex items-center px-2 mt-4"> 
             <div class="flex items-center" style="{ width: '120px' }">
-              <span class="text-sm opacity-80">
+              <p class="w-5 text-sm opacity-80">
                 {{ index < 9
                   ? '0' + (index + 1)
                   : (index + 1) }}
-              </span>
-              <div class="relative ml-4 w-16 h-16 rounded-md">
+              </p>
+              <div style="-webkit-transform: translateZ(0);" class="relative ml-4 w-16 h-16 rounded-md">
                 <load-img
                   loading-height="64px"
                   class-name="w-16 h-16 rounded-md"

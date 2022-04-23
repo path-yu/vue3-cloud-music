@@ -178,7 +178,7 @@ const loadMore = (successCallback: any) => {
             :name="tab.name"
           >
             <SongListSkeleton v-if="currentSongList.loading" />
-            <div v-else>
+            <div v-else class="mt-4">
               <SongList :songs="currentSongList.list" />
               <ListLoading
                 v-if="currentSongList.list.length > 15"
@@ -215,7 +215,7 @@ const loadMore = (successCallback: any) => {
   position: sticky;
   top: 0px;
   z-index: 999;
-  padding: 10px 0;
+  padding-top: 10px;
   background-color: v-bind(bodyColor);
 }
 

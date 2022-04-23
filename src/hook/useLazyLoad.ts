@@ -10,10 +10,7 @@ export default function useLazyLoad(src:string) {
     if (entries[0].isIntersecting) {
       const img = new Image();
       img.src = src;
-      observer?.unobserve(imageRef.value!);
       observer?.disconnect();
-      observer = null;
-      imageRef.value = null;
     }
   }
 

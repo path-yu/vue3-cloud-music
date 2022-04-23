@@ -43,11 +43,15 @@ export default defineComponent({
   },
   setup(props) {
     const isLoading = ref(true);
+    const error = ref(false);
     let myPreviewDisabled = ref(props.doubleClickPreview && props.previewDisabled
       ? true
       : false);
     const handleLoad = () => {
       isLoading.value = false;
+    };
+    const handleError = () => {
+      error.value = true;
     };
     //绑定双击事件函数
     const getClickPreviewMethod = () => {
@@ -80,7 +84,9 @@ export default defineComponent({
             height: props.loadingHeight,
             zIndex: isLoading.value
               ? 10
-              : 0
+              : error.value
+                ? 999
+                : 0
           }}>
           <n-image
             {...imageProps}
@@ -94,11 +100,12 @@ export default defineComponent({
                 : 1,
               borderRadius: props.borderRadius
             }} />
-          {isLoading.value && <div
-            class={'flex absolute top-0 left-0 justify-center items-center w-full h-full'}
+          <div
+            v-show={isLoading.value}
+            class='flex absolute top-0 left-0 justify-center items-center w-full h-full'
           >
             <n-skeleton class={props.className} loadingWidth={props.loadingWidth} height={props.loadingHeight} />
-          </div>}
+          </div>
         </div>
       );
     };
