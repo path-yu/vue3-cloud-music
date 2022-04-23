@@ -1,11 +1,10 @@
-<script setup lang="tsx">
+<script setup lang="ts">
 import { formateSongsAuthor } from '@/utils';
-import { useThemeVars, type DataTableColumns, NTime, NEllipsis, NAffix } from 'naive-ui';
+import { useThemeVars } from 'naive-ui';
 import { ref, type CSSProperties } from 'vue';
 import { getTopSong } from '../service';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import PlayIcon from '@/components/Base/PlayIcon.vue';
-import {} from '@vueuse/core';
 import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
 const typeList = [
   {
@@ -30,7 +29,7 @@ const typeList = [
   }
 ];
 const isLoading = ref(true);
-const newSongList = ref([]);
+const newSongList = ref<any[]>([]);
 const activeType = ref('0');
 const themeVars = useThemeVars();
 const activeStyle = (value: string):CSSProperties => {
@@ -46,76 +45,6 @@ const activeStyle = (value: string):CSSProperties => {
       : '0.8rem'
   };
 };
-
-const columns: DataTableColumns = [
-  {
-    key: 'order',
-    render: (
-      row: any, rowIndex: number
-    ) => {
-      return (
-        <div class="flex items-center" style={{ width: '120px' }}>
-          {<span class="text-sm opacity-80">{rowIndex < 9
-            ? '0' + (rowIndex + 1)
-            : (rowIndex + 1)}</span>}
-          <div class="relative ml-4 w-16 h-16 rounded-md">
-            <LoadImg
-              loading-height="64px"
-              class-name="w-16 h-16 rounded-md"
-              src={row.album.picUrl}
-              show-message={false}
-            />
-            <PlayIcon
-              size={15}
-              class="cursor-pointer position-center"
-              style={{ opacity: '1', width: '25px', height: '25px' }}
-            />
-          </div>
-        </div>
-      );
-    }
-  },
-  {
-    key: 'name',
-    render(row: any) {
-      return (
-        <NEllipsis class="w-xs text-sm">{row.name}</NEllipsis>
-      );
-    }
-  },
-  {
-    key: 'author',
-    render(row: any) {
-      return (
-        <p class="w-xs text-sm opacity-50">
-          <NEllipsis>{formateSongsAuthor(row.artists)}</NEllipsis>
-        </p>
-      );
-    }
-  },
-  {
-    key: 'albumName',
-    render(row: any) {
-      return (
-        <p class="flex-1 w-xs text-sm opacity-50">
-          <NEllipsis>{row.album.name}</NEllipsis>
-        </p>
-      );
-    }
-  },
-  {
-    key: 'time',
-    render(row: any) {
-      return (
-        <NTime
-          class="pl-4 mr-2 text-sm opacity-50"
-          time={row.bMusic.playTime}
-          format="mm:ss"
-        />
-      );
-    }
-  }
-];
 const { wrapRequest, isRepeat } = useMemorizeRequest(getTopSong);
 const fetchData = () => {
   isLoading.value = true;
@@ -140,7 +69,7 @@ const handleTypeClick = (value:string) => {
   activeType.value = value;
   fetchData();
 };
-const handlMouseEnter = (
+const handleMouseEnter = (
   e:MouseEvent, value:string
 ) => {
   if (value === activeType.value) return;
@@ -157,13 +86,13 @@ fetchData();
 </script>
 
 <template>
-  <div class="p-6">
-    <div class="sticky top-0 z-40 py-4" :style="{background:themeVars.bodyColor}">
+  <div class="px-6">
+    <div class="py-4">
       <span
         v-for="item in typeList"
         :key="item.value" class="px-2 rounded-md opacity-50 transition duration-150 ease-in-out cursor-pointer"
         :style="activeStyle(item.value)"
-        @mouseenter="handlMouseEnter($event,item.value)"
+        @mouseenter="handleMouseEnter($event,item.value)"
         @mouseleave="handleMouseLeave($event,item.value)"
         @click="handleTypeClick(item.value)"
       >{{ item.name }}</span>
@@ -192,11 +121,46 @@ fetchData();
       <transition
         name="fade"
         appear
+        mode="out-in"
       >
-        <n-data-table
-          v-show="!isLoading"
-          :data="newSongList" :columns="columns" :bordered="false"
-        />
+        <ul v-show="!isLoading" class="songList">
+          <li v-for="(item,index) in newSongList" :key="item.id" class="flex items-center px-2 mt-4"> 
+            <div class="flex items-center" style="{ width: '120px' }">
+              <span class="text-sm opacity-80">
+                {{ index < 9
+                  ? '0' + (index + 1)
+                  : (index + 1) }}
+              </span>
+              <div class="relative ml-4 w-16 h-16 rounded-md">
+                <load-img
+                  loading-height="64px"
+                  class-name="w-16 h-16 rounded-md"
+                  :src="item.album.picUrl"
+                  :show-message="false"
+                />
+                <play-icon
+                  :size="15"
+                  class="cursor-pointer position-center"
+                  :style="{opacity: '1', width: '25px', height: '25px' }"
+                />
+              </div>
+            </div>
+            <n-ellipsis class="ml-2 w-xs text-sm flex-30">
+              {{ item.name }}
+            </n-ellipsis>
+            <p class="ml-2 w-xs text-sm opacity-50 flex-30">
+              <n-ellipsis>{{ formateSongsAuthor(item.artists) }}</n-ellipsis>
+            </p>
+            <p class="flex-1 ml-2 w-xs text-sm opacity-50 flex-30">
+              <n-ellipsis>{{ item.album.name }}</n-ellipsis>
+            </p>
+            <n-time
+              class="pl-4 mx-2 text-sm text-left opacity-50"
+              :time="item.bMusic.playTime"
+              format="mm:ss"
+            />
+          </li>
+        </ul>
       </transition>
     </div>
   </div>
@@ -206,16 +170,21 @@ fetchData();
 :deep(.n-tabs .n-tabs-rail) {
   border-radius: 30px;
 }
-
 :deep(.n-tabs .n-tabs-rail .n-tabs-tab-wrapper > .n-tabs-tab) {
   border-radius: 30px;
 }
-
 :deep(.n-data-table-thead) {
   display: none;
 }
-
 .text-left-opacity-50 {
   @apply pl-4 text-left opacity-50;
+}
+.flex-30{
+  flex: 0.5;
+}
+.songList{
+  height: calc(100vh - 145px);
+  padding-left: 0;
+  overflow-y: scroll;
 }
 </style>
