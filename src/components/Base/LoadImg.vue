@@ -92,6 +92,7 @@ export default defineComponent({
             {...imageProps}
             class={props.className + 'w-full warpImg transition-all h-full group-hover-scale duration-500'}
             on-load={handleLoad}
+            on-error={handleError}
             src={props.src}
             preview-disabled={myPreviewDisabled.value}
             style={{
