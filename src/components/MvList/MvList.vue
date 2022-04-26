@@ -2,10 +2,15 @@
 import { formateNumber } from '@/utils/index';
 import { Play } from '@vicons/carbon';
 import { defineProps } from 'vue';
+import { useRouter } from 'vue-router';
 defineProps<{
   list?: any[]
   cols?: number;
 }>();
+const router = useRouter();
+const toDetail = (id:number) => {
+  router.push(`/mv/${id}`);
+};
 </script>
 
 <template>
@@ -26,6 +31,7 @@ defineProps<{
             loading-height="9vw"
             class-name="w-full rounded-md"
             :src="item.picUrl || item.cover"
+            @click="toDetail(item.id)"
           />
           <div
             class="flex absolute top-0 right-0 justify-end  items-center p-1 w-full text-white rounded-t-md card-mask"

@@ -1,6 +1,5 @@
 import { createRouter, createWebHashHistory, type NavigationGuardWithThis } from 'vue-router';
 const router = createRouter({
-  // @ts-ignore
   history: createWebHashHistory(import.meta.env.BASE_URL),
   routes: [
     {
@@ -26,6 +25,11 @@ const router = createRouter({
       path: '/latestMv',
       name: 'latestMv',
       component: () => import('@/views/LatestMvView.vue')
+    },
+    {
+      path: '/mv/:id',
+      component: () => import('@/views/MvDetail.vue'),
+      meta: { hidden: true }
     }
   ]
 });

@@ -20,12 +20,12 @@ watch(
     mainStore.changeTheme();
   }
 );
-const arrowIconClass = (value:string) => {
+const arrowIconClass = (value: string) => {
   return value
     ? 'opacity-100 cursor-pointer'
     : 'opacity-50';
 };
-const handleArrowClick = (type:'back' | 'forward') => {
+const handleArrowClick = (type: 'back' | 'forward') => {
   if (type === 'back' && backPath) {
     history.back();
   }
@@ -34,21 +34,26 @@ const handleArrowClick = (type:'back' | 'forward') => {
   }
 };
 watch(
-  [backHover, forwardHover], (value:boolean[]) => {
+  [backHover, forwardHover], (value: boolean[]) => {
     let [backIsHover, forwardIsHover] = value;
-    
+    console.log(backIsHover);
+    let backIconEle = (backIconRef.value as HTMLSpanElement);
+    let forwardIconEle = (forwardIconRef.value as HTMLSpanElement);
+
     if (backPath.value) {
-      let backIconEle = (backIconRef.value as HTMLSpanElement);
       backIsHover
         ? backIconEle.style.color = themeVars.value.primaryColor
         : backIconEle.style.color = '';
-    } 
-    if (forwardPath.value) { 
-      let forwardIconEle = (forwardIconRef.value as HTMLSpanElement);
+    } else {
+      backIconEle.style.color = '';
+    }
+    if (forwardPath.value) {
       forwardIsHover
         ? forwardIconEle.style.color = themeVars.value.primaryColor
         : forwardIconEle.style.color = '';
-    } 
+    } else {
+      forwardIconEle.style.color = '';
+    }
   }
 );
 </script>
@@ -58,21 +63,12 @@ watch(
     <div class="flex">
       <span class=" truncate">奇妙音乐屋!</span>
       <div class="flex items-center ml-8">
-        <span ref="backIconRef">
-          <n-icon
-            :class="['text-base',arrowIconClass(backPath)]"
-            :component="ArrowBackIosSharp"
-            @click="handleArrowClick('back')"
-          />
-        </span>
-        <span ref="forwardIconRef">
-          <n-icon
-          
-            :class="['text-base ml-2',arrowIconClass(forwardPath)]"
-            :component="ArrowForwardIosRound"
-            @click="handleArrowClick('forward')"
-          />
-        </span>
+        <div ref="backIconRef" class="text-base" @click="handleArrowClick('back')">
+          <n-icon :class="[arrowIconClass(backPath)]" :component="ArrowBackIosSharp" />
+        </div>
+        <div ref="forwardIconRef" class="ml-2 text-base" @click="handleArrowClick('forward')">
+          <n-icon :class="[arrowIconClass(forwardPath)]" :component="ArrowForwardIosRound" />
+        </div>
       </div>
     </div>
 

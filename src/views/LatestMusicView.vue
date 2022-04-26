@@ -156,7 +156,7 @@ fetchData();
             </p>
             <n-time
               class="pl-4 mx-2 text-sm text-left opacity-50"
-              :time="item.bMusic.playTime"
+              :time="item.bMusic?.playTime"
               format="mm:ss"
             />
           </li>

@@ -14,22 +14,22 @@ const menuOptions: MenuOption[] = [
     icon: () => <NIcon component={User} />
   },
   {
-    label: () => <RouterLink to='discovery'>发现音乐</RouterLink>,
+    label: () => <RouterLink to='/discovery'>发现音乐</RouterLink>,
     key: '/discovery',
     icon: () => <NIcon component={SparklesOutline} />
   },
   {
-    label: () => <RouterLink to='songList'>推荐歌单</RouterLink>,
+    label: () => <RouterLink to='/songList'>推荐歌单</RouterLink>,
     key: '/songList',
     icon: () => <NIcon component={List} />
   },
   {
-    label: () => <RouterLink to='latestMusic'>最新音乐</RouterLink>,
+    label: () => <RouterLink to='/latestMusic'>最新音乐</RouterLink>,
     key: '/latestMusic',
     icon: () => <NIcon component={Music} />
   },
   {
-    label: () => <RouterLink to='latestMv'>最新MV</RouterLink>,
+    label: () => <RouterLink to='/latestMv'>最新MV</RouterLink>,
     key: '/latestMv',
     icon: () => <NIcon component={VideocamOutline} />
   }
@@ -39,13 +39,15 @@ const route = useRoute();
 const loadingBar = useLoadingBar();
 let collapsed = ref(false);
 let activeKey = ref<string | null>('');
-const backPath = ref<string>(history.state.back);
-const forwardPath = ref<string>(history.state.forward);
+let hiddenLeftMenu = ref(false);
 watch(
   () => route.path, (newVal) => {
     activeKey.value = newVal;
-    backPath.value = history.state.back;
-    forwardPath.value = history.state.forward;
+    if (route.meta.hidden) {
+      hiddenLeftMenu.value = true;
+    } else {
+      hiddenLeftMenu.value = false;
+    }
   }
 );
 registerRouteHook(
@@ -62,6 +64,7 @@ registerRouteHook(
     has-sider
   >
     <n-layout-sider
+      v-show="!hiddenLeftMenu"
       bordered
       collapse-mode="width"
       class="h-main"
