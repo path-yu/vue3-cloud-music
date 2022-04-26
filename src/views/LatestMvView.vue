@@ -35,8 +35,6 @@ const themeVars = useThemeVars();
 const fetchList = (setPageCount = true) => {
   listIsLoading.value = true;
   let data = getParams();
-  console.log(data);
-  
   list.value = [];
   wrapRequest(data).then((res: { data: { data: never[]; count: number; }; }) => {
     listIsLoading.value = false;

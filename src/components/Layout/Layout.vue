@@ -9,7 +9,6 @@ window.$message = useMessage();
 <template>
   <div
     style="width: 80vw;margin: auto;"
-    :class="['transition-colors','duration-500']"
   >
     <base-header />
     <layout-left-menu />

@@ -29,7 +29,6 @@ const router = createRouter({
     }
   ]
 });
-
 export const registerRouteHook = (
   beforeEachFn: NavigationGuardWithThis<undefined>, beforeResolveFn: NavigationGuardWithThis<undefined>
 ) => {

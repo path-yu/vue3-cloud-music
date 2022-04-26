@@ -1,5 +1,3 @@
-import type { TopAlbumParams } from 'env';
-import qs from 'qs';
 import service from './request';
 // 获取轮播
 export function getBanner() {

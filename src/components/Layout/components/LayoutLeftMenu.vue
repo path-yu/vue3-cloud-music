@@ -39,11 +39,13 @@ const route = useRoute();
 const loadingBar = useLoadingBar();
 let collapsed = ref(false);
 let activeKey = ref<string | null>('');
-
+const backPath = ref<string>(history.state.back);
+const forwardPath = ref<string>(history.state.forward);
 watch(
   () => route.path, (newVal) => {
     activeKey.value = newVal;
-  
+    backPath.value = history.state.back;
+    forwardPath.value = history.state.forward;
   }
 );
 registerRouteHook(

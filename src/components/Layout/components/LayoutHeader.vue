@@ -2,13 +2,53 @@
 import { useMainStore } from '@/stores/main';
 import { Moon, Search, SunnySharp } from '@vicons/ionicons5';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
+import { useThemeVars } from 'naive-ui';
 import { ref, watch } from 'vue';
+import { userHistory } from '../hook/useHistoryRoutePath';
+import { useElementHover } from '@vueuse/core';
 let mainStore = useMainStore();
 let active = ref(mainStore.isActiveDarkTheme);
+const themeVars = useThemeVars();
+const { backPath, forwardPath } = userHistory();
+const backIconRef = ref();
+const forwardIconRef = ref();
+const backHover = useElementHover(backIconRef);
+const forwardHover = useElementHover(forwardIconRef);
 
 watch(
   () => active.value, () => {
     mainStore.changeTheme();
+  }
+);
+const arrowIconClass = (value:string) => {
+  return value
+    ? 'opacity-100 cursor-pointer'
+    : 'opacity-50';
+};
+const handleArrowClick = (type:'back' | 'forward') => {
+  if (type === 'back' && backPath) {
+    history.back();
+  }
+  if (type === 'forward' && forwardPath) {
+    history.forward();
+  }
+};
+watch(
+  [backHover, forwardHover], (value:boolean[]) => {
+    let [backIsHover, forwardIsHover] = value;
+    
+    if (backPath.value) {
+      let backIconEle = (backIconRef.value as HTMLSpanElement);
+      backIsHover
+        ? backIconEle.style.color = themeVars.value.primaryColor
+        : backIconEle.style.color = '';
+    } 
+    if (forwardPath.value) { 
+      let forwardIconEle = (forwardIconRef.value as HTMLSpanElement);
+      forwardIsHover
+        ? forwardIconEle.style.color = themeVars.value.primaryColor
+        : forwardIconEle.style.color = '';
+    } 
   }
 );
 </script>
@@ -18,12 +58,21 @@ watch(
     <div class="flex">
       <span class=" truncate">奇妙音乐屋!</span>
       <div class="flex items-center ml-8">
-        <n-button text class="text-md">
-          <n-icon :component="ArrowBackIosSharp" />
-        </n-button>
-        <n-button text class="ml-2 text-md">
-          <n-icon :component="ArrowForwardIosRound" />
-        </n-button>
+        <span ref="backIconRef">
+          <n-icon
+            :class="['text-base',arrowIconClass(backPath)]"
+            :component="ArrowBackIosSharp"
+            @click="handleArrowClick('back')"
+          />
+        </span>
+        <span ref="forwardIconRef">
+          <n-icon
+          
+            :class="['text-base ml-2',arrowIconClass(forwardPath)]"
+            :component="ArrowForwardIosRound"
+            @click="handleArrowClick('forward')"
+          />
+        </span>
       </div>
     </div>
 
