@@ -31,3 +31,17 @@ export function getMvList({ limit = 50, offset = 0, area = '全部', order = '�
 export function getTopSong(type: 0 | 7 | 96 |8 | 16=0) {
   return service.get(`/top/song?type=${type}`);
 }
+// mv详情
+export function getMvDetail(mvid: number) {
+  console.log(mvid);
+  
+  return service.get(`/mv/detail?mvid=${mvid}`);
+}
+// 相似推荐mv
+export function getSimiMv(mvid: number) {
+  return service.get(`/simi/mv?mvid=${mvid}`);
+}
+// 获取mv 地址
+export function getVideoUrl(id: number) {
+  return service.get(`/mv/url?id=${id}`);
+}

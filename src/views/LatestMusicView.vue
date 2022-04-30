@@ -145,7 +145,7 @@ fetchData();
                 />
               </div>
             </div>
-            <n-ellipsis class="ml-2 w-xs text-sm flex-30">
+            <n-ellipsis class="ml-6 w-xs text-sm flex-30">
               {{ item.name }}
             </n-ellipsis>
             <p class="ml-2 w-xs text-sm opacity-50 flex-30">

@@ -36,7 +36,6 @@ const handleArrowClick = (type: 'back' | 'forward') => {
 watch(
   [backHover, forwardHover], (value: boolean[]) => {
     let [backIsHover, forwardIsHover] = value;
-    console.log(backIsHover);
     let backIconEle = (backIconRef.value as HTMLSpanElement);
     let forwardIconEle = (forwardIconRef.value as HTMLSpanElement);
 
