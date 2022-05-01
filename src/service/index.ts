@@ -45,3 +45,7 @@ export function getSimiMv(mvid: number) {
 export function getVideoUrl(id: number) {
   return service.get(`/mv/url?id=${id}`);
 }
+// 获取歌手单曲可 获得歌手部分信息和热门歌曲
+export function getSingerSong(id: number) {
+  return service.get(`/artists?id=${id}`);
+}

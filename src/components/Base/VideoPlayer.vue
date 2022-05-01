@@ -25,7 +25,8 @@ const initPlayer = () => {
       poster: props.poster,
       videoInit: true,
       lang: 'zh-cn',
-      width: '100%'
+      width: '100%',
+      height: '440px'
     });
   }
 };
