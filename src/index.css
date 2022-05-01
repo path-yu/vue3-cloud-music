@@ -25,3 +25,6 @@
 p{
   margin: 0;
 }
+.v-binder-follower-content{
+  max-width: 50vw;
+}

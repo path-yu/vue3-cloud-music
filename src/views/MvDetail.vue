@@ -59,130 +59,135 @@ getSimiMvList();
 getMvVideoUrl();
 
 const handleImgClick = async (id:number) => {
+  videoPlayRef.value?.stop();
   router.push(`/mv/${id}`);
 };
 watch(
   () => route.path, (val:string) => {
     let id = +route.params.id;
-    loadingMaps.reloadLoading = true;
-    getMvVideoUrl(
-      id, true
-    );
-    getMvDetailInfo(id);
-    getSimiMvList(id);
-    
+    if (id) {
+      loadingMaps.reloadLoading = true;
+      getMvVideoUrl(
+        id, true
+      );
+      getMvDetailInfo(id);
+      getSimiMvList(id);
+    }
+  
   } 
 );
 </script>
 
 <template>
-  <n-spin :show="loadingMaps.reloadLoading">
-    <div class="px-20 pt-10">
-      <div class="flex justify-between">
-        <div class="flex-1">
-          <div class="flex items-center mb-5 cursor-pointer" @click="router.push('/latestMv')">
-            <n-icon :component="ArrowBack" size="20" />
-            <p class="ml-2 title">
-              Mv详情
-            </p>
+  <div class="px-20 pt-10">
+    <div class="flex justify-between">
+      <div class="flex-1">
+        <div class="flex items-center mb-5 cursor-pointer" @click="router.push('/latestMv')">
+          <n-icon :component="ArrowBack" size="20" />
+          <p class="ml-2 title">
+            Mv详情
+          </p>
+        </div>
+        <!-- 播放器 -->
+        <div id="mv-player">
+          <div v-show="loadingMaps.mvUrlLoading">
+            <n-skeleton height="440px" width="100%" />
           </div>
-          <!-- 播放器 -->
-          <div id="mv-player">
-            <div v-show="loadingMaps.mvUrlLoading">
-              <n-skeleton height="440px" width="100%" />
-            </div>
+          <n-spin :show="loadingMaps.reloadLoading">
             <video-player
               v-show="loadingMaps.mvUrlLoading === false" ref="videoPlayRef" :url="mvUrl"
               :poster="mvDetail.cover"
             />
-            <div v-if="!loadingMaps.authorInfoLoading">
-              <!-- 歌手信息 -->
-              <div class="flex items-center mt-5">
-                <n-avatar
-                  round
-                  :size="70"
-                  :src="authorInfo.picUrl"
-                />
-                <div class="ml-4">
-                  <p class=" text-lg">
-                    {{ authorInfo.name }}
-                  </p>
-                  <n-ellipsis class="max-w-2xl opacity-60" :line-clamp="2">
-                    {{ authorInfo.briefDesc }}
-                  </n-ellipsis>
-                </div>
-              </div>
-              <!-- mv详情 -->
-              <div class="mt-8">
-                <p class="text-2xl font-bold">
-                  {{ mvDetail.name }}
-                </p>
-                <div class="mt-6 text-xs opacity-60">
-                  <span>
-                    发布：{{ mvDetail.publishTime }}
-                  </span>
-                  <span class="ml-6">
-                    播放：{{ formateNumber(mvDetail.playCount) }}
-                  </span>
-                </div>
-              </div>
-            </div>
-            <div v-else>
-              <!-- 歌手信息 -->
-              <div class="flex items-center mt-5">
-                <n-skeleton width="70px" height="70px" circle />
-                <div class="flex flex-col ml-4">
-                  <n-skeleton text width="80px" />
-                  <n-skeleton text width="600px" class="mt-2" />
-                </div>
-              </div>
-              <!-- mv详情 -->
-              <div class="mt-8">
-                <n-skeleton width="160px" text />
-                <div class="flex mt-6 text-xs opacity-60">
-                  <n-skeleton width="100px" text />
-                  <n-skeleton width="100px" class="ml-6" text />
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-        <div class="ml-14">
-          <p class="mb-5  title">
-            相关推荐
-          </p>
-          <div v-if="simiMvList.length">
-            <div v-for="item in simiMvList" :key="item.id" class="group flex mt-4">
-              <mv-list-img-item
-                :is-to-detail="false" :item="item" height="6vw"
-                @handle-img-click="handleImgClick"
+          </n-spin>
+           
+          <div v-if="!loadingMaps.authorInfoLoading">
+            <!-- 歌手信息 -->
+            <div class="flex items-center mt-5">
+              <n-avatar
+                round
+                :size="75"
+                :src="authorInfo.picUrl"
               />
-              <div class="flex flex-col justify-center ml-4 w-48">
-                <n-ellipsis>
-                  {{ item.name }}
+              <div class="ml-4">
+                <p class=" text-lg">
+                  {{ authorInfo.name }}
+                </p>
+                <n-ellipsis class="max-w-2xl opacity-60" :line-clamp="2">
+                  {{ authorInfo.briefDesc }}
                 </n-ellipsis>
-                <n-ellipsis class="opacity-60">
-                  buy {{ formateSongsAuthor(item.artists) }}
-                </n-ellipsis>
+              </div>
+            </div>
+            <!-- mv详情 -->
+            <div class="mt-8">
+              <p class="text-2xl font-bold">
+                {{ mvDetail.name }}
+              </p>
+              <div class="mt-6 text-xs opacity-60">
+                <span>
+                  发布：{{ mvDetail.publishTime }}
+                </span>
+                <span class="ml-6">
+                  播放：{{ formateNumber(mvDetail.playCount) }}
+                </span>
               </div>
             </div>
           </div>
           <div v-else>
-            <div v-for="(item,index) in 5" :key="index" class="flex mt-4">
-              <n-skeleton width="204px" height="6vw" class="rounded-md" />
-              <div class="flex flex-col justify-center ml-4 w-48">
-                <n-skeleton text :repeat="2" class="mt-2" />
+            <!-- 歌手信息 -->
+            <div class="flex items-center mt-5">
+              <n-skeleton width="70px" height="75px" circle />
+              <div class="flex flex-col ml-4">
+                <n-skeleton text width="80px" />
+                <n-skeleton text width="600px" class="mt-2" />
+              </div>
+            </div>
+            <!-- mv详情 -->
+            <div class="mt-8">
+              <n-skeleton width="160px" text />
+              <div class="flex mt-6 text-xs opacity-60">
+                <n-skeleton width="100px" text />
+                <n-skeleton width="100px" class="ml-6" text />
               </div>
             </div>
           </div>
         </div>
       </div>
+      <div class="ml-10">
+        <p class="mb-5  title">
+          相关推荐
+        </p>
+        <div v-if="simiMvList.length">
+          <div v-for="item in simiMvList" :key="item.id" class="group flex mt-4">
+            <mv-list-img-item
+              :is-to-detail="false" :item="item" height="6vw"
+              @handle-img-click="handleImgClick"
+            />
+            <div class="flex flex-col justify-center ml-4 w-48">
+              <n-ellipsis>
+                {{ item.name }}
+              </n-ellipsis>
+              <n-ellipsis class="opacity-60">
+                buy {{ formateSongsAuthor(item.artists) }}
+              </n-ellipsis>
+            </div>
+          </div>
+        </div>
+        <div v-else>
+          <div v-for="(item,index) in 5" :key="index" class="flex mt-4">
+            <n-skeleton width="204px" height="6vw" class="rounded-md" />
+            <div class="flex flex-col justify-center ml-4 w-48">
+              <n-skeleton text :repeat="2" class="mt-2" />
+            </div>
+          </div>
+        </div>
+      </div>
     </div>
-  </n-spin>
+  </div>
 </template>
 
 <style scoped>
 .title{
   @apply text-lg font-bold;
 }
+
 </style>

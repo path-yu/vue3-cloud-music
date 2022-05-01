@@ -8,9 +8,11 @@ const props = withDefaults(
   item:any;
   height?:string;
   isToDetail?:boolean;
+  borderRadius?:string;
 }>(), {
     height: '9vw',
-    isToDetail: true
+    isToDetail: true,
+    borderRadius: '10px'
   }
 );
 const emit = defineEmits(['handle-img-click']);
@@ -23,17 +25,18 @@ const toDetail = (id:number) => {
     'handle-img-click', id
   );
 };
+const styleBorderRadius = { borderRadius: props.borderRadius };
 </script>
 <template>
-  <div class="overflow-hidden relative rounded-md"> 
+  <div :style="styleBorderRadius" class="overflow-hidden relative flex-1"> 
     <load-img
       :loading-height="height"
-      class-name="w-full rounded-md"
       :src="item.picUrl || item.cover"
       @click="toDetail(item.id)"
     />
     <div
-      class="flex absolute top-0 right-0 justify-end  items-center p-1 w-full text-white rounded-t-md card-mask"
+      :style="styleBorderRadius"
+      class="box-border flex absolute top-0 right-0 justify-end items-center p-1 w-full text-white rounded-t-md card-mask"
     >
       <n-icon :component="Play" />
       <span class="pl-1">{{ formateNumber(item.playCount) }}</span>
@@ -45,7 +48,7 @@ const toDetail = (id:number) => {
     <p v-if="item.copywriter" class="tips">
       {{ item.copywriter }}
     </p>
-    <div class="absolute bottom-0 w-full text-right rounded-b-md bg-linear-mask">
+    <div :style="styleBorderRadius" class="absolute bottom-0 w-full text-right bg-linear-mask">
       <n-time
         class="mr-2 text-white"
         :time="item.duration"
@@ -54,3 +57,10 @@ const toDetail = (id:number) => {
     </div>
   </div>
 </template>
+<style scoped>
+.tips{
+  @apply overflow-hidden absolute top-0 w-full h-0 
+  group-hover:h-8 leading-8 text-center text-white
+bg-black/50 transition-height
+}
+</style>

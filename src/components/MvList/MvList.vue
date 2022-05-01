@@ -45,9 +45,5 @@ defineProps<{
   align-items: center;
   justify-content: center;
 }
-.tips{
-  @apply overflow-hidden absolute top-0 w-full h-0 
-  group-hover:h-8 leading-8 text-center text-white
-bg-black/50 transition-height
-}
+
 </style>

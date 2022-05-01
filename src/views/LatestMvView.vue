@@ -82,7 +82,7 @@ watch(
 </script>
 
 <template>
-  <div class="p-6">
+  <div class="p-6" :style="{background:themeVars.bodyColor}">
     <n-space
       vertical class="sticky top-0 z-40 py-4" :style="{background:themeVars.bodyColor}"
       :size="20"

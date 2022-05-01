@@ -3,7 +3,8 @@
 </template>
 
 <script setup lang="ts">
-import { onMounted, ref, watch, watchEffect } from 'vue';
+import { useThemeVars } from 'naive-ui';
+import { computed, ref, watch } from 'vue';
 import Player from 'xgplayer';
 export interface VideoPlayProps{
   url?:string;
@@ -16,7 +17,8 @@ export interface VideoPlayerExpose{
 let player:Player;
 const playerRef = ref<HTMLElement>();
 const props = defineProps<VideoPlayProps>();
-
+const themVars = useThemeVars();
+const primaryColor = computed(() => themVars.value.primaryColor);
 const initPlayer = () => {
   if (props.url) {
     player = new Player({
@@ -26,7 +28,10 @@ const initPlayer = () => {
       videoInit: true,
       lang: 'zh-cn',
       width: '100%',
-      height: '440px'
+      height: '440px',
+      playbackRate: [
+        0.5, 0.75, 1, 1.5, 2
+      ]
     });
   }
 };
@@ -56,5 +61,11 @@ watch(
 <style>
 .xgplayer-error {
   display: none;
+}
+.xgplayer-skin-default .xgplayer-progress-played{
+  background: v-bind(primaryColor);
+}
+.xgplayer-skin-default .xgplayer-drag{
+   background: v-bind(primaryColor);
 }
 </style>

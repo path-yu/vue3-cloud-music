@@ -68,13 +68,16 @@ export default defineComponent({
         }
       };
     };
-    const { imageRef } = useLazyLoad(props.src);
+    let src = props.src
+      ? props.src
+      : props.fallbackSrc;
+    const { imageRef } = useLazyLoad(src);
     let imageProps = {
       previewDisabled: props.previewDisabled,
       fallbackSrc: props.fallbackSrc,
-      class: props.className
+      class: props.className,
+      src
     };
-   
     return () => {
       return (
         <div
@@ -93,7 +96,6 @@ export default defineComponent({
             class={props.className + 'w-full warpImg transition-all h-full group-hover-scale duration-500'}
             on-load={handleLoad}
             on-error={handleError}
-            src={props.src}
             preview-disabled={myPreviewDisabled.value}
             style={{
               opacity: isLoading.value
