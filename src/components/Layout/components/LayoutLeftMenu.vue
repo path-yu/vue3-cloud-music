@@ -5,7 +5,7 @@ import { BackToTop, Music, User } from '@vicons/carbon';
 import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
 import { NIcon, useLoadingBar } from 'naive-ui';
-import { ref, watch } from 'vue';
+import { onMounted, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
 
 const menuOptions: MenuOption[] = [
@@ -41,6 +41,7 @@ const loadingBar = useLoadingBar();
 const mainStore = useMainStore();
 
 let collapsed = ref(false);
+let scrollContainer:HTMLElement|null;
 let activeKey = ref<string | null>('');
 let hiddenLeftMenu = ref(false);
 watch(
@@ -53,11 +54,19 @@ watch(
     }
   }
 );
+onMounted(() => {
+  scrollContainer = document.querySelector('.rightMain>.n-layout-scroll-container');
+});
 registerRouteHook(
   () => {
     loadingBar.start();
+    scrollContainer?.scrollTo({
+      behavior: 'smooth',
+      top: 0
+    });
   }, () => {
     loadingBar.finish();
+
   }
 );
 
