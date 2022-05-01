@@ -63,9 +63,12 @@ watch(
   display: none;
 }
 .xgplayer-skin-default .xgplayer-progress-played{
-  background: v-bind(primaryColor);
+  background: v-bind(primaryColor) !important;
 }
 .xgplayer-skin-default .xgplayer-drag{
-   background: v-bind(primaryColor);
+  background: v-bind(primaryColor) !important;
+}
+.xgplayer-skin-default .xgplayer-error .xgplayer-error-refresh{
+  color: v-bind(primaryColor) !important;
 }
 </style>
