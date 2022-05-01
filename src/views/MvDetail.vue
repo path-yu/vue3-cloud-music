@@ -1,11 +1,12 @@
 <script setup lang="ts">
-import { getMvDetail, getSimiMv, getSingerSong, getVideoUrl } from '@/service';
+import { getMvDetail, getSimiMv, getSingerSong, getVideoUrl, getMvComment } from '@/service';
 import { ArrowBack } from '@vicons/ionicons5';
 import { ref, reactive, watch } from 'vue';
 import { formateSongsAuthor, formateNumber } from '@/utils';
 import { useRoute, useRouter } from 'vue-router';
 import VideoPlayer, { type VideoPlayerExpose } from '@/components/Base/VideoPlayer.vue';
 import type { AnyObject } from 'env';
+import CommentList from '../components/CommentList/CommentList.vue';
 
 const route = useRoute();
 let mvid = route.params.id as string;
@@ -14,13 +15,15 @@ const loadingMaps = reactive({
   myDetailLoading: true,
   simiMvLoading: true,
   reloadLoading: false,
-  authorInfoLoading: true
+  authorInfoLoading: true,
+  commentLoading: true
 });
 const mvUrl = ref('');
 const simiMvList = ref<any[]>([]);
 const mvDetail = ref<AnyObject>({});
 const videoPlayRef = ref<VideoPlayerExpose>();
 const authorInfo = ref<AnyObject>({});
+const mvComment = ref<AnyObject>({});
 const router = useRouter();
 const getMvVideoUrl = (
   mvId:number=+mvid, setReloadLoading=false
@@ -54,10 +57,16 @@ const getSingerSongInfo = (id:number) => {
     !loadingMaps.reloadLoading && (loadingMaps.authorInfoLoading = false);
   });
 };
+const getMvCommentInfo = (mvId:number=+mvid) => {
+  getMvComment(mvId).then(res => {
+    mvComment.value = res.data;
+    !loadingMaps.reloadLoading && (loadingMaps.mvUrlLoading = false);
+  });
+};
 getMvDetailInfo();
 getSimiMvList();
 getMvVideoUrl();
-
+getMvCommentInfo();
 const handleImgClick = async (id:number) => {
   videoPlayRef.value?.stop();
   router.push(`/mv/${id}`);
@@ -150,6 +159,12 @@ watch(
               </div>
             </div>
           </div>
+          <!-- 精彩评论 -->
+          <div v-if="mvComment.hotComments">
+            <comment-list title="精彩评论" :list="mvComment.hotComments" />
+            <comment-list :comment-total-num="mvComment.total" title="最新评论" :list="mvComment.comments" />
+          </div>
+          <!-- 最新评论 -->
         </div>
       </div>
       <div class="ml-10">
