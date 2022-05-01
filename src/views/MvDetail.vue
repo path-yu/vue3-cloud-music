@@ -1,15 +1,17 @@
 <script setup lang="ts">
 import { getMvDetail, getSimiMv, getSingerSong, getVideoUrl, getMvComment } from '@/service';
 import { ArrowBack } from '@vicons/ionicons5';
-import { ref, reactive, watch } from 'vue';
-import { formateSongsAuthor, formateNumber } from '@/utils';
+import { ref, reactive, watch, onMounted, onUnmounted } from 'vue';
+import { formateSongsAuthor, formateNumber, getArrLast } from '@/utils';
 import { useRoute, useRouter } from 'vue-router';
 import VideoPlayer, { type VideoPlayerExpose } from '@/components/Base/VideoPlayer.vue';
 import type { AnyObject } from 'env';
 import CommentList from '../components/CommentList/CommentList.vue';
+import { useMainStore } from '@/stores/main';
 
 const route = useRoute();
 let mvid = route.params.id as string;
+let backTopEle:HTMLElement;
 const loadingMaps = reactive({
   mvUrlLoading: true,
   myDetailLoading: true,
@@ -18,13 +20,20 @@ const loadingMaps = reactive({
   authorInfoLoading: true,
   commentLoading: true
 });
+const pageParams = reactive({
+  pageCount: 10,
+  page: 1,
+  pageSize: 50
+});
 const mvUrl = ref('');
 const simiMvList = ref<any[]>([]);
 const mvDetail = ref<AnyObject>({});
 const videoPlayRef = ref<VideoPlayerExpose>();
 const authorInfo = ref<AnyObject>({});
 const mvComment = ref<AnyObject>({});
+
 const router = useRouter();
+const mainStore = useMainStore();
 const getMvVideoUrl = (
   mvId:number=+mvid, setReloadLoading=false
 ) => {
@@ -57,38 +66,71 @@ const getSingerSongInfo = (id:number) => {
     !loadingMaps.reloadLoading && (loadingMaps.authorInfoLoading = false);
   });
 };
-const getMvCommentInfo = (mvId:number=+mvid) => {
-  getMvComment(mvId).then(res => {
+const getMvCommentInfo = (mvId:string=mvid) => {
+  !loadingMaps.reloadLoading && (loadingMaps.commentLoading = true);
+  let params = {
+    id: mvId,
+    limit: pageParams.pageSize,
+    offset: ((pageParams.page) - 1) * pageParams.pageSize,
+    before: ''
+  };
+  if (mvComment.value.total > 5000) {
+    params.before = mvComment.value.comments[getArrLast(mvComment.value.comments)];
+  }
+  getMvComment(params).then(res => {
+    pageParams.pageCount = Math.round(res.data.total / pageParams.pageSize);
     mvComment.value = res.data;
-    !loadingMaps.reloadLoading && (loadingMaps.mvUrlLoading = false);
+    !loadingMaps.reloadLoading && (loadingMaps.commentLoading = false);
   });
 };
-getMvDetailInfo();
-getSimiMvList();
-getMvVideoUrl();
-getMvCommentInfo();
+
+const init = () => {
+  getMvDetailInfo();
+  getSimiMvList();
+  getMvVideoUrl();
+  getMvCommentInfo();
+};
+
+init();
 const handleImgClick = async (id:number) => {
   videoPlayRef.value?.stop();
   router.push(`/mv/${id}`);
 };
 watch(
   () => route.path, (val:string) => {
-    let id = +route.params.id;
-    if (id) {
-      loadingMaps.reloadLoading = true;
-      getMvVideoUrl(
-        id, true
-      );
-      getMvDetailInfo(id);
-      getSimiMvList(id);
-    }
+    reloadMvData();
   
   } 
 );
+const reloadMvData = () => {
+  let id = +route.params.id;
+  if (id) {
+    loadingMaps.reloadLoading = true;
+    getMvVideoUrl(
+      id, true
+    );
+    getMvDetailInfo(id);
+    getSimiMvList(id);
+    getMvCommentInfo(id.toString());
+  }
+};
+watch(
+  pageParams, () => {
+    backTopEle = document.querySelector('.n-back-top') as HTMLElement;
+    backTopEle && backTopEle.click();
+    getMvCommentInfo();
+  }
+);
+onMounted(() => {
+  mainStore.backTopLeft = '32vw';
+});
+onUnmounted(() => {
+  mainStore.backTopLeft = '7vw';
+});
 </script>
 
 <template>
-  <div class="px-20 pt-10">
+  <div class="py-10 px-20">
     <div class="flex justify-between">
       <div class="flex-1">
         <div class="flex items-center mb-5 cursor-pointer" @click="router.push('/latestMv')">
@@ -121,7 +163,7 @@ watch(
                 <p class=" text-lg">
                   {{ authorInfo.name }}
                 </p>
-                <n-ellipsis class="max-w-2xl opacity-60" :line-clamp="2">
+                <n-ellipsis class="max-w-2xl text-xs opacity-60" :line-clamp="2">
                   {{ authorInfo.briefDesc }}
                 </n-ellipsis>
               </div>
@@ -152,19 +194,42 @@ watch(
             </div>
             <!-- mv详情 -->
             <div class="mt-8">
-              <n-skeleton width="160px" text />
+              <n-skeleton width="450px" text />
               <div class="flex mt-6 text-xs opacity-60">
                 <n-skeleton width="100px" text />
                 <n-skeleton width="100px" class="ml-6" text />
               </div>
             </div>
           </div>
-          <!-- 精彩评论 -->
-          <div v-if="mvComment.hotComments">
-            <comment-list title="精彩评论" :list="mvComment.hotComments" />
-            <comment-list :comment-total-num="mvComment.total" title="最新评论" :list="mvComment.comments" />
+          <div v-show="loadingMaps.commentLoading">
+            <div v-for="item in 15" :key="item" class="flex mt-5">
+              <n-skeleton circle width="50px" height="50px" />
+              <div class="flex-1 pb-5 ml-4">
+                <n-skeleton text />
+                <n-skeleton text />
+                <div class="flex justify-between mt-2 text-xs opacity-60">
+                  <n-skeleton width="100px" />
+                  <n-skeleton width="100px" />
+                </div>
+              </div>
+            </div>
           </div>
-          <!-- 最新评论 -->
+          <div v-show="!loadingMaps.commentLoading">
+            <!-- 精彩评论 -->
+            <comment-list title="精彩评论" :list="mvComment.hotComments || []" />
+            <!-- 最新评论 -->
+            <comment-list :comment-total-num="mvComment.total" title="最新评论" :list="mvComment.comments || []" />
+          </div>
+          <!-- 分页 -->
+          <div class="flex justify-end mt-6">
+            <n-pagination
+              v-model:page="pageParams.page" 
+              v-model:page-size="pageParams.pageSize" 
+              :page-count="pageParams.pageCount" 
+              show-size-picker
+              :page-sizes="[10, 20, 30, 40,50]"
+            />
+          </div>
         </div>
       </div>
       <div class="ml-10">
@@ -188,7 +253,7 @@ watch(
           </div>
         </div>
         <div v-else>
-          <div v-for="(item,index) in 5" :key="index" class="flex mt-4">
+          <div v-for="item in 5" :key="item" class="flex mt-4">
             <n-skeleton width="204px" height="6vw" class="rounded-md" />
             <div class="flex flex-col justify-center ml-4 w-48">
               <n-skeleton text :repeat="2" class="mt-2" />

@@ -9,8 +9,6 @@ export function getMvList({
 }
 // mv详情
 export function getMvDetail(mvid: number) {
-  console.log(mvid);
-  
   return service.get(`/mv/detail?mvid=${mvid}`);
 }
 // 相似推荐mv
@@ -26,8 +24,10 @@ export function getRecommendMv() {
   return service.get('/personalized/mv?limit=3');
 }
 // mv评论
-export function getMvComment(
-  id: number, limit = 20, offset = 0
-) {
-  return service.get(`/comment/mv?id=${id}&limit=${limit}&offset=${offset}`);
+export function getMvComment({ id='', limit = 20, offset = 0, before='' }) {
+  let qs = `id=${id}&limit=${limit}&offset=${offset}`;
+  if (before) {
+    qs+=`&before=${before}`;
+  }
+  return service.get(`/comment/mv?${qs}`);
 }

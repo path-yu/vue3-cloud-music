@@ -8,7 +8,7 @@ window.$message = useMessage();
 
 <template>
   <div
-    style="width: 80vw;margin: auto;"
+    style="width: 85vw;margin: auto;"
   >
     <base-header />
     <layout-left-menu />

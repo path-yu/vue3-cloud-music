@@ -7,7 +7,10 @@ let changeThemeCallback: () => void;
 
 export const useMainStore = defineStore({
   id: 'main',
-  state: () => ({ theme: localStorage.theme || 'light' }),
+  state: () => ({ 
+    theme: localStorage.theme || 'light',
+    backTopLeft: localStorage.backTopLeft || '7vw'
+  }),
   getters: {
     activeTheme(state) {
       return state.theme === 'dark'

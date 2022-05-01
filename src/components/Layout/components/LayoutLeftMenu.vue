@@ -1,5 +1,6 @@
 <script setup lang="tsx">
 import { registerRouteHook } from '@/router';
+import { useMainStore } from '@/stores/main';
 import { BackToTop, Music, User } from '@vicons/carbon';
 import { List, SparklesOutline, VideocamOutline } from '@vicons/ionicons5';
 import type { MenuOption } from 'naive-ui';
@@ -37,6 +38,8 @@ const menuOptions: MenuOption[] = [
 
 const route = useRoute();
 const loadingBar = useLoadingBar();
+const mainStore = useMainStore();
+
 let collapsed = ref(false);
 let activeKey = ref<string | null>('');
 let hiddenLeftMenu = ref(false);
@@ -90,7 +93,7 @@ registerRouteHook(
           mode="out-in"
         >
           <div>
-            <n-back-top right="7vw" :bottom="220" :visibility-height="800">
+            <n-back-top :right="mainStore.backTopLeft" :bottom="220" :visibility-height="800">
               <n-icon :component="BackToTop" />
             </n-back-top>
             <component :is="Component" />
