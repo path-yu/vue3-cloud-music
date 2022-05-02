@@ -11,9 +11,17 @@ import LoginModal, { type LoginModalExpose } from './LoginModal.vue';
 
 const menuOptions: MenuOption[] = [
   {
-    label: () => <p onClick={handleOpenLoginModalClick}>未登录</p>,
+    label: () => (
+      mainStore.isLogin
+        ? <div class="flex items-center"> 
+          <p >我创建的歌单</p>
+        </div>
+        : <div class="flex items-center" onClick={handleOpenLoginModalClick}> 
+          <p >未登录</p>
+        </div>
+    ),
     key: 'login',
-    icon: () => <NIcon component={User} />
+    icon: () => <NIcon class="mr-2" size={20} component={User} />
   },
   {
     label: () => <RouterLink to='/discovery'>发现音乐</RouterLink>,
@@ -46,6 +54,7 @@ let scrollContainer:HTMLElement|null;
 let activeKey = ref<string | null>('');
 let hiddenLeftMenu = ref(false);
 const loginModalRef = ref<LoginModalExpose>();
+
 const handleOpenLoginModalClick = () => {
   loginModalRef.value?.show();
 };

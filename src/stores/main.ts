@@ -2,8 +2,6 @@
 import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
 
-// 主题切换时回调
-let changeThemeCallback: () => void;
 
 export const useMainStore = defineStore({
   id: 'main',

@@ -168,7 +168,7 @@ const loadMore = (successCallback: any) => {
       </div>
     </div>
     <div>
-      <div v-if="songsTagsIsLoading" class="flex justify-between">
+      <div v-if="songsTagsIsLoading" class="flex justify-between mt-4">
         <n-skeleton height="28px" :sharp="false" />
       </div>
       <div v-else class="relative">

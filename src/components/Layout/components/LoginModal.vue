@@ -1,5 +1,5 @@
 <template>
-  <n-modal v-model:show="showModal" transform-origin="center">
+  <n-modal v-model:show="showModal" :mask-closable="false" transform-origin="center">
     <n-card
       style="width: 350px;height: 500px;"
       :bordered="false"
@@ -67,6 +67,7 @@
 import { onUnmounted, ref, watch } from 'vue';
 import { CloseOutline } from '@vicons/ionicons5';
 import { getQrCode, getQrCodeImg, getQrCodeStatus } from '@/service';
+import { useMainStore } from '@/stores/main';
 export interface LoginModalExpose{
   show:() => void;
   close:() => void;
@@ -78,6 +79,7 @@ const showModal = ref(false);
 const status = ref<qrCodeStatus|''>();
 let qrCodeImg = ref('');
 const isLoadingQrCodeImg = ref(true);
+const mainStore = useMainStore();
 defineExpose({
   show() {
     showModal.value = true;
@@ -112,6 +114,8 @@ const loopGetQrCodeStatus = () => {
         window.$message.success('授权登录成功');
         showModal.value = false;
         status.value = '';
+        localStorage.isLogin = true;
+        mainStore.isLogin = true;
         timer = undefined;
         return;
       }

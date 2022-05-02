@@ -5,6 +5,7 @@ specifiers:
   '@types/jsdom': ^16.2.14
   '@types/node': ^16.11.25
   '@types/qs': ^6.9.7
+  '@vicons/antd': ^0.12.0
   '@vicons/carbon': ^0.12.0
   '@vicons/ionicons5': ^0.12.0
   '@vicons/material': ^0.12.0
@@ -61,6 +62,7 @@ devDependencies:
   '@types/jsdom': registry.npmmirror.com/@types/jsdom/16.2.14
   '@types/node': registry.npmmirror.com/@types/node/16.11.26
   '@types/qs': 6.9.7
+  '@vicons/antd': 0.12.0
   '@vicons/carbon': 0.12.0
   '@vicons/ionicons5': registry.npmmirror.com/@vicons/ionicons5/0.12.0
   '@vicons/material': 0.12.0
@@ -238,6 +240,10 @@ packages:
 
   /@types/qs/6.9.7:
     resolution: {integrity: sha512-FGa1F62FT09qcrueBA6qYTrJPVDzah9a+493+o2PCXsesWHIn27G98TsSMs3WPNbZIEj4+VJf6saSFpvD+3Zsw==}
+    dev: true
+
+  /@vicons/antd/0.12.0:
+    resolution: {integrity: sha512-C0p6aO1EmGG1QHrqgUWQS1No20934OdWSRQshM5NIDK5H1On6tC26U0hT6Rmp40KfUsvhvX5YW8BoWJdNFifPg==}
     dev: true
 
   /@vicons/carbon/0.12.0:

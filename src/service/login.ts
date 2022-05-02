@@ -12,3 +12,7 @@ export function getQrCodeImg(key:string) {
 export function getQrCodeStatus(key:string) {
   return service.get(`/login/qr/check?key=${key}&timestamp=${new Date().getTime()}`);
 }
+// 退出登录
+export function logout() {
+  return service.get('/logout');
+}
