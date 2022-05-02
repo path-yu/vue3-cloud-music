@@ -6,3 +6,4 @@ export function getBanner() {
 export * from './mv';
 export * from './playlist';
 export * from './songs';
+export * from './login';

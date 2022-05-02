@@ -7,10 +7,11 @@ import type { MenuOption } from 'naive-ui';
 import { NIcon, useLoadingBar } from 'naive-ui';
 import { onMounted, ref, watch } from 'vue';
 import { RouterLink, useRoute } from 'vue-router';
+import LoginModal, { type LoginModalExpose } from './LoginModal.vue';
 
 const menuOptions: MenuOption[] = [
   {
-    label: '登录',
+    label: () => <p onClick={handleOpenLoginModalClick}>未登录</p>,
     key: 'login',
     icon: () => <NIcon component={User} />
   },
@@ -44,6 +45,11 @@ let collapsed = ref(false);
 let scrollContainer:HTMLElement|null;
 let activeKey = ref<string | null>('');
 let hiddenLeftMenu = ref(false);
+const loginModalRef = ref<LoginModalExpose>();
+const handleOpenLoginModalClick = () => {
+  loginModalRef.value?.show();
+};
+
 watch(
   () => route.path, (newVal) => {
     activeKey.value = newVal;
@@ -102,6 +108,7 @@ registerRouteHook(
           mode="out-in"
         >
           <div>
+            <login-modal ref="loginModalRef" />
             <n-back-top :right="mainStore.backTopLeft" :bottom="220" :visibility-height="800">
               <n-icon :component="BackToTop" />
             </n-back-top>

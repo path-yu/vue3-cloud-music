@@ -60,7 +60,7 @@ watch(
 <template>
   <n-layout-header bordered class="flex justify-between items-center px-6 h-14 sm:px-3">
     <div class="flex">
-      <span class=" truncate">奇妙音乐屋!</span>
+      <span class=" truncate">奇妙音乐屋！</span>
       <div class="flex items-center ml-8">
         <div ref="backIconRef" class="text-base" @click="handleArrowClick('back')">
           <n-icon :class="[arrowIconClass(backPath)]" :component="ArrowBackIosSharp" />

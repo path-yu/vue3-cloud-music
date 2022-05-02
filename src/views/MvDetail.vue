@@ -122,7 +122,7 @@ watch(
   }
 );
 onMounted(() => {
-  mainStore.backTopLeft = '32vw';
+  mainStore.backTopLeft = '28vw';
 });
 onUnmounted(() => {
   mainStore.backTopLeft = '7vw';

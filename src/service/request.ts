@@ -14,11 +14,14 @@ instance.interceptors.request.use(
     return err;
   }
 );
+const loginQrCode = [
+  800, 801, 802, 803
+];
 //response interceptor
 instance.interceptors.response.use(
   async (data) => {
     await sleep();
-    if (data.data.code !== 200) {
+    if (data.data.code !== 200 && !loginQrCode.includes(data.data.code)) {
       window.$message.error('network error');
     }
     return data;
