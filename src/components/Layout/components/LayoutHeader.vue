@@ -91,7 +91,6 @@ const getUserProfile = () => {
 // 获取用户详情数据
 const getUserDetailInfo = (uid:string) => {
   getUserDetail(uid).then((res) => {
-    res.data.pcSign = false;
     userDetail.value = res.data;
   });
 };
