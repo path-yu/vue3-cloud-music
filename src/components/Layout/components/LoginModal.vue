@@ -46,16 +46,13 @@
             </div>
           </div>
         </n-spin>
-        <p class="mt-2">
+        <p class="mt-6">
           <span>使用</span>
           <span class="text-sky-500">网易云音乐APP</span>
           <span>扫码登录</span>
         </p>
-        <p class="mt-10 text-gray-600"> 
-          选择其他登录方式>
-        </p>
       </div>
-      <!-- 待确认登录 -->
+      <!-- 扫码待确认登录 -->
       <div v-if="status === 802" class="mt-20">
         <n-result
           size="small" status="success" title="扫码成功"
@@ -137,6 +134,8 @@ watch(
   showModal, (val) => {
     if (val) {
       getQsCodeKey();
+    } else {
+      clearInterval(timer);
     }
   }
 );
