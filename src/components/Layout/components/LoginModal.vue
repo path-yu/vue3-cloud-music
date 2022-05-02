@@ -70,7 +70,6 @@ import { getQrCode, getQrCodeImg, getQrCodeStatus } from '@/service';
 export interface LoginModalExpose{
   show:() => void;
   close:() => void;
-  isLoadingQrCodeImg:boolean;
 }
 type qrCodeStatus = 800 | 801 | 802 | 803;
 let qrCodeKey = '';
@@ -85,8 +84,7 @@ defineExpose({
   },
   close() {
     showModal.value = false;
-  },
-  isLoadingQrCodeImg
+  }
 });
 const getQsCodeKey = () => {
   isLoadingQrCodeImg.value = true;
