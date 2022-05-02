@@ -8,7 +8,7 @@ export const useMainStore = defineStore({
   state: () => ({ 
     theme: localStorage.theme || 'light',
     backTopLeft: localStorage.backTopLeft || '7vw',
-    isLogin: localStorage.isLogin || false
+    isLogin: JSON.parse(localStorage.isLogin) || false
   }),
   getters: {
     activeTheme(state) {

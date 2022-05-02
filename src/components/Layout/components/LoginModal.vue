@@ -1,7 +1,7 @@
 <template>
   <n-modal v-model:show="showModal" :mask-closable="false" transform-origin="center">
     <n-card
-      style="width: 350px;height: 500px;"
+      style="width: 350px;height: 420px;"
       :bordered="false"
       size="small"
       preset="dialog"
@@ -16,7 +16,7 @@
         </div>
       </template>
       <div v-if="status !== 802" class="flex flex-col justify-between items-center">
-        <p class="mt-10 text-3xl">
+        <p class="mt-5 text-3xl">
           扫码登录
         </p>
         <!-- 二维码图片 -->
