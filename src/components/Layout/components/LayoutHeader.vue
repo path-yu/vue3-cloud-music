@@ -73,8 +73,12 @@ watch(
   }
 );
 onClickOutside(
-  popoverContainerRef, () => {
-    showUserPopover.value = false;
+  popoverContainerRef, (event:MouseEvent) => {
+    let target = event.target as HTMLElement;
+    // 如果点击的不是不是触发弹出选择的元素
+    if (!target.classList.contains('trigger')) {
+      showUserPopover.value = false;
+    }
   }
 );
 // 获取用户账号数据
@@ -146,7 +150,7 @@ if (mainStore.isLogin) {
           display-directive="show"
         >
           <template #trigger>
-            <p class="pl-2 text-xs truncate opacity-80 hover:opacity-100 cursor-pointer w-30" @click="() => (userDetail && (showUserPopover = true))">
+            <p class="pl-2 text-xs truncate opacity-80 hover:opacity-100 cursor-pointer w-30 trigger" @click="() => (userDetail && (showUserPopover = true))">
               {{ userInfo.profile.nickname }}
             </p>
           </template>
