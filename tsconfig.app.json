@@ -1,6 +1,6 @@
 {
   "extends": "@vue/tsconfig/tsconfig.web.json",
-  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","./src/i18n/en/en.json","./src/i18n/zh-cn/zh-cn.json"],
+  "include": ["env.d.ts", "src/**/*", "src/**/*.vue","src/assets/js/region.json","src/**/**/.vue"],
   "exclude": ["src/**/__tests__/*"],
   "compilerOptions": {
     "composite": true,
@@ -8,6 +8,7 @@
     "paths": {
       "@/*": ["./src/*"],
     },
-    "module": "ESNext"
+    "module": "ESNext",
+    "lib": ["es2017"]
   }
 }

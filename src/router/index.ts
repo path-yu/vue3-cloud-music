@@ -4,32 +4,43 @@ const router = createRouter({
   routes: [
     {
       path: '/',
-      redirect: '/discovery'
+      redirect: '/discovery',
+      meta: { auth: false }
     },
     {
       path: '/songList',
       name: 'songs',
-      component: () => import('@/views/RecommendSongListView.vue')
+      component: () => import('@/views/RecommendSongListView.vue'),
+      meta: { auth: false }
     },
     {
       path: '/discovery',
       name: 'discovery',
-      component: () => import('@/views/DiscoveryView.vue')
+      component: () => import('@/views/DiscoveryView.vue'),
+      meta: { auth: false }
     },
     {
       path: '/latestMusic',
       name: 'latestMusic',
-      component: () => import('@/views/LatestMusicView.vue')
+      component: () => import('@/views/LatestMusicView.vue'),
+      meta: { auth: false }
     },
     {
       path: '/latestMv',
       name: 'latestMv',
-      component: () => import('@/views/LatestMvView.vue')
+      component: () => import('@/views/LatestMvView.vue'),
+      meta: { auth: false }
     },
     {
       path: '/mv/:id',
       component: () => import('@/views/MvDetail.vue'),
-      meta: { hidden: true }
+      meta: { hidden: true, auth: false }
+    },
+    {
+      path: '/userInfoEdit',
+      name: 'userInfoEdit',
+      component: () => import('@/views/user/UserInfoEdit.vue'),
+      meta: { auth: true }
     }
   ]
 });

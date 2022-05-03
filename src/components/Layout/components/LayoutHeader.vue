@@ -23,7 +23,7 @@ const userDetail = ref<AnyObject>();
 const showUserPopover = ref(false);
 const backHover = useElementHover(backIconRef);
 const forwardHover = useElementHover(forwardIconRef);
-
+const signBtnLoading = ref(false);
 watch(
   () => active.value, () => {
     mainStore.changeTheme();
@@ -91,6 +91,8 @@ const getUserProfile = () => {
 // 获取用户详情数据
 const getUserDetailInfo = (uid:string) => {
   getUserDetail(uid).then((res) => {
+    mainStore.userProfile = res.data;
+    localStorage.userProfile = JSON.stringify(res.data);
     userDetail.value = res.data;
   });
 };
@@ -104,9 +106,12 @@ const handlePositiveClick = () => {
   });
 };
 const handleSignInClick = () => {
+  signBtnLoading.value = true;
   signIn().then(() => {
     if (userDetail.value) {
+      signBtnLoading.value = false;
       userDetail.value.pcSign = true;
+      window.$message.success('签到成功!');
     }
   });
 };
@@ -141,8 +146,8 @@ if (mainStore.isLogin) {
 
     <div class="flex items-center">
       <!-- 用户信息入口 -->
-      <div v-if="mainStore.isLogin && userInfo" class="flex items-center mr-2">
-        <n-avatar round :size="30" :src="userInfo.profile.avatarUrl" />
+      <div v-if="mainStore.isLogin && mainStore.userProfile" class="flex items-center mr-2">
+        <n-avatar round :size="30" :src="mainStore.userProfile.profile.avatarUrl" />
         <n-popover
           :show="showUserPopover"
           trigger="click" style="padding:0"
@@ -150,7 +155,7 @@ if (mainStore.isLogin) {
         >
           <template #trigger>
             <p class="pl-2 text-xs truncate opacity-80 hover:opacity-100 cursor-pointer w-30 trigger" @click="() => (userDetail && (showUserPopover = true))">
-              {{ userInfo.profile.nickname }}
+              {{ mainStore.userProfile.profile.nickname }}
             </p>
           </template>
           <div v-if="userDetail" ref="popoverContainerRef" style="width:300px">
@@ -175,7 +180,10 @@ if (mainStore.isLogin) {
               </div>
             </div>
             <div class="flex justify-center">
-              <n-button :disabled="userDetail.pcSign" round @click="handleSignInClick">
+              <n-button
+                :loading="signBtnLoading" :disabled="userDetail.pcSign" round
+                @click="handleSignInClick"
+              >
                 {{ userDetail.pcSign ? '已签到' :' 签到' }}
               </n-button>
             </div>

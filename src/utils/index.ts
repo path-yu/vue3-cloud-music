@@ -67,3 +67,75 @@ export const sliceArr = (
   }
   return arr;
 };
+
+export const generalTimeOptions = (
+  start:number, end:number, label:string
+) => {
+  const arr = [];
+  for (let i = start; i <= end; i++) {
+    arr.push({
+      label: i+label,
+      value: i
+    });
+  }
+  return arr;
+};
+export const getDayOptions = (
+  month:number, year:number=new Date().getFullYear()
+) => {
+  let day;
+  if ([
+    1, 3, 5, 7, 8, 10, 12
+  ].includes(month)) {
+    day = 31;
+  }
+  if ([
+    4, 6, 9, 11
+  ].includes(month)) {
+    day = 30;
+  }
+  // 如果此时为闰年 并且是2月
+  if (month === 2) {
+    if (year % 4 === 0) {
+      day = 29;
+    } else {
+      day = 28;
+    }
+  }
+  return generalTimeOptions(
+    1, day as number, '日'
+  );
+}; 
+// 对比两个对象是否相等
+export const compareObject = (
+  obj1:any, obj2:any
+) => {
+  const keys1 = Object.keys(obj1);
+  const keys2 = Object.keys(obj2);
+  if (keys1.length !== keys2.length) return false;
+  for (const key of keys1) {
+    if (obj1[key] !== obj2[key]) return false;
+  }
+  return true;
+};
+export function getImgSize(file: File):Promise<{width:number, height:number}> {
+  return new Promise((
+    resolve, reject
+  ) => {
+    const reader = new FileReader();
+    reader.readAsDataURL(file);
+    reader.onload = function (theFile) {
+      const image = new Image();
+      if (theFile.target) {
+        image.src = theFile.target.result as string;
+        image.onload = function () {
+          resolve({
+            width: image.width,
+            height: image.height
+          });
+        };
+      }
+      
+    };
+  });
+}

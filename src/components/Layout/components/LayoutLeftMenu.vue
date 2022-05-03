@@ -73,15 +73,21 @@ onMounted(() => {
   scrollContainer = document.querySelector('.rightMain>.n-layout-scroll-container');
 });
 registerRouteHook(
-  () => {
-    loadingBar.start();
+  (to) => {
     scrollContainer?.scrollTo({
       behavior: 'smooth',
       top: 0
     });
+    if (to.meta.auth && !mainStore.isLogin) {
+      window.$message.error('请先登录');
+      return false;
+    } else {
+      loadingBar.start();
+      return true;
+    }
+  
   }, () => {
     loadingBar.finish();
-
   }
 );
 
