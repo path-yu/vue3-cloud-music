@@ -124,7 +124,7 @@ const loopGetQrCodeStatus = () => {
         window.$message.warning('二维码已过期,请重新获取');
         timer = undefined;
       }
-    }, 2000
+    }, 1000
   );
 };
 const handleRefreshClick = () => {

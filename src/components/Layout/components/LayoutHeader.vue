@@ -9,10 +9,11 @@ import { userHistory } from '../hook/useHistoryRoutePath';
 import { useElementHover, onClickOutside } from '@vueuse/core';
 import { getUserDetail, getUserInfo, logout, signIn } from '@/service';
 import type { AnyObject } from 'env';
+import { useRouter } from 'vue-router';
 
 let mainStore = useMainStore();
 const themeVars = useThemeVars();
-
+const router = useRouter();
 const { backPath, forwardPath } = userHistory();
 const backIconRef = ref();
 const forwardIconRef = ref();
@@ -97,10 +98,16 @@ const getUserDetailInfo = (uid:string) => {
   });
 };
 const handlePositiveClick = () => {
+  window.$message.loading(
+    '退出登录中...', { duration: 0 }
+  );
   logout().then(res => {
     if (res.data.code === 200) {
       mainStore.isLogin = false;
+      mainStore.userProfile = null;
       localStorage.isLogin = false;
+      localStorage.clear();
+      window.$message.destroyAll();
       window.$message.success('退出登录成功!');
     }
   });
@@ -158,39 +165,39 @@ if (mainStore.isLogin) {
               {{ mainStore.userProfile.profile.nickname }}
             </p>
           </template>
-          <div v-if="userDetail" ref="popoverContainerRef" style="width:300px">
+          <div ref="popoverContainerRef" style="width:300px">
             <div class="flex justify-evenly py-4">
               <div class="flex flex-col items-center">
                 <p class="text-lg font-bold">
-                  {{ userDetail.profile.eventCount }}
+                  {{ mainStore.userProfile.profile.eventCount }}
                 </p>
                 动态
               </div>
               <div>
                 <p class="text-lg font-bold">
-                  {{ userDetail.profile.follows }}
+                  {{ mainStore.userProfile.profile.follows }}
                 </p>
                 关注
               </div>
               <div>
                 <p class="text-lg font-bold">
-                  {{ userDetail.profile.followeds }}
+                  {{ mainStore.userProfile.profile.followeds }}
                 </p>
                 粉丝
               </div>
             </div>
             <div class="flex justify-center">
               <n-button
-                :loading="signBtnLoading" :disabled="userDetail.pcSign" round
+                :loading="signBtnLoading" :disabled="mainStore.userProfile.pcSign" round
                 @click="handleSignInClick"
               >
-                {{ userDetail.pcSign ? '已签到' :' 签到' }}
+                {{ mainStore.userProfile.pcSign ? '已签到' :' 签到' }}
               </n-button>
             </div>
             <div class="mt-3 hover:bg-neutral-200/20 border-0 border-b border-gray-200  dark:border-gray-200/20 border-solid">
               <!-- 个人信息设置 -->
               <div class="flex justify-between items-center py-2 px-4 cursor-pointer">
-                <div class="flex items-center text-base">
+                <div class="flex items-center text-base" @click="router.push('/userInfoEdit')">
                   <n-icon :size="20" :component="UserProfile" />
                   <span class="ml-2">个人信息设置</span>
                 </div>

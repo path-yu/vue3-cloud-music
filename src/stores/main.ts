@@ -9,7 +9,7 @@ export const useMainStore = defineStore({
     theme: localStorage.theme || 'light',
     backTopLeft: localStorage.backTopLeft || '7vw',
     isLogin: localStorage.isLogin && JSON.parse(localStorage.isLogin) || false,
-    userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) || {}
+    userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) ||null
   }),
   getters: {
     activeTheme(state) {
