@@ -20,7 +20,6 @@ const loginQrCode = [
 //response interceptor
 instance.interceptors.response.use(
   async (data) => {
-    await sleep();
     if (data.data.code !== 200 && !loginQrCode.includes(data.data.code)) {
       window.$message.error('network error');
     }
