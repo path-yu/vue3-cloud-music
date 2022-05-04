@@ -123,8 +123,6 @@ import { useMainStore } from '@/stores/main';
 import { updateUserAvatar, updateUserInfo } from '@/service';
 import type { AnyObject } from 'env';
 
-console.log(regionList);
-
 const rules = {
   nickname: {
     required: true,
@@ -150,7 +148,6 @@ const initProvinceIndex = () => {
     );
   });
 };
-console.log(indexMap);
 
 initProvinceIndex();
 
@@ -258,8 +255,6 @@ const initData = () => {
 
   model.value.city = profile.city;
   rawModel = JSON.parse(JSON.stringify(toRaw(model.value)));
-  console.log(rawModel);
-  
   isInit = false;
 };
 const changeModelBirthday = () => {
@@ -273,7 +268,6 @@ const changeModelBirthday = () => {
   model.value.birthday = timestamp;
 };
 initData();
-console.log(model.value);
       
 const handleValidateButtonClick = (e: MouseEvent) => {
   e.preventDefault();
