@@ -8,9 +8,10 @@ import VideoPlayer, { type VideoPlayerExpose } from '@/components/Base/VideoPlay
 import type { AnyObject } from 'env';
 import CommentList from '../components/CommentList/CommentList.vue';
 import { useMainStore } from '@/stores/main';
+import { ReflectHorizontal } from '@vicons/carbon';
 
 const route = useRoute();
-let mvid = route.params.id as string;
+let mvid = ref(route.params.id);
 let backTopEle:HTMLElement;
 const loadingMaps = reactive({
   mvUrlLoading: true,
@@ -35,7 +36,7 @@ const mvComment = ref<AnyObject>({});
 const router = useRouter();
 const mainStore = useMainStore();
 const getMvVideoUrl = (
-  mvId:number=+mvid, setReloadLoading=false
+  mvId:number=+mvid.value, setReloadLoading=false
 ) => {
   getVideoUrl(+mvId).then(res => {
     mvUrl.value = res.data.data.url;
@@ -47,13 +48,13 @@ const getMvVideoUrl = (
     }
   });
 };
-const getSimiMvList = (mvId:number=+mvid) => {
+const getSimiMvList = (mvId:number=+mvid.value) => {
   getSimiMv(mvId).then(res => {
     simiMvList.value = res.data.mvs;
     !loadingMaps.reloadLoading && (loadingMaps.simiMvLoading = false);
   });
 };
-const getMvDetailInfo = (mvId:number=+mvid) => {
+const getMvDetailInfo = (mvId:number=+mvid.value) => {
   getMvDetail(+mvId).then(res => {
     mvDetail.value = res.data.data;
     !loadingMaps.reloadLoading && (loadingMaps.myDetailLoading = false);
@@ -66,7 +67,7 @@ const getSingerSongInfo = (id:number) => {
     !loadingMaps.reloadLoading && (loadingMaps.authorInfoLoading = false);
   });
 };
-const getMvCommentInfo = (mvId:string=mvid) => {
+const getMvCommentInfo = (mvId:string=mvid.value.toString()) => {
   !loadingMaps.reloadLoading && (loadingMaps.commentLoading = true);
   let params = {
     id: mvId,
@@ -78,7 +79,7 @@ const getMvCommentInfo = (mvId:string=mvid) => {
     params.before = mvComment.value.comments[getArrLast(mvComment.value.comments)];
   }
   getMvComment(params).then(res => {
-    pageParams.pageCount = Math.round(res.data.total / pageParams.pageSize);
+    pageParams.pageCount = Math.round(res.data.total / pageParams.pageSize) || 1;
     mvComment.value = res.data;
     !loadingMaps.reloadLoading && (loadingMaps.commentLoading = false);
   });
@@ -99,7 +100,6 @@ const handleImgClick = async (id:number) => {
 watch(
   () => route.path, (val:string) => {
     reloadMvData();
-  
   } 
 );
 const reloadMvData = () => {
@@ -109,6 +109,7 @@ const reloadMvData = () => {
     getMvVideoUrl(
       id, true
     );
+    mvid.value = id.toString();
     getMvDetailInfo(id);
     getSimiMvList(id);
     getMvCommentInfo(id.toString());
@@ -121,6 +122,11 @@ watch(
     getMvCommentInfo();
   }
 );
+const updateCommentList = (value:any) => {
+  mvComment.value.comments.unshift(value);
+  console.log(mvComment.value.comments);
+  
+};
 onMounted(() => {
   mainStore.backTopLeft = '28vw';
 });
@@ -216,9 +222,16 @@ onUnmounted(() => {
           </div>
           <div v-show="!loadingMaps.commentLoading">
             <!-- 精彩评论 -->
-            <comment-list title="精彩评论" :list="mvComment.hotComments || []" />
+            <comment-list
+              :resource-id="+mvid" title="精彩评论" :list="mvComment.hotComments || []"
+              @update-comment-list="updateCommentList"
+            />
             <!-- 最新评论 -->
-            <comment-list :comment-total-num="mvComment.total" title="最新评论" :list="mvComment.comments || []" />
+            <comment-list
+              :resource-id="+mvid"
+              :comment-total-num="mvComment.total" title="最新评论" :list="mvComment.comments || []"
+              @update-comment-list="updateCommentList"
+            />
           </div>
           <!-- 分页 -->
           <div class="flex justify-end mt-6">

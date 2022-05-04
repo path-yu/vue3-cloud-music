@@ -20,6 +20,12 @@
   .group-hover-scale{
    @apply group-hover:scale-110 scale-100 transition-transform duration-300;
   }
+  .border-left{
+    @apply border-0 border-l border-solid;
+  }
+  .flex-items-center{
+    @apply flex items-center;
+  }
 }
 
 p{

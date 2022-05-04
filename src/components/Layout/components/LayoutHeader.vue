@@ -7,7 +7,7 @@ import { useThemeVars } from 'naive-ui';
 import { ref, watch } from 'vue';
 import { userHistory } from '../hook/useHistoryRoutePath';
 import { useElementHover, onClickOutside } from '@vueuse/core';
-import { getUserDetail, getUserInfo, logout, signIn } from '@/service';
+import { getLoginStatus, getUserDetail, getUserInfo, logout, signIn } from '@/service';
 import type { AnyObject } from 'env';
 import { useRouter } from 'vue-router';
 
@@ -91,7 +91,6 @@ const getUserProfile = () => {
       getUserDetailInfo(res.data.profile.userId);
     });
   }
- 
 };
 // 获取用户详情数据
 const getUserDetailInfo = (uid:string) => {
@@ -101,6 +100,7 @@ const getUserDetailInfo = (uid:string) => {
     userDetail.value = res.data;
   });
 };
+
 const handlePositiveClick = () => {
   window.$message.loading(
     '退出登录中...', { duration: 0 }
@@ -205,8 +205,8 @@ if (mainStore.isLogin) {
               </div>
               <div class="mt-3 hover:bg-neutral-200/20 border-0 border-b border-gray-200  dark:border-gray-200/20 border-solid">
                 <!-- 个人信息设置 -->
-                <div class="flex justify-between items-center py-2 px-4 cursor-pointer">
-                  <div class="flex items-center text-base" @click="router.push('/userInfoEdit')">
+                <div class="flex justify-between items-center py-2 px-4 cursor-pointer" @click="router.push('/userInfoEdit')">
+                  <div class="flex items-center text-base">
                     <n-icon :size="20" :component="UserProfile" />
                     <span class="ml-2">个人信息设置</span>
                   </div>
