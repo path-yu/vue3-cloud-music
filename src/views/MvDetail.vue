@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getMvDetail, getSimiMv, getSingerSong, getVideoUrl, getMvComment } from '@/service';
+import { getMvDetail, getSimiMv, getSingerSong, getVideoUrl, getMvComment, sendComment } from '@/service';
 import { ArrowBack } from '@vicons/ionicons5';
 import { ref, reactive, watch, onMounted, onUnmounted } from 'vue';
 import { formateSongsAuthor, formateNumber, getArrLast } from '@/utils';
@@ -8,7 +8,6 @@ import VideoPlayer, { type VideoPlayerExpose } from '@/components/Base/VideoPlay
 import type { AnyObject } from 'env';
 import CommentList from '../components/CommentList/CommentList.vue';
 import { useMainStore } from '@/stores/main';
-import { ReflectHorizontal } from '@vicons/carbon';
 
 const route = useRoute();
 let mvid = ref(route.params.id);
@@ -32,7 +31,8 @@ const mvDetail = ref<AnyObject>({});
 const videoPlayRef = ref<VideoPlayerExpose>();
 const authorInfo = ref<AnyObject>({});
 const mvComment = ref<AnyObject>({});
-
+const commentContent = ref('');
+const commentBtnLoading = ref(false);
 const router = useRouter();
 const mainStore = useMainStore();
 const getMvVideoUrl = (
@@ -124,8 +124,31 @@ watch(
 );
 const updateCommentList = (value:any) => {
   mvComment.value.comments.unshift(value);
-  console.log(mvComment.value.comments);
-  
+};
+const handleCommentClick = () => {
+  if (!mainStore.isLogin) {
+    window.$message.warning('请先登录');
+    return;
+  }
+  let params = {
+    t: 1,
+    content: commentContent.value,
+    id: +mvid.value,
+    type: 1
+  };
+  commentBtnLoading.value = true;
+  sendComment(params).then(res => {
+    if (res.data.code === 200) {
+      window.$message.success('评论成功');
+      commentContent.value = '';
+      mvComment.value.total += 1;
+      res.data.comment.beReplied = [];
+      updateCommentList(res.data.comment);
+    }
+  })
+    .finally(() => {
+      commentBtnLoading.value = false;
+    });
 };
 onMounted(() => {
   mainStore.backTopLeft = '28vw';
@@ -140,7 +163,6 @@ onUnmounted(() => {
     <div class="flex justify-between">
       <div class="flex-1">
         <div class="flex items-center mb-5 cursor-pointer" @click="router.push('/latestMv')">
-          <n-icon :component="ArrowBack" size="20" />
           <p class="ml-2 title">
             Mv详情
           </p>
@@ -221,6 +243,20 @@ onUnmounted(() => {
             </div>
           </div>
           <div v-show="!loadingMaps.commentLoading">
+            <!-- 评论 -->
+            <p class="mt-14 text-2xl font-bold">
+              评论
+              <span class="text-sm opacity-60">({{ mvComment.total }})</span>
+            </p>
+            <n-input
+              v-model:value="commentContent" maxlength="140" :show-count="true"
+              class="mt-5 h-32" type="textarea"
+            />
+            <div class="flex justify-end mt-4">
+              <n-button :loading="commentBtnLoading" type="primary" @click="handleCommentClick">
+                评论
+              </n-button>
+            </div>
             <!-- 精彩评论 -->
             <comment-list
               :resource-id="+mvid" title="精彩评论" :list="mvComment.hotComments || []"

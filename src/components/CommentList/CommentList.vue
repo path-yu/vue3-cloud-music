@@ -1,5 +1,6 @@
 <script setup lang="ts">
 import { sendComment } from '@/service';
+import { useMainStore } from '@/stores/main';
 import { ThumbsUp } from '@vicons/carbon';
 import { CommentOutlined } from '@vicons/material';
 import { computed, ref } from 'vue';
@@ -11,6 +12,7 @@ export interface CommentListProps{
 }
 const props = defineProps<CommentListProps>();
 const currentClickedComment = ref<any>();
+const mainStore = useMainStore();
 const commentBtnLoading = ref(false);
 const commentContent = ref('');
 const emit = defineEmits(['updateCommentList']);
@@ -21,6 +23,10 @@ const commentPlaceholder = computed(() => {
 const showModal = ref(false);
 
 const handleClickComment = (index:number) => {
+  if (!mainStore.isLogin) {
+    window.$message.warning('请先登录');
+    return;
+  }
   showModal.value = true;
   currentClickedComment.value = props.list[index];
 };
@@ -82,7 +88,7 @@ const handleSubmitCommitClick = () => {
       <n-modal />
     </n-modal>
   </teleport>
-  <p v-if="list.length" class="mt-10 text-xl font-bold">
+  <p v-if="list.length" class="mt-10 text-base font-bold">
     {{ title }}
     <span v-if="commentTotalNum" class="text-sm">({{ commentTotalNum }})</span>
   </p>
