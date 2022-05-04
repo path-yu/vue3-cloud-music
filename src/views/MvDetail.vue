@@ -123,6 +123,7 @@ watch(
   }
 );
 const updateCommentList = (value:any) => {
+  mvComment.value.total += 1;
   mvComment.value.comments.unshift(value);
 };
 const handleCommentClick = () => {
@@ -141,7 +142,6 @@ const handleCommentClick = () => {
     if (res.data.code === 200) {
       window.$message.success('评论成功');
       commentContent.value = '';
-      mvComment.value.total += 1;
       res.data.comment.beReplied = [];
       updateCommentList(res.data.comment);
     }
