@@ -55,3 +55,7 @@ export function sendComment(data: {
   });
   return service.get('/comment?'+params);
 }
+//获取用户歌单
+export function getUserPlaylist(uid:string) {
+  return service.get('/user/playlist?uid='+uid);
+}

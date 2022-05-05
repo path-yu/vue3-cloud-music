@@ -7,7 +7,7 @@ import { useThemeVars } from 'naive-ui';
 import { ref, watch } from 'vue';
 import { userHistory } from '../hook/useHistoryRoutePath';
 import { useElementHover, onClickOutside } from '@vueuse/core';
-import { getLoginStatus, getUserDetail, getUserInfo, logout, signIn } from '@/service';
+import { getLoginStatus, getUserDetail, getUserInfo, getUserPlaylist, logout, signIn } from '@/service';
 import type { AnyObject } from 'env';
 import { useRouter } from 'vue-router';
 
