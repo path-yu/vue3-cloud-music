@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { getMvDetail, getSimiMv, getSingerSong, getVideoUrl, getMvComment, sendComment } from '@/service';
-import { ArrowBack } from '@vicons/ionicons5';
 import { ref, reactive, watch, onMounted, onUnmounted } from 'vue';
 import { formateSongsAuthor, formateNumber, getArrLast } from '@/utils';
 import { useRoute, useRouter } from 'vue-router';

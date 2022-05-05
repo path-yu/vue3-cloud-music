@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { useMemoryScrollTop } from '@/hook/useMemoryScrollTop';
 import {
   getBanner,
