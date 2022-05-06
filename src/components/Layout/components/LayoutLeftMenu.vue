@@ -1,12 +1,13 @@
 <script setup lang="tsx">
-import router, { registerRouteHook } from '@/router';
+import { registerRouteHook } from '@/router';
 import { getUserPlaylist } from '@/service';
 import { useMainStore } from '@/stores/main';
 import { BackToTop, Music, User } from '@vicons/carbon';
-import { List, SparklesOutline, VideocamOutline, StarOutline } from '@vicons/ionicons5';
+import { QueueMusicFilled } from '@vicons/material';
+import { List, SparklesOutline, VideocamOutline, StarOutline, Heart } from '@vicons/ionicons5';
 import { NIcon, useLoadingBar } from 'naive-ui';
-import { onMounted, ref, shallowRef, watch, watchEffect, type VNodeChild } from 'vue';
-import { RouterLink, useRoute } from 'vue-router';
+import { onMounted, ref, watch, type VNodeChild } from 'vue';
+import { RouterLink, useRoute, useRouter } from 'vue-router';
 import LoginModal, { type LoginModalExpose } from './LoginModal.vue';
 
 const mainStore = useMainStore();
@@ -50,6 +51,7 @@ const menuOptions = [
 ];
 
 const route = useRoute();
+const router = useRouter();
 const loadingBar = useLoadingBar();
 
 let collapsed = ref(false);
@@ -70,10 +72,15 @@ const changeMenuOption = (
         label: '我创建的歌单',
         key: 'create',
         icon: () => <NIcon class="mr-2" size={20} component={User} />,
-        children: myCreatePlayList.map((item:any) => {
+        children: myCreatePlayList.map((
+          item:any, index:number
+        ) => {
           return {
             label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
-            key: item.name
+            key: item.name,
+            icon: () => <NIcon size={20} component={index === 0
+              ? Heart
+              : QueueMusicFilled}></NIcon>
           };
         })
       },
@@ -84,7 +91,8 @@ const changeMenuOption = (
         children: collectPlayList.map((item:any) => {
           return {
             label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
-            key: item.name
+            key: item.name,
+            icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>
           };
         })
       }
@@ -95,8 +103,7 @@ const handleOpenLoginModalClick = () => {
   loginModalRef.value?.show();
 };
 const handlePlayListItemClick = (item:any) => {
-  let id = item.id;
-  // router.push(`/playlist/id`)
+  router.push(`/songList/${item.id}`);
 };
 watch(
   () => route.path, (newVal) => {
@@ -238,5 +245,7 @@ onMounted(() => {
 }
 :deep(.n-submenu-children > .n-menu-item > .n-menu-item-content){
   padding-left: 40px !important; 
+}
+:deep(.n-menu .n-submenu .n-menu-item-content){
 }
 </style>

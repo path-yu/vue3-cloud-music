@@ -14,6 +14,12 @@ const router = createRouter({
       meta: { auth: false }
     },
     {
+      path: '/songList/:id',
+      name: 'songListDetail',
+      component: () => import('@/views/songList/SongListDetail.vue'),
+      meta: { auth: false }
+    },
+    {
       path: '/discovery',
       name: 'discovery',
       component: () => import('@/views/home/DiscoveryView.vue'),
