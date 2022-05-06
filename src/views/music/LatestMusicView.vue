@@ -2,7 +2,7 @@
 import { formateSongsAuthor } from '@/utils';
 import { useThemeVars } from 'naive-ui';
 import { ref, type CSSProperties } from 'vue';
-import { getTopSong } from '../service';
+import { getTopSong } from '../../service';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import PlayIcon from '@/components/Base/PlayIcon.vue';
 import { useMemorizeRequest } from '@/hook/useMemorizeRequest';

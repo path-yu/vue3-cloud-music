@@ -5,7 +5,7 @@ import { formateSongsAuthor, formateNumber, getArrLast } from '@/utils';
 import { useRoute, useRouter } from 'vue-router';
 import VideoPlayer, { type VideoPlayerExpose } from '@/components/Base/VideoPlayer.vue';
 import type { AnyObject } from 'env';
-import CommentList from '../components/CommentList/CommentList.vue';
+import CommentList from '@/components/CommentList/CommentList.vue';
 import { useMainStore } from '@/stores/main';
 
 const route = useRoute();
