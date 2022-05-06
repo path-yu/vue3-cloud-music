@@ -125,6 +125,16 @@ const updateCommentList = (value:any) => {
   mvComment.value.total += 1;
   mvComment.value.comments.unshift(value);
 };
+const updateCommentLiked = (
+  data:{liked:boolean, index:number}, isHot:boolean
+) => {
+  let { index, liked } = data;
+  if (isHot) {
+    mvComment.value.hotComments[index].liked = liked;
+  } else {
+    mvComment.value.comments[index].liked = liked;
+  }
+};
 const handleCommentClick = () => {
   if (!mainStore.isLogin) {
     window.$message.warning('请先登录');
@@ -260,12 +270,14 @@ onUnmounted(() => {
             <comment-list
               :resource-id="+mvid" title="精彩评论" :list="mvComment.hotComments || []"
               @update-comment-list="updateCommentList"
+              @update-comment-liked="(data) => updateCommentLiked(data,true)"
             />
             <!-- 最新评论 -->
             <comment-list
               :resource-id="+mvid"
               :comment-total-num="mvComment.total" title="最新评论" :list="mvComment.comments || []"
               @update-comment-list="updateCommentList"
+              @update-comment-liked="(data) => updateCommentLiked(data,false)"
             />
           </div>
           <!-- 分页 -->

@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { sendComment } from '@/service';
+import { likeComment, sendComment } from '@/service';
 import { useMainStore } from '@/stores/main';
-import { ThumbsUp } from '@vicons/carbon';
+import { ThumbsUp, ThumbsUpFilled } from '@vicons/carbon';
 import { CommentOutlined } from '@vicons/material';
 import { computed, ref } from 'vue';
 export interface CommentListProps{
@@ -15,7 +15,7 @@ const currentClickedComment = ref<any>();
 const mainStore = useMainStore();
 const commentBtnLoading = ref(false);
 const commentContent = ref('');
-const emit = defineEmits(['updateCommentList']);
+const emit = defineEmits(['updateCommentList', 'updateCommentLiked']);
 const commentPlaceholder = computed(() => {
   return currentClickedComment.value && '回复: ' + currentClickedComment.value.user.nickname;
 });
@@ -54,6 +54,27 @@ const handleSubmitCommitClick = () => {
     .finally(() => {
       commentBtnLoading.value = false;
     });
+};
+// 点赞
+const handleLikedClick = (
+  item:any, index:number
+) => {
+  let t = item.liked
+    ? 0
+    : 1;
+  let params = {
+    type: 1,
+    id: props.resourceId,
+    t,
+    cid: item.commentId
+  };
+  likeComment(params).then((res) => {
+    if (res.data.code === 200) {
+      emit(
+        'updateCommentLiked', { index, liked: t } 
+      );
+    }
+  });
 };
 </script>
 
@@ -108,8 +129,8 @@ const handleSubmitCommitClick = () => {
           {{ item.time }}
         </n-time>
         <div class="flex items-center">
-          <div class="flex items-center mr-4">
-            <n-icon :component="ThumbsUp" />
+          <div class="flex items-center mr-4 cursor-pointer" @click="handleLikedClick(item,index)">
+            <n-icon :component="item.liked ? ThumbsUpFilled : ThumbsUp" />
             <span class="pl-1">{{ item.likedCount }}</span>
           </div>
           <div class="pl-4 border-gray-300 dark:border-gray-300/50 cursor-pointer flex-items-center border-left" @click="handleClickComment(index)">

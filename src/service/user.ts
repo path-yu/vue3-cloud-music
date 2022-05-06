@@ -59,3 +59,16 @@ export function sendComment(data: {
 export function getUserPlaylist(uid:string) {
   return service.get('/user/playlist?uid='+uid);
 }
+// 给评论点赞
+export function likeComment(data:{
+  t:number;// 是否点赞 1 为点赞 0 为取消点赞
+  cid: number, //评论 id
+  type: number, //0: 歌曲1: mv 2: 歌单 3: 专辑 4: 电台 5: 视频 6: 动态
+  id: number, //对应资源 id
+}) {
+  const params = qs.stringify({
+    ...data,
+    timestamp: Date.now()
+  });
+  return service.get('/comment/like?'+params);
+}

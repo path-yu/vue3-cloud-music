@@ -110,8 +110,6 @@ watch(
 );
 watch(
   () => mainStore.userProfile, (val) => {
-    console.log('change');
-    
     if (val) {
       fetchUserPlaylist();
     } else {
