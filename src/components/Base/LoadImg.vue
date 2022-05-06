@@ -78,6 +78,10 @@ export default defineComponent({
       class: props.className,
       src
     };
+    let imageClasses = props.className + 'w-full warpImg transition-all h-full duration-500 ';
+    if (props.hasHoverScale) {
+      imageClasses += 'group-hover-scale';
+    }
     return () => {
       return (
         <div
@@ -93,7 +97,7 @@ export default defineComponent({
           }}>
           <n-image
             {...imageProps}
-            class={props.className + 'w-full warpImg transition-all h-full group-hover-scale duration-500'}
+            class={imageClasses}
             on-load={handleLoad}
             on-error={handleError}
             preview-disabled={myPreviewDisabled.value}
