@@ -4,7 +4,7 @@ const path = require('path');
 console.log(fs.readFile);
 fs.readFile(
   path.resolve(
-    __dirname, './localtion.json'
+    __dirname, './location.json'
   ), (
     err, data
   ) => {
@@ -13,10 +13,10 @@ fs.readFile(
   }
 );
 
-const formate = (localtionJson) => {
+const formate = (locationJson) => {
   let arr = [];
-  for (let key in localtionJson) {
-    let val = localtionJson[key];
+  for (let key in locationJson) {
+    let val = locationJson[key];
     if (val.name.indexOf('市') > -1) {
       if (!arr[0]) {
         arr[0] = {

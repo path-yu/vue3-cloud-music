@@ -1,6 +1,6 @@
 <script setup lang="ts">
-import { defineProps, onMounted, onUnmounted, ref } from 'vue';
-interface Props {
+import { onMounted, onUnmounted, ref } from 'vue';
+export interface ListLoadingProps {
   wrapHeight?: string;
   strokeWidth?:number;
   show?:boolean;
@@ -12,7 +12,7 @@ interface Props {
   noMore:boolean,
 }
 const props = withDefaults(
-  defineProps<Props>(), {
+  defineProps<ListLoadingProps>(), {
     wrapHeight: '40px',
     show: true,
     size: 'medium',

@@ -1,12 +1,12 @@
 <script setup lang="ts">
-import { defineProps, ref } from 'vue';
+import { ref } from 'vue';
 
-interface Props {
+export interface MvListItemProps {
   name: string;
   list: string[];
   modelValue?:string;
 }
-const props = defineProps<Props>();
+const props = defineProps<MvListItemProps>();
 const emit = defineEmits(['update:modelValue']);
 let activeIndex = ref(0);
 let categoryValue = ref(props.list[0]);

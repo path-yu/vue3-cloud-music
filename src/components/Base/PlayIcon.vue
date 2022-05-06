@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { PlayFilledAlt } from '@vicons/carbon';
 import { useThemeVars } from 'naive-ui';
-import { defineProps, type CSSProperties } from 'vue';
+import type { CSSProperties } from 'vue';
 
 defineProps<{
   style?: CSSProperties;

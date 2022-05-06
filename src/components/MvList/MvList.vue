@@ -1,5 +1,4 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
 import MvListImgItem from './MvListImgItem.vue';
 defineProps<{
   list?: any[]

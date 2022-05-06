@@ -1,10 +1,9 @@
 <script setup lang="ts">
-import { defineProps } from 'vue';
-interface Props {
-  count?:number;
-}
+
 withDefaults(
-  defineProps<Props>(), { count: 0 }
+  defineProps<{
+  count?:number;
+}>(), { count: 0 }
 );
 </script>
 

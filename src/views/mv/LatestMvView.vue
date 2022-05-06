@@ -6,7 +6,6 @@ import {
   nextTick,
   reactive, ref, toRaw, watch 
 } from 'vue';
-
 const areaList = [
   '全部', '内地', '港台', '欧美', '日本', '韩国'
 ];
@@ -50,7 +49,6 @@ const fetchList = (setPageCount = true) => {
         pageParams.pageCount = 50;
       }
     }
-
   });
 };
 
