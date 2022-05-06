@@ -9,6 +9,9 @@ declare global {
   interface Window {
     $message: MessageApiInjection;
   }
+  interface ImportMeta {
+    env: Record<string, string>
+  }
 }
 declare module 'vue' {
   export interface Window {
