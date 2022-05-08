@@ -26,6 +26,9 @@
   .flex-items-center{
     @apply flex items-center;
   }
+  .text-primary{
+    @apply text-sky-500;
+  }
 }
 
 p{
