@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { getPlaylistAllDetail, getPlaylistDetail, getTopPlayListTags } from '@/service';
+import { getPlaylistAllDetail, getPlaylistDetail, getTopPlayListTags, updatePlaylistTags } from '@/service';
 import type { AnyObject } from 'env';
 import { formateNumber } from '@/utils';
 import { computed, ref, shallowRef, watchEffect } from 'vue';
@@ -8,12 +8,20 @@ import { useRoute, useRouter } from 'vue-router';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import { Play, AddOutline, StarOutline, Star, ShareSocialOutline } from '@vicons/ionicons5';
 import { useMainStore } from '@/stores/main';
+import { useThemeVars } from 'naive-ui';
 const router = useRouter();
 const route = useRoute();
 const mainStore = useMainStore();
 const songListDetail = shallowRef<AnyObject>();
 const isLoading = ref(true);
+const showSelectTagModal = ref(false);
+const selectTagList = ref<any[]>([]);
 const imageRef = ref();
+const tagList = ref<any[]>([]);
+const themVars = useThemeVars();
+const primaryColor = computed(() => themVars.value.primaryColor);
+console.log(primaryColor.value);
+
 const isMySongList = computed(() => {
   return songListDetail.value && songListDetail.value.userId === mainStore.userProfile.profile.userId;
 });
@@ -27,14 +35,51 @@ const fetchSongListDetail = (songListId:string) => {
     }
     isLoading.value = false;
     songListDetail.value = res.data.playlist;
+    
   });
 };
+
 const fetchPlayListTags = () => {
   getTopPlayListTags().then(res => {
-    console.log(res);
+    tagList.value = res.data.tags.map((item: any) => {
+      item.checked = false;
+      return item;
+    });
   });
 };
 fetchPlayListTags();
+
+const handleTagClick = (
+  item:{checked:boolean, name:string}, index:number
+) => {
+  if (!item.checked) {
+    selectTagList.value.push(item);
+  } else {
+    let removeIndex = selectTagList.value.findIndex(val => val.name === item.name);
+    if (index) {
+      selectTagList.value.splice(
+        removeIndex, 1
+      );
+    }
+  }
+  item.checked = !item.checked;
+};
+const handleCompleteClick = () => {
+  let detail = songListDetail.value as AnyObject;
+  let tags = selectTagList.value.map((item: { name: any; }) => item.name);
+  let params = {
+    id: detail.id,
+    tags: tags.toString()
+  };
+  updatePlaylistTags(params).then(res => {
+    if (res.data.code === 0) {
+      window.$message.success('标签设置成功');
+    }
+    detail.tags = tags;
+  });
+  
+  
+};
 watchEffect(() => {
   fetchSongListDetail(route.params.id as string);
 });
@@ -105,7 +150,7 @@ watchEffect(() => {
               <span>标签</span>
               <span class="px-1">:</span>
               <span class="text-primary"> {{ songListDetail.tags.join(' / ') }} </span>
-              <span v-if="isMySongList" class="cursor-pointer text-primary"> 添加标签</span>
+              <span v-if="isMySongList && !songListDetail.tags.length" class="cursor-pointer text-primary" @click="showSelectTagModal = true"> 添加标签</span>
             </div>
             <div class="flex">
               <div>
@@ -133,10 +178,48 @@ watchEffect(() => {
           </div>
         </div>
       </div>
+      <!-- 标签选择弹窗 -->
+      <n-modal v-model:show="showSelectTagModal" transform-origin="center">
+        <n-card
+          style="width: 600px"
+          title="添加标签"
+          :bordered="false"
+          size="medium"
+          role="dialog"
+          aria-modal="true"
+        >
+          <span>
+            <span class="opacity-60"> 选择合适的标签, 最多可选</span>
+            <span :style="{color:primaryColor}" class="px-1 text-base">3</span>
+            <span class="opacity-60">个</span>
+          </span>
+          <div class="flex flex-wrap mt-3">
+            <n-space size="large">
+              <n-tag
+                v-for="(item,index) in tagList" :key="item.id" round
+                checkable :checked="item.checked"
+                @click="handleTagClick(item,index)"
+              >
+                {{ item.name }}
+              </n-tag>
+            </n-space>
+            <div class="flex justify-center items-center mt-4 w-full">
+              <n-button size="medium" type="primary" @click="handleCompleteClick">
+                完成
+              </n-button>
+            </div>
+          </div>
+        </n-card>
+      </n-modal>
     </n-spin>
   </div>
 </template>
 
-<style scoped>
-
+<style>
+:deep(.n-card-header__main){
+  text-align: center;
+}
+.tag:hover{
+  color: var(--n-color-target);
+}
 </style>

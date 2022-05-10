@@ -1,3 +1,4 @@
+import qs from 'qs';
 import service from './request';
 // 获取精品歌单
 export function getTopPlayList({ cat = '全部', limit = 10, before = '' }) {
@@ -21,18 +22,17 @@ export function getPlaylistAllDetail(data:{
   limit?: number,
   offset?: number,
 }) {
-  const qs = {
-    ...data,
-    timestamp: Date.now()
-  };
+  const url = qs.stringify(data);
   return service.get('/playlist/track/all?'+qs);
 }
 // 更新歌单标签
 export function updatePlaylistTags(data: {
   id: string,
-  tags: string[]
+  tags: string
 }) {
-  return service.post(
-    '/playlist/tags/update', data
-  );
+  const url = qs.stringify({
+    ...data,
+    timestamp: Date.now()
+  });
+  return service.get('/playlist/tags/update?'+url);
 }
