@@ -27,3 +27,12 @@ export function getPlaylistAllDetail(data:{
   };
   return service.get('/playlist/track/all?'+qs);
 }
+// 更新歌单标签
+export function updatePlaylistTags(data: {
+  id: string,
+  tags: string[]
+}) {
+  return service.post(
+    '/playlist/tags/update', data
+  );
+}
