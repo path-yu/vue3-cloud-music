@@ -3,6 +3,14 @@ import service from './request';
 export function getBanner() {
   return service.get('/banner');
 }
+// 批量请求接口
+export function batchRequest(data: {
+  [key: string]: string
+}) {
+  return service.post(
+    '/batch', data
+  );
+}
 export * from './mv';
 export * from './playlist';
 export * from './songs';

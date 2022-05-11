@@ -72,3 +72,4 @@ export function likeComment(data:{
   });
   return service.get('/comment/like?'+params);
 }
+// 获取登录状态

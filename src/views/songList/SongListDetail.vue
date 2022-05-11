@@ -20,10 +20,16 @@ const imageRef = ref();
 const tagList = ref<any[]>([]);
 const themVars = useThemeVars();
 const primaryColor = computed(() => themVars.value.primaryColor);
-console.log(primaryColor.value);
 
 const isMySongList = computed(() => {
-  return songListDetail.value && songListDetail.value.userId === mainStore.userProfile.profile.userId;
+  return songListDetail.value 
+   && mainStore.userProfile
+   && songListDetail.value.userId === mainStore.userProfile.profile.userId;
+});
+const starButtonDisabled = computed(() => {
+  return songListDetail.value 
+   && mainStore.userProfile
+    && songListDetail.value.userId === mainStore.userProfile.profile.userId;
 });
 const fetchSongListDetail = (songListId:string) => {
   isLoading.value = true;
@@ -52,6 +58,10 @@ fetchPlayListTags();
 const handleTagClick = (
   item:{checked:boolean, name:string}, index:number
 ) => {
+  if (selectTagList.value.length === 3) {
+    window.$message.warning('最多可选三个标签');
+    return;
+  }
   if (!item.checked) {
     selectTagList.value.push(item);
   } else {
@@ -69,16 +79,14 @@ const handleCompleteClick = () => {
   let tags = selectTagList.value.map((item: { name: any; }) => item.name);
   let params = {
     id: detail.id,
-    tags: tags.toString()
+    tags: tags.join(';')
   };
   updatePlaylistTags(params).then(res => {
-    if (res.data.code === 0) {
+    if (res.data.code === 200) {
       window.$message.success('标签设置成功');
+      (songListDetail.value as AnyObject).tags = tags;
     }
-    detail.tags = tags;
   });
-  
-  
 };
 watchEffect(() => {
   fetchSongListDetail(route.params.id as string);
@@ -129,7 +137,7 @@ watchEffect(() => {
                   </n-tooltip>
                 </div>
               </n-button>
-              <n-button size="medium" round :disabled="songListDetail.userId === mainStore.userProfile.profile.userId">
+              <n-button size="medium" round :disabled="starButtonDisabled">
                 <template #icon>
                   <n-icon :component="songListDetail.subscribed ? Star : StarOutline" />
                 </template>
@@ -164,7 +172,7 @@ watchEffect(() => {
                 {{ formateNumber(songListDetail.playCount) }}
               </div>
             </div>
-            <div v-if="!songListDetail.isMyLike" class="flex">
+            <div v-if="!songListDetail.isMyLike && songListDetail.description" class="flex">
               <n-ellipsis
                 expand-trigger="click" line-clamp="1"
                 :tooltip="false"

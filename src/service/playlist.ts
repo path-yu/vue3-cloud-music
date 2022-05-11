@@ -14,7 +14,11 @@ export function getPersonalized() {
 }
 // 获取歌单详情
 export function getPlaylistDetail(id: string) {
-  return service.get(`/playlist/detail?id=${id}`);
+  const url = qs.stringify({
+    id,
+    timestamp: Date.now()
+  });
+  return service.get('/playlist/detail?'+url);
 }
 // 获取歌单所有数据
 export function getPlaylistAllDetail(data:{
