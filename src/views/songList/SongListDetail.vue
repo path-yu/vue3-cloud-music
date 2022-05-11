@@ -157,7 +157,7 @@ watchEffect(() => {
             <div v-if="!songListDetail.isMyLike">
               <span>标签</span>
               <span class="px-1">:</span>
-              <span class="text-primary"> {{ songListDetail.tags.join(' / ') }} </span>
+              <span class="cursor-pointer text-primary"> {{ songListDetail.tags.join(' / ') }} </span>
               <span v-if="isMySongList && !songListDetail.tags.length" class="cursor-pointer text-primary" @click="showSelectTagModal = true"> 添加标签</span>
             </div>
             <div class="flex">
@@ -172,14 +172,14 @@ watchEffect(() => {
                 {{ formateNumber(songListDetail.playCount) }}
               </div>
             </div>
-            <div v-if="!songListDetail.isMyLike && songListDetail.description" class="flex">
+            <div class="flex">
               <n-ellipsis
                 expand-trigger="click" line-clamp="1"
                 :tooltip="false"
               >
                 <span>简介</span>
                 <span class="px-1">:</span>
-                <span v-if="isMySongList" class="cursor-pointer text-primary">添加简介</span>
+                <span v-if="isMySongList && !songListDetail.description" class="cursor-pointer text-primary">添加简介</span>
                 {{ songListDetail.description }}
               </n-ellipsis>
             </div>
