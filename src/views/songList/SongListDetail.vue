@@ -7,6 +7,7 @@ import { computed, ref, shallowRef, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import { Play, AddOutline, StarOutline, Star, ShareSocialOutline } from '@vicons/ionicons5';
+import { Edit } from '@vicons/carbon';
 import { useMainStore } from '@/stores/main';
 import { useThemeVars } from 'naive-ui';
 const router = useRouter();
@@ -85,13 +86,17 @@ const handleCompleteClick = () => {
     if (res.data.code === 200) {
       window.$message.success('标签设置成功');
       (songListDetail.value as AnyObject).tags = tags;
+      showSelectTagModal.value = false;
     }
   });
 };
 watchEffect(() => {
   fetchSongListDetail(route.params.id as string);
 });
-
+const toSongListEdit = () => {
+  let id = route.params.id;
+  router.push('/songList/edit/id');
+};
 </script>
 
 <template>
@@ -112,6 +117,9 @@ watchEffect(() => {
             <p class="ml-4 text-2xl font-bold">
               {{ songListDetail.name }}
             </p>
+            <div class="ml-2" style="line-height:0" @click="toSongListEdit">
+              <n-icon :size="20" :component="Edit" />
+            </div>
           </div>
           <div class="mt-3 text-sm flex-items-center">
             <n-avatar round :size="30" :src="songListDetail.creator.avatarUrl" />
@@ -172,14 +180,18 @@ watchEffect(() => {
                 {{ formateNumber(songListDetail.playCount) }}
               </div>
             </div>
-            <div class="flex">
+            <div v-if="isMySongList && !songListDetail.description" class="flex">
+              <span>简介</span>
+              <span class="px-1">:</span>
+              <span v-if="isMySongList && !songListDetail.description" class="cursor-pointer text-primary" @click="toSongListEdit">添加简介</span>
+            </div>
+            <div v-else-if="songListDetail.description" class="flex">
               <n-ellipsis
                 expand-trigger="click" line-clamp="1"
                 :tooltip="false"
               >
                 <span>简介</span>
                 <span class="px-1">:</span>
-                <span v-if="isMySongList && !songListDetail.description" class="cursor-pointer text-primary">添加简介</span>
                 {{ songListDetail.description }}
               </n-ellipsis>
             </div>

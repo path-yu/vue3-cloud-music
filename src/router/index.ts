@@ -20,6 +20,12 @@ const router = createRouter({
       meta: { auth: false }
     },
     {
+      path: '/songList/edit/:id',
+      name: 'songListEdit',
+      component: () => import('@/views/songList/EditSongList.vue'),
+      meta: { auth: true }
+    },
+    {
       path: '/discovery',
       name: 'discovery',
       component: () => import('@/views/home/DiscoveryView.vue'),
