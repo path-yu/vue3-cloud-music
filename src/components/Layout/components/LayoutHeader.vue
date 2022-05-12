@@ -104,8 +104,8 @@ const getUserDetailInfo = (uid:string) => {
 };
 const checkLoginStatus = () => {
   getLoginStatus().then(res => {
-    if (res.data.code === 200) {
-      if (!res.data.account) {
+    if (res.data.data.code === 200) {
+      if (!res.data.data.account) {
         window.$message.warning('登录状态过期,请重新登录');
         mainStore.userProfile = null;
         localStorage.clear();
@@ -114,7 +114,6 @@ const checkLoginStatus = () => {
     }
   });
 };
-checkLoginStatus();
 const handlePositiveClick = () => {
   window.$message.loading(
     '退出登录中...', { duration: 0 }
