@@ -100,7 +100,18 @@ watchEffect(() => {
 });
 const toSongListEdit = () => {
   let id = route.params.id;
-  router.push('/songList/edit/'+id);
+  if (songListDetail.value) {
+    
+    router.push({
+      path: '/songList/edit/'+id,
+      query: {
+        songListName: songListDetail.value.name,
+        desc: songListDetail.value.description,
+        tags: songListDetail.value.tags.join(',')
+      }
+    });
+  }
+ 
 };
 </script>
 
