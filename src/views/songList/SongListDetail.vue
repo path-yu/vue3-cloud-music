@@ -9,19 +9,18 @@ import LoadImg from '@/components/Base/LoadImg.vue';
 import { Play, AddOutline, StarOutline, Star, ShareSocialOutline } from '@vicons/ionicons5';
 import { Edit } from '@vicons/carbon';
 import { useMainStore } from '@/stores/main';
-import { useThemeVars } from 'naive-ui';
+import type { SelectSongListTagModalExpose } from '@/components/SongsList/SelectSongListTagModal.vue';
+
 const router = useRouter();
 const route = useRoute();
 const mainStore = useMainStore();
 const songListDetail = shallowRef<AnyObject>();
 const isLoading = ref(true);
-const showSelectTagModal = ref(false);
 const selectTagList = ref<any[]>([]);
 const imageRef = ref();
 const tagList = ref<any[]>([]);
-const themVars = useThemeVars();
-const primaryColor = computed(() => themVars.value.primaryColor);
-
+const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
+const btnLoading = ref(false);
 const isMySongList = computed(() => {
   return songListDetail.value 
    && mainStore.userProfile
@@ -35,6 +34,8 @@ const starButtonDisabled = computed(() => {
 const fetchSongListDetail = (songListId:string) => {
   isLoading.value = true;
   getPlaylistDetail(songListId).then(res => {
+    console.log(res.data);
+    
     if (res.data.playlist.name === (res.data.playlist.creator.nickname +'喜欢的音乐')) {
       res.data.playlist['isMyLike'] = true;
     } else {
@@ -59,7 +60,7 @@ fetchPlayListTags();
 const handleTagClick = (
   item:{checked:boolean, name:string}, index:number
 ) => {
-  if (selectTagList.value.length === 3) {
+  if (selectTagList.value.length === 3 && !item.checked) {
     window.$message.warning('最多可选三个标签');
     return;
   }
@@ -82,20 +83,24 @@ const handleCompleteClick = () => {
     id: detail.id,
     tags: tags.join(';')
   };
+  btnLoading.value = true;
   updatePlaylistTags(params).then(res => {
     if (res.data.code === 200) {
       window.$message.success('标签设置成功');
       (songListDetail.value as AnyObject).tags = tags;
-      showSelectTagModal.value = false;
+      selectSongListTagRef.value?.close();
     }
+    btnLoading.value = false;
   });
 };
 watchEffect(() => {
-  fetchSongListDetail(route.params.id as string);
+  if (!route.path.includes('edit')) {
+    fetchSongListDetail(route.params.id as string);
+  }
 });
 const toSongListEdit = () => {
   let id = route.params.id;
-  router.push('/songList/edit/id');
+  router.push('/songList/edit/'+id);
 };
 </script>
 
@@ -166,7 +171,7 @@ const toSongListEdit = () => {
               <span>标签</span>
               <span class="px-1">:</span>
               <span class="cursor-pointer text-primary"> {{ songListDetail.tags.join(' / ') }} </span>
-              <span v-if="isMySongList && !songListDetail.tags.length" class="cursor-pointer text-primary" @click="showSelectTagModal = true"> 添加标签</span>
+              <span v-if="isMySongList && !songListDetail.tags.length" class="cursor-pointer text-primary" @click="() => selectSongListTagRef?.show()"> 添加标签</span>
             </div>
             <div class="flex">
               <div>
@@ -199,38 +204,13 @@ const toSongListEdit = () => {
         </div>
       </div>
       <!-- 标签选择弹窗 -->
-      <n-modal v-model:show="showSelectTagModal" transform-origin="center">
-        <n-card
-          style="width: 600px"
-          title="添加标签"
-          :bordered="false"
-          size="medium"
-          role="dialog"
-          aria-modal="true"
-        >
-          <span>
-            <span class="opacity-60"> 选择合适的标签, 最多可选</span>
-            <span :style="{color:primaryColor}" class="px-1 text-base">3</span>
-            <span class="opacity-60">个</span>
-          </span>
-          <div class="flex flex-wrap mt-3">
-            <n-space size="large">
-              <n-tag
-                v-for="(item,index) in tagList" :key="item.id" round
-                checkable :checked="item.checked"
-                @click="handleTagClick(item,index)"
-              >
-                {{ item.name }}
-              </n-tag>
-            </n-space>
-            <div class="flex justify-center items-center mt-4 w-full">
-              <n-button size="medium" type="primary" @click="handleCompleteClick">
-                完成
-              </n-button>
-            </div>
-          </div>
-        </n-card>
-      </n-modal>
+      <select-song-list-tag-modal
+        ref="selectSongListTagRef"
+        :handle-complete-click="handleCompleteClick" 
+        :handle-tag-click="handleTagClick"
+        :btn-loading="btnLoading"
+        :tag-list="tagList"
+      />
     </n-spin>
   </div>
 </template>
