@@ -95,12 +95,14 @@ const getUserProfile = () => {
 // 获取用户详情数据
 const getUserDetailInfo = (uid:string) => {
   getUserDetail(uid).then((res) => {
-    mainStore.userProfile = res.data;
-    localStorage.userProfile = JSON.stringify(res.data);
-    userDetail.value = res.data;
+    if (res.data.code === 200) {
+      mainStore.userProfile = res.data;
+      localStorage.userProfile = JSON.stringify(res.data);
+      userDetail.value = res.data;
+    }
   });
 };
-
+getUserDetailInfo(467820662);
 const handlePositiveClick = () => {
   window.$message.loading(
     '退出登录中...', { duration: 0 }
