@@ -73,3 +73,6 @@ export function likeComment(data:{
   return service.get('/comment/like?'+params);
 }
 // 获取登录状态
+export function getLoginStatus() {
+  return service.get('/login/status?timestamp='+Date.now());
+}

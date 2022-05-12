@@ -7,7 +7,7 @@ import { useThemeVars } from 'naive-ui';
 import { ref, watch } from 'vue';
 import { userHistory } from '../hook/useHistoryRoutePath';
 import { useElementHover, onClickOutside } from '@vueuse/core';
-import { getUserDetail, getUserInfo, getUserPlaylist, logout, signIn } from '@/service';
+import { getLoginStatus, getUserDetail, getUserInfo, getUserPlaylist, logout, signIn } from '@/service';
 import type { AnyObject } from 'env';
 import { useRouter } from 'vue-router';
 
@@ -102,6 +102,19 @@ const getUserDetailInfo = (uid:string) => {
     }
   });
 };
+const checkLoginStatus = () => {
+  getLoginStatus().then(res => {
+    if (res.data.code === 200) {
+      if (!res.data.account) {
+        window.$message.warning('登录状态过期,请重新登录');
+        mainStore.userProfile = null;
+        localStorage.clear();
+        mainStore.isLogin = false;
+      }
+    }
+  });
+};
+checkLoginStatus();
 const handlePositiveClick = () => {
   window.$message.loading(
     '退出登录中...', { duration: 0 }
@@ -129,6 +142,7 @@ const handleSignInClick = () => {
 };
 if (mainStore.isLogin) {
   getUserProfile();
+  checkLoginStatus();
 }
 </script>
 

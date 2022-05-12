@@ -14,5 +14,5 @@ export function getQrCodeStatus(key:string) {
 }
 // 退出登录
 export function logout() {
-  return service.get('/logout');
+  return service.get('/logout?timestamp=' + new Date().getTime());
 }
