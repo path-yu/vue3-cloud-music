@@ -102,7 +102,6 @@ const getUserDetailInfo = (uid:string) => {
     }
   });
 };
-getUserDetailInfo(467820662);
 const handlePositiveClick = () => {
   window.$message.loading(
     '退出登录中...', { duration: 0 }
