@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { getPlaylistAllDetail, getPlaylistDetail, updatePlaylistTags } from '@/service';
+import { getPlaylistAllDetail, getPlaylistDetail, updatePlayListSubscribe, updatePlaylistTags } from '@/service';
 import type { AnyObject } from 'env';
 import { formateNumber } from '@/utils';
 import { computed, ref, shallowRef, watchEffect } from 'vue';
@@ -10,15 +10,17 @@ import { Play, AddOutline, StarOutline, Star, ShareSocialOutline } from '@vicons
 import { Edit } from '@vicons/carbon';
 import { useMainStore } from '@/stores/main';
 import type { SelectSongListTagModalExpose } from '@/components/SongsList/SelectSongListTagModal.vue';
+import { useDialog } from 'naive-ui';
 
 const router = useRouter();
 const route = useRoute();
 const mainStore = useMainStore();
-const songListDetail = shallowRef<AnyObject>();
+const songListDetail = ref<AnyObject>();
 const isLoading = ref(true);
 const imageRef = ref();
 const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
 const btnLoading = ref(false);
+const dialog = useDialog();
 
 const isMySongList = computed(() => {
   return songListDetail.value 
@@ -34,14 +36,13 @@ const fetchSongListDetail = (songListId:string) => {
   isLoading.value = true;
   getPlaylistDetail(songListId).then(res => {
     if (res.data.playlist.name === (res.data.playlist.creator.nickname +'喜欢的音乐')) {
-      res.data.playlist['isMyLike'] = true;
+      res.data.playlist.isMyLike = true;
       res.data.playlist.name = '我喜欢的音乐';
     } else {
-      res.data.playlist['isMyLike'] = false;
+      res.data.playlist.isMyLike = false;
     }
     isLoading.value = false;
     songListDetail.value = res.data.playlist;
-    
   });
 };
 
@@ -57,11 +58,13 @@ const handleCompleteClick = (selectTagList:any[]) => {
     tags: tags.join(';')
   };
   btnLoading.value = true;
-  updatePlaylistTags(params).then(res => {
+  return updatePlaylistTags(params).then(res => {
     if (res.data.code === 200) {
       window.$message.success('标签设置成功');
       (songListDetail.value as AnyObject).tags = tags;
       selectSongListTagRef.value?.close();
+    } else {
+      window.$message.error('标签设置失败');
     }
     btnLoading.value = false;
   });
@@ -85,6 +88,45 @@ const toSongListEdit = () => {
     });
   }
 };
+// 点击收藏/取消收藏事件
+const handleSubscribeClick = (subscribed:boolean) => {
+  let params = {
+    id: route.params.id as string,
+    t: subscribed
+      ? 2
+      : 1
+  };
+  if (params.t === 2) {
+    dialog.warning({
+      title: '警告',
+      content: '确定不在收藏该歌单?',
+      positiveText: '确定', 
+      onPositiveClick: () => {
+        console.log('确定');
+        updatePlayListSubscribe(params).then((res) => {
+          if (res.data.code === 200) {
+            window.$message.success('取消收藏成功');
+            (songListDetail.value as AnyObject).subscribed = false;
+            (songListDetail.value as AnyObject).subscribedCount-=1;
+          } else {
+            window.$message.error('取消收藏失败');
+          }
+        });
+      } 
+    });
+  } else {
+    updatePlayListSubscribe(params).then((res) => {
+      if (res.data.code === 200) {
+        window.$message.success('收藏成功!');
+        (songListDetail.value as AnyObject).subscribed = true;
+        (songListDetail.value as AnyObject).subscribedCount+=1;
+      } else {
+        window.$message.error('收藏失败');
+      }
+    });
+  }
+};
+
 </script>
 <template>
   <div class="p-8">
@@ -96,7 +138,7 @@ const toSongListEdit = () => {
           loading-height="200px"
           :src="songListDetail.coverImgUrl "
         />
-        <div class="flex-1 ml-4">
+        <div class="flex-1 ml-8">
           <div class="flex items-center">
             <n-tag type="primary">
               歌单
@@ -132,19 +174,23 @@ const toSongListEdit = () => {
                   </n-tooltip>
                 </div>
               </n-button>
-              <n-button size="medium" round :disabled="starButtonDisabled">
+              <n-button
+                size="medium" round
+                :disabled="starButtonDisabled"
+                @click="handleSubscribeClick(songListDetail!.subscribed)"
+              >
                 <template #icon>
                   <n-icon :component="songListDetail.subscribed ? Star : StarOutline" />
                 </template>
                 {{ songListDetail.subscribed ? '已收藏' :' 收藏' }}
-                ({{ songListDetail.subscribedCount }})
+                ({{ formateNumber(songListDetail.subscribedCount) }})
               </n-button>
               <n-button size="medium" round>
                 <template #icon>
                   <n-icon :component="ShareSocialOutline" />
                 </template>
                 分享
-                ({{ songListDetail.shareCount }})
+                ({{ formateNumber(songListDetail.shareCount) }})
               </n-button>
             </n-space>
           </div>
@@ -153,7 +199,10 @@ const toSongListEdit = () => {
               <span>标签</span>
               <span class="px-1">:</span>
               <span class="cursor-pointer text-primary"> {{ songListDetail.tags.join(' / ') }} </span>
-              <span v-if="isMySongList && !songListDetail.tags.length" class="cursor-pointer text-primary" @click="() => selectSongListTagRef?.show()"> 添加标签</span>
+              <span
+                v-if="isMySongList && !songListDetail.tags.length " 
+                class="cursor-pointer text-primary" @click="() => selectSongListTagRef?.show()"
+              > 添加标签</span>
             </div>
             <div class="flex">
               <div>
@@ -167,10 +216,10 @@ const toSongListEdit = () => {
                 {{ formateNumber(songListDetail.playCount) }}
               </div>
             </div>
-            <div v-if="isMySongList && !songListDetail.description" class="flex">
+            <div v-if="isMySongList && !songListDetail.description && !songListDetail.isMyLike" class="flex">
               <span>简介</span>
               <span class="px-1">:</span>
-              <span v-if="isMySongList && !songListDetail.description" class="cursor-pointer text-primary" @click="toSongListEdit">添加简介</span>
+              <span class="cursor-pointer text-primary" @click="toSongListEdit">添加简介</span>
             </div>
             <div v-else-if="songListDetail.description" class="flex">
               <n-ellipsis

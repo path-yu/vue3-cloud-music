@@ -71,3 +71,15 @@ export function updatePlayListCover(
     url, formData, { headers: { 'Content-Type': 'multipart/form-data' } }
   );  
 }
+// 收藏/取消收藏歌单
+export function updatePlayListSubscribe(data:{
+  id:string;
+  t:number;// 1:收藏，2:取消收藏
+}) {
+  const query = qs.stringify({
+    id: data.id,
+    t: data.t,
+    timestamp: Date.now()
+  });
+  return service.get('/playlist/subscribe?'+query);
+}

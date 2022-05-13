@@ -15,7 +15,9 @@ onMounted(() => {
     <n-loading-bar-provider>
       <div class="w-100vw">
         <n-message-provider>
-          <LayOut />
+          <n-dialog-provider>
+            <LayOut />
+          </n-dialog-provider>
         </n-message-provider>
       </div>
     </n-loading-bar-provider>
