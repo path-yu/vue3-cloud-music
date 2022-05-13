@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import { userCheckLogin } from '@/hook/useCheckLogin';
 import { likeComment, sendComment } from '@/service';
 import { useMainStore } from '@/stores/main';
 import { ThumbsUp, ThumbsUpFilled } from '@vicons/carbon';
@@ -23,12 +24,11 @@ const commentPlaceholder = computed(() => {
 const showModal = ref(false);
 
 const handleClickComment = (index:number) => {
-  if (!mainStore.isLogin) {
-    window.$message.warning('请先登录');
-    return;
-  }
-  showModal.value = true;
-  currentClickedComment.value = props.list[index];
+  userCheckLogin(() => {
+    showModal.value = true;
+    currentClickedComment.value = props.list[index];
+  })
+  ;
 };
 const handleSubmitCommitClick = () => {
   let params = {
@@ -59,21 +59,23 @@ const handleSubmitCommitClick = () => {
 const handleLikedClick = (
   item:any, index:number
 ) => {
-  let t = item.liked
-    ? 0
-    : 1;
-  let params = {
-    type: 1,
-    id: props.resourceId,
-    t,
-    cid: item.commentId
-  };
-  likeComment(params).then((res) => {
-    if (res.data.code === 200) {
-      emit(
-        'updateCommentLiked', { index, liked: t } 
-      );
-    }
+  userCheckLogin(() => {
+    let t = item.liked
+      ? 0
+      : 1;
+    let params = {
+      type: 1,
+      id: props.resourceId,
+      t,
+      cid: item.commentId
+    };
+    likeComment(params).then((res) => {
+      if (res.data.code === 200) {
+        emit(
+          'updateCommentLiked', { index, liked: t } 
+        );
+      }
+    });
   });
 };
 </script>

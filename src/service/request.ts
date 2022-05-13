@@ -19,7 +19,7 @@ const loginQrCode = [
 ];
 //response interceptor
 instance.interceptors.response.use(
-  async (data) => {
+  (data) => {
     return data;
   }, err => {
     window.$message.error('network error');

@@ -7,6 +7,7 @@ import VideoPlayer, { type VideoPlayerExpose } from '@/components/Base/VideoPlay
 import type { AnyObject } from 'env';
 import CommentList from '@/components/CommentList/CommentList.vue';
 import { useMainStore } from '@/stores/main';
+import { userCheckLogin } from '@/hook/useCheckLogin';
 
 const route = useRoute();
 let mvid = ref(route.params.id);
@@ -136,28 +137,26 @@ const updateCommentLiked = (
   }
 };
 const handleCommentClick = () => {
-  if (!mainStore.isLogin) {
-    window.$message.warning('请先登录');
-    return;
-  }
-  let params = {
-    t: 1,
-    content: commentContent.value,
-    id: +mvid.value,
-    type: 1
-  };
-  commentBtnLoading.value = true;
-  sendComment(params).then(res => {
-    if (res.data.code === 200) {
-      window.$message.success('评论成功');
-      commentContent.value = '';
-      res.data.comment.beReplied = [];
-      updateCommentList(res.data.comment);
-    }
-  })
-    .finally(() => {
-      commentBtnLoading.value = false;
-    });
+  userCheckLogin(() => {
+    let params = {
+      t: 1,
+      content: commentContent.value,
+      id: +mvid.value,
+      type: 1
+    };
+    commentBtnLoading.value = true;
+    sendComment(params).then(res => {
+      if (res.data.code === 200) {
+        window.$message.success('评论成功');
+        commentContent.value = '';
+        res.data.comment.beReplied = [];
+        updateCommentList(res.data.comment);
+      }
+    })
+      .finally(() => {
+        commentBtnLoading.value = false;
+      });
+  });
 };
 onMounted(() => {
   mainStore.backTopLeft = '28vw';
