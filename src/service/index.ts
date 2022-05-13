@@ -5,7 +5,7 @@ export function getBanner() {
 }
 // 批量请求接口
 export function batchRequest(data: {
-  [key: string]: string
+  [key: string]: any
 }) {
   return service.post(
     '/batch', data

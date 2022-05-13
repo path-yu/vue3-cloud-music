@@ -79,7 +79,8 @@ const toSongListEdit = () => {
       query: {
         songListName: songListDetail.value.name,
         desc: songListDetail.value.description,
-        tags: songListDetail.value.tags.join(',')
+        tags: songListDetail.value.tags.join(','),
+        coverUrl: songListDetail.value.coverImgUrl
       }
     });
   }
@@ -104,7 +105,7 @@ const toSongListEdit = () => {
               {{ songListDetail.name }}
             </p>
             <div class="ml-2" style="line-height:0" @click="toSongListEdit">
-              <n-icon :size="20" :component="Edit" />
+              <n-icon v-if="isMySongList" :size="20" :component="Edit" />
             </div>
           </div>
           <div class="mt-3 text-sm flex-items-center">

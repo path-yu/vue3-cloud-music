@@ -1,4 +1,5 @@
 import qs from 'qs';
+import { batchRequest } from '.';
 import service from './request';
 // 获取精品歌单
 export function getTopPlayList({ cat = '全部', limit = 10, before = '' }) {
@@ -14,11 +15,11 @@ export function getPersonalized() {
 }
 // 获取歌单详情
 export function getPlaylistDetail(id: string) {
-  const url = qs.stringify({
+  const query = qs.stringify({
     id,
     timestamp: Date.now()
   });
-  return service.get('/playlist/detail?'+url);
+  return service.get('/playlist/detail?'+query);
 }
 // 获取歌单所有数据
 export function getPlaylistAllDetail(data:{
@@ -26,17 +27,47 @@ export function getPlaylistAllDetail(data:{
   limit?: number,
   offset?: number,
 }) {
-  const url = qs.stringify(data);
-  return service.get('/playlist/track/all?'+qs);
+  const query = qs.stringify(data);
+  return service.get('/playlist/track/all?'+query);
 }
 // 更新歌单标签
 export function updatePlaylistTags(data: {
   id: string,
   tags: string
 }) {
-  const url = qs.stringify({
+  const query = qs.stringify({
     ...data,
     timestamp: Date.now()
   });
-  return service.get('/playlist/tags/update?'+url);
+  return service.get('/playlist/tags/update?'+query);
+}
+// 编辑歌单
+export function updatePlayListInfo(data:{
+  id:string;
+  name:string;
+  tags:string;
+  desc:string;
+}) {
+  const query = qs.stringify({
+    id: data.id,
+    name: data.name,
+    tags: data.tags,
+    desc: data.desc,
+    timestamp: Date.now()
+  });
+  return service.get('/playlist/update?'+query);
+}
+// 更新歌单封面
+export function updatePlayListCover(
+  file: File, imgSize:number, id:string
+) {
+  const formData = new FormData();
+  formData.append(
+    'imgFile', file
+  );
+  const params = { timestamp: Date.now(), imgSize, id };
+  const url = '/playlist/cover/update?'+qs.stringify(params);
+  return service.post(
+    url, formData, { headers: { 'Content-Type': 'multipart/form-data' } }
+  );  
 }
