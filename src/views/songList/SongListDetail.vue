@@ -1,6 +1,6 @@
 <script setup lang="ts">
 
-import { getPlaylistAllDetail, getPlaylistDetail, getTopPlayListTags, updatePlaylistTags } from '@/service';
+import { getPlaylistAllDetail, getPlaylistDetail, updatePlaylistTags } from '@/service';
 import type { AnyObject } from 'env';
 import { formateNumber } from '@/utils';
 import { computed, ref, shallowRef, watchEffect } from 'vue';
@@ -16,11 +16,10 @@ const route = useRoute();
 const mainStore = useMainStore();
 const songListDetail = shallowRef<AnyObject>();
 const isLoading = ref(true);
-const selectTagList = ref<any[]>([]);
 const imageRef = ref();
-const tagList = ref<any[]>([]);
 const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
 const btnLoading = ref(false);
+
 const isMySongList = computed(() => {
   return songListDetail.value 
    && mainStore.userProfile
@@ -34,10 +33,9 @@ const starButtonDisabled = computed(() => {
 const fetchSongListDetail = (songListId:string) => {
   isLoading.value = true;
   getPlaylistDetail(songListId).then(res => {
-    console.log(res.data);
-    
     if (res.data.playlist.name === (res.data.playlist.creator.nickname +'喜欢的音乐')) {
       res.data.playlist['isMyLike'] = true;
+      res.data.playlist.name = '我喜欢的音乐';
     } else {
       res.data.playlist['isMyLike'] = false;
     }
@@ -47,38 +45,13 @@ const fetchSongListDetail = (songListId:string) => {
   });
 };
 
-const fetchPlayListTags = () => {
-  getTopPlayListTags().then(res => {
-    tagList.value = res.data.tags.map((item: any) => {
-      item.checked = false;
-      return item;
-    });
-  });
-};
-fetchPlayListTags();
 
-const handleTagClick = (
-  item:{checked:boolean, name:string}, index:number
-) => {
-  if (selectTagList.value.length === 3 && !item.checked) {
-    window.$message.warning('最多可选三个标签');
-    return;
-  }
-  if (!item.checked) {
-    selectTagList.value.push(item);
-  } else {
-    let removeIndex = selectTagList.value.findIndex(val => val.name === item.name);
-    if (index) {
-      selectTagList.value.splice(
-        removeIndex, 1
-      );
-    }
-  }
-  item.checked = !item.checked;
-};
-const handleCompleteClick = () => {
+const handleCompleteClick = (selectTagList:any[]) => {
   let detail = songListDetail.value as AnyObject;
-  let tags = selectTagList.value.map((item: { name: any; }) => item.name);
+  let tags = selectTagList.map((item: { name: any; }) => item.name);
+  if (tags.length === 0) {
+    return window.$message.warning('请选择标签');
+  }
   let params = {
     id: detail.id,
     tags: tags.join(';')
@@ -101,7 +74,6 @@ watchEffect(() => {
 const toSongListEdit = () => {
   let id = route.params.id;
   if (songListDetail.value) {
-    
     router.push({
       path: '/songList/edit/'+id,
       query: {
@@ -111,10 +83,8 @@ const toSongListEdit = () => {
       }
     });
   }
- 
 };
 </script>
-
 <template>
   <div class="p-8">
     <n-spin :show="isLoading">
@@ -218,9 +188,7 @@ const toSongListEdit = () => {
       <select-song-list-tag-modal
         ref="selectSongListTagRef"
         :handle-complete-click="handleCompleteClick" 
-        :handle-tag-click="handleTagClick"
         :btn-loading="btnLoading"
-        :tag-list="tagList"
       />
     </n-spin>
   </div>
