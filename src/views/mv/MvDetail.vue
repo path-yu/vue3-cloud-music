@@ -137,7 +137,10 @@ const updateCommentLiked = (
   }
 };
 const handleCommentClick = () => {
-  userCheckLogin(() => {
+  if (!commentContent.value) {
+    return window.$message.error('评论不能为空!');
+  }
+  return userCheckLogin(() => {
     let params = {
       t: 1,
       content: commentContent.value,

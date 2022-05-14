@@ -3,7 +3,7 @@
 import { getPlaylistAllDetail, getPlaylistDetail, updatePlayListSubscribe, updatePlaylistTags } from '@/service';
 import type { AnyObject } from 'env';
 import { formateNumber } from '@/utils';
-import { computed, ref, shallowRef, toRaw, watchEffect } from 'vue';
+import { computed, ref, toRaw, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import { Play, AddOutline, StarOutline, Star, ShareSocialOutline } from '@vicons/ionicons5';
@@ -72,7 +72,7 @@ const handleCompleteClick = (selectTagList:any[]) => {
   });
 };
 watchEffect(() => {
-  if (!route.path.includes('edit')) {
+  if (!route.path.includes('edit') && route.params.id) {
     fetchSongListDetail(route.params.id as string);
   }
 });
@@ -92,6 +92,9 @@ const toSongListEdit = () => {
 };
 // 点击收藏/取消收藏事件
 const handleSubscribeClick = (subscribed:boolean) => {
+  if (!mainStore.isLogin) {
+    return window.$message.error('请先登录');
+  }
   let params = {
     id: route.params.id as string,
     t: subscribed
@@ -136,8 +139,8 @@ const handleSubscribeClick = (subscribed:boolean) => {
     }) 
       .finally(() => subscribeBtnLoading.value = false);
   }
+  return undefined;
 };
-
 </script>
 <template>
   <div class="p-8">
@@ -246,6 +249,16 @@ const handleSubscribeClick = (subscribed:boolean) => {
         </div>
       </div>
       <div v-else style="height:200px" />
+      <div class="mt-10">
+        <n-tabs :bar-width="50" type="line" default-value="show">
+          <n-tab-pane name="show" tab="歌曲">
+            43
+          </n-tab-pane>
+          <n-tab-pane name="if" tab="评论">
+            43
+          </n-tab-pane>
+        </n-tabs>
+      </div>
       <!-- 标签选择弹窗 -->
       <select-song-list-tag-modal
         ref="selectSongListTagRef"
@@ -255,7 +268,6 @@ const handleSubscribeClick = (subscribed:boolean) => {
     </n-spin>
   </div>
 </template>
-
 <style>
 :deep(.n-card-header__main){
   text-align: center;

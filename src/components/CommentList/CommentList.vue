@@ -31,6 +31,9 @@ const handleClickComment = (index:number) => {
   ;
 };
 const handleSubmitCommitClick = () => {
+  if (!commentContent.value) {
+    return window.$message.error('评论不能为空!');
+  }
   let params = {
     t: 2,
     type: 1,
@@ -39,7 +42,7 @@ const handleSubmitCommitClick = () => {
     commentId: currentClickedComment.value.commentId
   };
   commentBtnLoading.value = true;
-  sendComment(params).then(res => {
+  return sendComment(params).then(res => {
     if (res.data.code === 200) {
       window.$message.success('评论成功');
       showModal.value = false;
