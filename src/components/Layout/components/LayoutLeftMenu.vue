@@ -224,8 +224,6 @@ const watchUpdateCollectPlayList = () => {
 onMounted(() => {
   scrollContainer = document.querySelector('.rightMain>.n-layout-scroll-container');
   watchUpdateCollectPlayList();
-  
-    
 });
 </script>
 <template>

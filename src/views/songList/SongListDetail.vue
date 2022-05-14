@@ -245,6 +245,7 @@ const handleSubscribeClick = (subscribed:boolean) => {
           </div>
         </div>
       </div>
+      <div v-else style="height:200px" />
       <!-- 标签选择弹窗 -->
       <select-song-list-tag-modal
         ref="selectSongListTagRef"
