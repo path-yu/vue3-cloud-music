@@ -283,7 +283,7 @@ onUnmounted(() => {
             />
           </div>
           <!-- 分页 -->
-          <div class="flex justify-end mt-6">
+          <div v-if="pageParams.pageCount > 1" class="flex justify-end mt-6">
             <n-pagination
               v-model:page="pageParams.page" 
               v-model:page-size="pageParams.pageSize" 

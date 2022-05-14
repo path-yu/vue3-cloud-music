@@ -8,14 +8,17 @@ import { computed, ref } from 'vue';
 export interface CommentListProps{
   list:any[],
   title:string;
-  resourceId:number;
-  commentTotalNum?:string|number;
+  resourceId:number;//资源id
+  commentTotalNum?:string|number; 
+  type?:number;//资源类型0: 歌曲 1: mv2: 歌单3: 专辑4: 电台5: 视频6: 动态
 }
-const props = defineProps<CommentListProps>();
+const props = withDefaults(
+  defineProps<CommentListProps>(), { type: 1, commentTotalNum: 0 }
+);
 const currentClickedComment = ref<any>();
-const mainStore = useMainStore();
 const commentBtnLoading = ref(false);
 const commentContent = ref('');
+const mainStore = useMainStore();
 const emit = defineEmits(['updateCommentList', 'updateCommentLiked']);
 const commentPlaceholder = computed(() => {
   return currentClickedComment.value && '回复: ' + currentClickedComment.value.user.nickname;
@@ -31,12 +34,15 @@ const handleClickComment = (index:number) => {
   ;
 };
 const handleSubmitCommitClick = () => {
+  if (!mainStore.isLogin) {
+    return window.$message.error('请先登录!');
+  }
   if (!commentContent.value) {
     return window.$message.error('评论不能为空!');
   }
   let params = {
     t: 2,
-    type: 1,
+    type: props.type,
     id: props.resourceId,
     content: commentContent.value,
     commentId: currentClickedComment.value.commentId
@@ -67,13 +73,17 @@ const handleLikedClick = (
       ? 0
       : 1;
     let params = {
-      type: 1,
+      type: props.type,
       id: props.resourceId,
       t,
       cid: item.commentId
     };
     likeComment(params).then((res) => {
       if (res.data.code === 200) {
+        let message = t === 0
+          ? '取消点赞成功'
+          :' 点赞成功'; 
+        window.$message.success(message);
         emit(
           'updateCommentLiked', { index, liked: t } 
         );

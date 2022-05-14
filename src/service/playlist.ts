@@ -83,3 +83,13 @@ export function updatePlayListSubscribe(data:{
   });
   return service.get('/playlist/subscribe?'+query);
 }
+// 歌单评论
+export function getPlaylistComment(data:{
+  id:string;
+  limit?:number;
+  offset?:number;
+  before?:string;
+}) {
+  const query = qs.stringify(data);
+  return service.get('/comment/playlist?'+query);
+}

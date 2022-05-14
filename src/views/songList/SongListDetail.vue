@@ -1,9 +1,9 @@
 <script setup lang="ts">
 
-import { getPlaylistAllDetail, getPlaylistDetail, updatePlayListSubscribe, updatePlaylistTags } from '@/service';
+import { getPlaylistAllDetail, getPlaylistComment, getPlaylistDetail, sendComment, updatePlayListSubscribe, updatePlaylistTags } from '@/service';
 import type { AnyObject } from 'env';
-import { formateNumber } from '@/utils';
-import { computed, ref, toRaw, watchEffect } from 'vue';
+import { formateNumber, getArrLast } from '@/utils';
+import { computed, reactive, ref, toRaw, watch, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import { Play, AddOutline, StarOutline, Star, ShareSocialOutline } from '@vicons/ionicons5';
@@ -12,18 +12,31 @@ import { useMainStore } from '@/stores/main';
 import type { SelectSongListTagModalExpose } from '@/components/SongsList/SelectSongListTagModal.vue';
 import { useDialog } from 'naive-ui';
 import obverser from '@/utils/obverser';
+import { userCheckLogin } from '@/hook/useCheckLogin';
 
+
+let backTopEle:HTMLElement;
 const router = useRouter();
 const route = useRoute();
 const mainStore = useMainStore();
 const songListDetail = ref<AnyObject>();
-const isLoading = ref(true);
+const tabsValue = ref('musicList');
+const commentValue = ref('');
+const songListComment = ref<AnyObject>({});
+const pageParams = reactive({
+  pageCount: 10,
+  page: 1,
+  pageSize: 50
+});
 const imageRef = ref();
 const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
 const btnLoading = ref(false);
+const isLoading = ref(true);
+const commentLoading = ref(false);
+const commentBtnLoading = ref(false);
 const subscribeBtnLoading = ref(false);
 const dialog = useDialog();
-
+const songListId = ref(route.params.id as string);
 const isMySongList = computed(() => {
   return songListDetail.value 
    && mainStore.userProfile
@@ -34,9 +47,11 @@ const starButtonDisabled = computed(() => {
    && mainStore.userProfile
     && songListDetail.value.userId === mainStore.userProfile.profile.userId;
 });
-const fetchSongListDetail = (songListId:string) => {
+// 获取歌单详情
+const fetchSongListDetail = (id:string=route.params.id as string) => {
   isLoading.value = true;
-  getPlaylistDetail(songListId).then(res => {
+  // fetchSongListComment();
+  getPlaylistDetail(id).then(res => {
     if (res.data.playlist.name === (res.data.playlist.creator.nickname +'喜欢的音乐')) {
       res.data.playlist.isMyLike = true;
       res.data.playlist.name = '我喜欢的音乐';
@@ -47,35 +62,46 @@ const fetchSongListDetail = (songListId:string) => {
     songListDetail.value = res.data.playlist;
   });
 };
-
-
-const handleCompleteClick = (selectTagList:any[]) => {
-  let detail = songListDetail.value as AnyObject;
-  let tags = selectTagList.map((item: { name: any; }) => item.name);
-  if (tags.length === 0) {
-    return window.$message.warning('请选择标签');
-  }
-  let params = {
-    id: detail.id,
-    tags: tags.join(';')
+// 获取歌单评论
+const fetchSongListComment = (id:string=route.params.id as string) => {
+  let params:{
+    id:string;limit:number;offset:number;before?:string;
+  } = {
+    id,
+    limit: pageParams.pageSize,
+    offset: ((pageParams.page) - 1) * pageParams.pageSize
   };
-  btnLoading.value = true;
-  return updatePlaylistTags(params).then(res => {
-    if (res.data.code === 200) {
-      window.$message.success('标签设置成功');
-      (songListDetail.value as AnyObject).tags = tags;
-      selectSongListTagRef.value?.close();
-    } else {
-      window.$message.error('标签设置失败');
-    }
-    btnLoading.value = false;
-  });
-};
-watchEffect(() => {
-  if (!route.path.includes('edit') && route.params.id) {
-    fetchSongListDetail(route.params.id as string);
+  if (songListComment.value.total > 5000) {
+    params.before = songListComment.value.comments[getArrLast(songListComment.value.comments)];
   }
-});
+  commentLoading.value = true;
+  getPlaylistComment(params).then(res => {
+    pageParams.pageCount = Math.round(res.data.total / pageParams.pageSize) || 1;
+    songListComment.value = res.data;
+  })
+    .finally(() => commentLoading.value = false);
+};
+
+
+watch(
+  () => route.params, (val) => {
+    let id = val.id as string;
+    if (!route.path.includes('edit') && id) {
+      songListId.value = id;
+      fetchSongListDetail(id);
+      fetchSongListComment();
+    }
+  }
+);
+fetchSongListDetail();
+fetchSongListComment();
+watch(
+  pageParams, () => {
+    backTopEle = document.querySelector('.n-back-top') as HTMLElement;
+    backTopEle && backTopEle.click();
+    fetchSongListComment();
+  }
+);
 const toSongListEdit = () => {
   let id = route.params.id;
   if (songListDetail.value) {
@@ -140,6 +166,70 @@ const handleSubscribeClick = (subscribed:boolean) => {
       .finally(() => subscribeBtnLoading.value = false);
   }
   return undefined;
+};
+// 点击完成设置标签
+const handleCompleteClick = (selectTagList:any[]) => {
+  let detail = songListDetail.value as AnyObject;
+  let tags = selectTagList.map((item: { name: any; }) => item.name);
+  if (tags.length === 0) {
+    return window.$message.warning('请选择标签');
+  }
+  let params = {
+    id: detail.id,
+    tags: tags.join(';')
+  };
+  btnLoading.value = true;
+  return updatePlaylistTags(params).then(res => {
+    if (res.data.code === 200) {
+      window.$message.success('标签设置成功');
+      (songListDetail.value as AnyObject).tags = tags;
+      selectSongListTagRef.value?.close();
+    } else {
+      window.$message.error('标签设置失败');
+    }
+    btnLoading.value = false;
+  });
+};
+// 点击评论
+const handleCommentClick = () => {
+  userCheckLogin(() => {
+    // 评论不能为空
+    if (!commentValue.value) {
+      return window.$message.error('评论不能为空!');
+    }
+    let params = {
+      t: 1,
+      content: commentValue.value,
+      id: +songListId.value,
+      type: 2
+    };
+    commentBtnLoading.value = true;
+    return sendComment(params).then(res => {
+      if (res.data.code === 200) {
+        window.$message.success('评论成功');
+        commentValue.value = '';
+        res.data.comment.beReplied = [];
+        updateCommentList(res.data.comment);
+      }
+    })
+      .finally(() => {
+        commentBtnLoading.value = false;
+      }); 
+  });
+};
+const updateCommentList = (value:any) => {
+  songListComment.value.total += 1;
+  songListComment.value.comments.unshift(value);
+};
+const updateCommentLiked = (
+  data:{liked:boolean, index:number}, isHot:boolean
+) => {
+  let { index, liked } = data;
+  if (isHot) {
+    songListComment.value.hotComments[index].liked = liked;
+  } else {
+    songListComment.value.comments[index].liked = liked;
+  }
 };
 </script>
 <template>
@@ -249,15 +339,55 @@ const handleSubscribeClick = (subscribed:boolean) => {
         </div>
       </div>
       <div v-else style="height:200px" />
-      <div class="mt-10">
-        <n-tabs :bar-width="50" type="line" default-value="show">
-          <n-tab-pane name="show" tab="歌曲">
-            43
-          </n-tab-pane>
-          <n-tab-pane name="if" tab="评论">
-            43
-          </n-tab-pane>
+      <div :value="tabsValue" class="mt-10">
+        <n-tabs type="line" :value="tabsValue">
+          <n-tab name="musicList" @click="tabsValue = 'musicList'">
+            歌曲列表
+          </n-tab>
+          <n-tab name="comment" @click="tabsValue = 'comment'">
+            评论
+          </n-tab>
         </n-tabs>
+        <div v-show="tabsValue === 'musicList'">
+          musicList
+        </div>
+        <div v-show="tabsValue === 'comment'" class="mt-8">
+          <div>
+            <n-input
+              v-model:value="commentValue" type="textarea" :maxlength="140"
+              :show-count="true"
+            />
+            <div class="flex justify-end mt-5">
+              <n-button round :loading="commentBtnLoading" @click="handleCommentClick">
+                评论
+              </n-button>
+            </div>
+            <!-- 精彩评论 -->
+            <comment-list
+              :type="2"
+              :resource-id="+songListId" title="精彩评论" :list="songListComment.hotComments || []"
+              @update-comment-list="updateCommentList"
+              @update-comment-liked="(data:any) => updateCommentLiked(data,true)"
+            />
+            <!-- 最新评论 -->
+            <comment-list
+              :resource-id="+songListId"
+              :type="2"
+              :comment-total-num="songListComment.total" title="最新评论" :list="songListComment.comments || []"
+              @update-comment-list="updateCommentList"
+              @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
+            />
+            <div v-if="pageParams.pageCount > 1" class="flex justify-end mt-6">
+              <n-pagination
+                v-model:page="pageParams.page" 
+                v-model:page-size="pageParams.pageSize" 
+                :page-count="pageParams.pageCount" 
+                show-size-picker
+                :page-sizes="[10, 20, 30, 40,50]"
+              />
+            </div>
+          </div>
+        </div>
       </div>
       <!-- 标签选择弹窗 -->
       <select-song-list-tag-modal
