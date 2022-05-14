@@ -3,7 +3,7 @@
 import { getPlaylistAllDetail, getPlaylistDetail, updatePlayListSubscribe, updatePlaylistTags } from '@/service';
 import type { AnyObject } from 'env';
 import { formateNumber } from '@/utils';
-import { computed, ref, shallowRef, watchEffect } from 'vue';
+import { computed, ref, shallowRef, toRaw, watchEffect } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import { Play, AddOutline, StarOutline, Star, ShareSocialOutline } from '@vicons/ionicons5';
@@ -11,6 +11,7 @@ import { Edit } from '@vicons/carbon';
 import { useMainStore } from '@/stores/main';
 import type { SelectSongListTagModalExpose } from '@/components/SongsList/SelectSongListTagModal.vue';
 import { useDialog } from 'naive-ui';
+import obverser from '@/utils/obverser';
 
 const router = useRouter();
 const route = useRoute();
@@ -20,6 +21,7 @@ const isLoading = ref(true);
 const imageRef = ref();
 const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
 const btnLoading = ref(false);
+const subscribeBtnLoading = ref(false);
 const dialog = useDialog();
 
 const isMySongList = computed(() => {
@@ -102,28 +104,37 @@ const handleSubscribeClick = (subscribed:boolean) => {
       content: '确定不在收藏该歌单?',
       positiveText: '确定', 
       onPositiveClick: () => {
-        console.log('确定');
+        subscribeBtnLoading.value = true;
         updatePlayListSubscribe(params).then((res) => {
           if (res.data.code === 200) {
             window.$message.success('取消收藏成功');
             (songListDetail.value as AnyObject).subscribed = false;
             (songListDetail.value as AnyObject).subscribedCount-=1;
+            obverser.emit(
+              'updateCollectPlayList', { subscribed: false, id: route.params.id }
+            );
           } else {
             window.$message.error('取消收藏失败');
           }
-        });
+        })
+          .finally(() => subscribeBtnLoading.value = false);
       } 
     });
   } else {
+    subscribeBtnLoading.value = true;
     updatePlayListSubscribe(params).then((res) => {
       if (res.data.code === 200) {
         window.$message.success('收藏成功!');
         (songListDetail.value as AnyObject).subscribed = true;
         (songListDetail.value as AnyObject).subscribedCount+=1;
+        obverser.emit(
+          'updateCollectPlayList', { subscribed: true, songListDetail: toRaw(songListDetail.value) }
+        );
       } else {
         window.$message.error('收藏失败');
       }
-    });
+    }) 
+      .finally(() => subscribeBtnLoading.value = false);
   }
 };
 
@@ -176,7 +187,7 @@ const handleSubscribeClick = (subscribed:boolean) => {
               </n-button>
               <n-button
                 size="medium" round
-                :disabled="starButtonDisabled"
+                :disabled="starButtonDisabled" :loading="subscribeBtnLoading"
                 @click="handleSubscribeClick(songListDetail!.subscribed)"
               >
                 <template #icon>

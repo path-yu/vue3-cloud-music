@@ -9,14 +9,19 @@ import { NIcon, useLoadingBar } from 'naive-ui';
 import { onMounted, ref, watch, type VNodeChild } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import LoginModal, { type LoginModalExpose } from './LoginModal.vue';
+import obverser from '@/utils/obverser';
+import { id } from 'date-fns/locale';
 
 const mainStore = useMainStore();
 type MySongsList = { myCreatePlayList: any[], collectPlayList: any[] };
+interface childrenMenuOptionItem extends MenuOptionItem{
+   id:number;
+}
 type MenuOptionItem = {
   label: (() => VNodeChild) | string,
   key: string,
   icon?: () => VNodeChild,
-  children?:MenuOptionItem[]
+  children?:childrenMenuOptionItem[]
 }
 const noLoginOption = {
   label: () => <div class="flex items-center" onClick={handleOpenLoginModalClick}> 
@@ -80,7 +85,8 @@ const changeMenuOption = (
             key: item.name,
             icon: () => <NIcon size={20} component={index === 0
               ? Heart
-              : QueueMusicFilled}></NIcon>
+              : QueueMusicFilled}></NIcon>,
+            id: item.id
           };
         })
       },
@@ -92,7 +98,8 @@ const changeMenuOption = (
           return {
             label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
             key: item.name,
-            icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>
+            icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
+            id: item.id
           };
         })
       }
@@ -149,7 +156,6 @@ const fetchUserPlaylist = () => {
       changeMenuOption(
         myCreatePlayList, collectPlayList
       );
-      
     }
   });
 };
@@ -189,8 +195,37 @@ registerRouteHook(
     loadingBar.finish();
   }
 );
+//监听歌单收藏状态
+const watchUpdateCollectPlayList = () => {
+  obverser.on(
+    'updateCollectPlayList', (data:any) => {
+      let { subscribed } = data;
+      // 收藏 添加歌单
+      if (subscribed) {
+        let songListDetail = data.songListDetail;
+        myMenuOptions.value[1].children?.unshift({
+          label: () => <span onClick={() => handlePlayListItemClick(songListDetail)}>{songListDetail.name}</span>,
+          key: songListDetail.name,
+          icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
+          id: songListDetail.id
+        });
+      } else { //取消收藏. 删除歌单
+        let id = data.id;
+        let index = myMenuOptions.value[1].children?.findIndex((item:any) => item.id === +id);
+        if (index) {
+          myMenuOptions.value[1].children?.splice(
+            index, 1
+          );
+        }
+      }
+    }
+  );
+};
 onMounted(() => {
   scrollContainer = document.querySelector('.rightMain>.n-layout-scroll-container');
+  watchUpdateCollectPlayList();
+  
+    
 });
 </script>
 <template>
@@ -245,7 +280,5 @@ onMounted(() => {
 }
 :deep(.n-submenu-children > .n-menu-item > .n-menu-item-content){
   padding-left: 40px !important; 
-}
-:deep(.n-menu .n-submenu .n-menu-item-content){
 }
 </style>
