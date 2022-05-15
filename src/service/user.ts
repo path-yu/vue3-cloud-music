@@ -56,7 +56,7 @@ export function sendComment(data: {
   return service.get('/comment?'+params);
 }
 //获取用户歌单
-export function getUserPlaylist(uid:string) {
+export function getUserPlaylist(uid:number) {
   return service.get('/user/playlist?uid='+uid);
 }
 // 给评论点赞

@@ -1,6 +1,6 @@
 <script setup lang="tsx">
 import { registerRouteHook } from '@/router';
-import { getUserPlaylist } from '@/service';
+import { getLikeList, getUserPlaylist } from '@/service';
 import { useMainStore } from '@/stores/main';
 import { BackToTop, Music, User } from '@vicons/carbon';
 import { QueueMusicFilled } from '@vicons/material';
@@ -10,7 +10,6 @@ import { onMounted, ref, watch, type VNodeChild } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import LoginModal, { type LoginModalExpose } from './LoginModal.vue';
 import obverser from '@/utils/obverser';
-import { id } from 'date-fns/locale';
 
 const mainStore = useMainStore();
 type MySongsList = { myCreatePlayList: any[], collectPlayList: any[] };
@@ -125,7 +124,9 @@ watch(
 watch(
   () => mainStore.userProfile, (val) => {
     if (val) {
-      fetchUserPlaylist();
+      let userId = mainStore.userProfile.profile.userId;
+      fetchUserPlaylist(userId);
+      fetchMyLikeMusicList(userId);
     } else {
       changeMenuOption();
     }
@@ -145,8 +146,7 @@ if (!mainStore.isLogin) {
   changeMenuOption();
 }
 
-const fetchUserPlaylist = () => {
-  let userId = mainStore.userProfile.profile.userId;
+const fetchUserPlaylist = (userId:number) => {
   getUserPlaylist(userId).then((res) => {
     // 将歌单分类
     if (res.data.code === 200) {
@@ -159,7 +159,12 @@ const fetchUserPlaylist = () => {
     }
   });
 };
-
+// 获取我喜欢的音乐
+const fetchMyLikeMusicList = (userId:number) => {
+  getLikeList(userId).then(res => {
+    mainStore.setLikeList(res.data.ids);
+  });
+};
 const classifySongsList = (
   userId:number, playList:any[]
 ) => {

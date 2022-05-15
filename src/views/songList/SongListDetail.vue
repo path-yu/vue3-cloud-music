@@ -3,10 +3,10 @@
 import { getPlaylistAllDetail, getPlaylistComment, getPlaylistDetail, sendComment, updatePlayListSubscribe, updatePlaylistTags } from '@/service';
 import type { AnyObject } from 'env';
 import { formateNumber, getArrLast } from '@/utils';
-import { computed, reactive, ref, toRaw, watch, watchEffect } from 'vue';
+import { computed, reactive, ref, toRaw, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import LoadImg from '@/components/Base/LoadImg.vue';
-import { Play, AddOutline, StarOutline, Star, ShareSocialOutline } from '@vicons/ionicons5';
+import { Play, AddOutline, StarOutline, Star, ShareSocialOutline, Search } from '@vicons/ionicons5';
 import { Edit } from '@vicons/carbon';
 import { useMainStore } from '@/stores/main';
 import type { SelectSongListTagModalExpose } from '@/components/SongsList/SelectSongListTagModal.vue';
@@ -20,6 +20,7 @@ const router = useRouter();
 const route = useRoute();
 const mainStore = useMainStore();
 const songListDetail = ref<AnyObject>();
+const songList = ref<any[]>([]);
 const tabsValue = ref('musicList');
 const commentValue = ref('');
 const songListComment = ref<AnyObject>({});
@@ -32,6 +33,7 @@ const imageRef = ref();
 const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
 const btnLoading = ref(false);
 const isLoading = ref(true);
+const songListAllDetailLoading = ref(true);
 const commentLoading = ref(false);
 const commentBtnLoading = ref(false);
 const subscribeBtnLoading = ref(false);
@@ -81,7 +83,23 @@ const fetchSongListComment = (id:string=route.params.id as string) => {
   })
     .finally(() => commentLoading.value = false);
 };
+const fetchMusicList = (id:string=route.params.id as string) => {
+  songListAllDetailLoading.value = true;
+  getPlaylistAllDetail({ id }).then(res => {
+    if (res.data.code === 200) {
+      songList.value = res.data.songs.map((
+        item:any, index:number
+      ) => {
+        let hasLike = mainStore.hasLikeSong(item.id);
+        item.like = hasLike;
+        item.key = index;
+        return item;
+      });
 
+    }
+  })
+    .finally(() => songListAllDetailLoading.value = false);
+};
 
 watch(
   () => route.params, (val) => {
@@ -90,11 +108,10 @@ watch(
       songListId.value = id;
       fetchSongListDetail(id);
       fetchSongListComment();
+      fetchMusicList(id);
     }
   }
 );
-fetchSongListDetail();
-fetchSongListComment();
 watch(
   pageParams, () => {
     backTopEle = document.querySelector('.n-back-top') as HTMLElement;
@@ -102,6 +119,10 @@ watch(
     fetchSongListComment();
   }
 );
+
+fetchSongListDetail();
+fetchSongListComment();
+fetchMusicList();
 const toSongListEdit = () => {
   let id = route.params.id;
   if (songListDetail.value) {
@@ -235,7 +256,7 @@ const updateCommentLiked = (
 };
 </script>
 <template>
-  <div class="p-8">
+  <div class="p-8 pb-2">
     <n-spin :show="isLoading">
       <div v-if="songListDetail" class="flex justify-between">
         <load-img
@@ -342,16 +363,28 @@ const updateCommentLiked = (
       </div>
       <div v-else style="height:200px" />
       <div :value="tabsValue" class="mt-10">
-        <n-tabs type="line" :value="tabsValue">
-          <n-tab name="musicList" @click="tabsValue = 'musicList'">
-            歌曲列表
-          </n-tab>
-          <n-tab name="comment" @click="tabsValue = 'comment'">
-            评论
-          </n-tab>
-        </n-tabs>
-        <div v-show="tabsValue === 'musicList'">
-          musicList
+        <div class="flex justify-between">
+          <n-tabs type="line" :value="tabsValue">
+            <n-tab name="musicList" @click="tabsValue = 'musicList'">
+              歌曲列表
+            </n-tab>
+            <n-tab name="comment" @click="tabsValue = 'comment'">
+              评论 <span class="pl-1 text-sm">({{ songListComment?.total }})</span>
+            </n-tab>
+          </n-tabs>
+          <div class="w-60">
+            <n-input
+              size="small" placeholder="搜索歌单歌曲"
+              round
+            >
+              <template #suffix>
+                <n-icon class="cursor-pointer" :component="Search" />
+              </template>
+            </n-input>
+          </div>
+        </div>
+        <div v-show="tabsValue === 'musicList'" class="mt-5">
+          <music-list :song-list="songList" :loading="songListAllDetailLoading" />
         </div>
         <div v-show="tabsValue === 'comment'" class="mt-8">
           <div>
@@ -403,9 +436,12 @@ const updateCommentLiked = (
     </n-spin>
   </div>
 </template>
-<style>
+<style scoped>
 :deep(.n-card-header__main){
   text-align: center;
+}
+:deep(.n-tabs .n-tabs-nav.n-tabs-nav--line-type .n-tabs-nav-scroll-content){
+  border: none;
 }
 .tag:hover{
   color: var(--n-color-target);

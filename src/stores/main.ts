@@ -2,14 +2,14 @@
 import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
 
-
 export const useMainStore = defineStore({
   id: 'main',
   state: () => ({ 
     theme: localStorage.theme || 'light',
     backTopLeft: localStorage.backTopLeft || '7vw',
     isLogin: localStorage.isLogin && JSON.parse(localStorage.isLogin) || false,
-    userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) ||null
+    userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) ||null,
+    likeSongs: localStorage.likeSongs && JSON.parse(localStorage.likeSongs) || []
   }),
   getters: {
     activeTheme(state) {
@@ -19,6 +19,15 @@ export const useMainStore = defineStore({
     },
     isActiveDarkTheme(state) {
       return state.theme === 'dark';
+    },
+    likeSongsIndexMap(state) {
+      const map:{[key:number]:number} = Object.create(null);
+      state.likeSongs.forEach((
+        item:number, index:number
+      ) => {
+        map[item] = index;
+      });
+      return map;
     }
   },
   actions: {
@@ -45,6 +54,27 @@ export const useMainStore = defineStore({
         document.documentElement.classList.remove('dark');
         document.documentElement.style.colorScheme = '';
       }
+    },
+    setLikeList(data:number[]) {
+      this.likeSongs = data;
+      localStorage.likeSongs = JSON.stringify(data);
+    },
+    removeLikeList(id:number) {
+      this.likeSongs = this.likeSongs.filter((item: number) => item !== id);
+      localStorage.likeSongs = JSON.stringify(this.likeSongs);
+    },
+    removeAllLikeList() {
+      this.likeSongs = [];
+      localStorage.likeSongs = JSON.stringify(this.likeSongs);
+    },
+    addLikeList(id:number) {
+      this.likeSongs.push(id);
+      localStorage.likeSongs = JSON.stringify(this.likeSongs);
+    },
+    hasLikeSong(id:number) {
+      return this.likeSongs[this.likeSongsIndexMap[id]]
+        ? true
+        : false;
     }
   }
 });

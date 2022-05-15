@@ -27,7 +27,10 @@ export function getPlaylistAllDetail(data:{
   limit?: number,
   offset?: number,
 }) {
-  const query = qs.stringify(data);
+  const query = qs.stringify({
+    ...data,
+    timestamp: Date.now()
+  });
   return service.get('/playlist/track/all?'+query);
 }
 // 更新歌单标签
