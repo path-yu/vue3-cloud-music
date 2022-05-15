@@ -5,8 +5,9 @@ import { CaretLeftFilled, CaretRightFilled } from '@vicons/antd';
 import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound } from '@vicons/material';
 import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import { useThemeVars } from 'naive-ui';
-import { computed } from 'vue';
+import { computed, ref } from 'vue';
 const themeVars = useThemeVars();
+const audioRef = ref<HTMLAudioElement>();
 const primaryColor = computed(() => themeVars.value.primaryColor);
 </script>
 
@@ -56,6 +57,7 @@ const primaryColor = computed(() => themeVars.value.primaryColor);
       <n-icon :component="VolumeUpRound" :size="25" class="mr-2 custom-icon" />
       <n-icon :component="List" :size="25" class="mr-2 custom-icon" />
     </div>
+    <audio ref="audioRef" src="" />
   </div>
 </template>
 

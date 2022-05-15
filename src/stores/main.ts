@@ -9,7 +9,9 @@ export const useMainStore = defineStore({
     backTopLeft: localStorage.backTopLeft || '7vw',
     isLogin: localStorage.isLogin && JSON.parse(localStorage.isLogin) || false,
     userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) ||null,
-    likeSongs: localStorage.likeSongs && JSON.parse(localStorage.likeSongs) || []
+    likeSongs: localStorage.likeSongs && JSON.parse(localStorage.likeSongs) || [],
+    playList: localStorage.playList && JSON.parse(localStorage.playList) || [],
+    currentPlayIndx: localStorage.currentPlayIndx && JSON.parse(localStorage.currentPlayIndx) || 0
   }),
   getters: {
     activeTheme(state) {
@@ -28,6 +30,9 @@ export const useMainStore = defineStore({
         map[item] = index;
       });
       return map;
+    },
+    currentPlaySong(state) {
+      return state.playList[state.currentPlayIndx];
     }
   },
   actions: {
