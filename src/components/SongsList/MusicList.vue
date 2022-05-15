@@ -4,6 +4,7 @@ import { HeartOutline, Heart, DownloadOutline } from '@vicons/ionicons5';
 import { useThemeVars, type DataTableColumns } from 'naive-ui';
 import { NIcon, NTime, NEllipsis, NTag } from 'naive-ui';
 import { computed } from 'vue';
+import { useRouter } from 'vue-router';
 type RowData= {
   like:boolean;
   ar:any[]
@@ -19,7 +20,7 @@ defineProps<{
   songList:any[]
   loading:boolean;
 }>();
-
+const router = useRouter();
 const themeVars = useThemeVars();
 const tagColor = computed(() => {
   return {
@@ -60,7 +61,7 @@ const columns:DataTableColumns<RowData> = [
       return <div>
         {row.name}
         {row.mv !== 0
-          ? <NTag size="small" color={tagColor.value} class="ml-2">MV</NTag>
+          ? <NTag onClick={() => router.push(`/mv/${row.mv}`)} size="small" color={tagColor.value} class="ml-2">MV</NTag>
           : null}
         {row.fee === 1
           ? <NTag size="small" color={tagColor.value} class="ml-2">VIP</NTag>
@@ -82,9 +83,7 @@ const columns:DataTableColumns<RowData> = [
     title: '专辑',
     key: 'album',
     width: '120',
-    render(
-      row, index
-    ) {
+    render(row) {
       return <p class="text-sm">
         <NEllipsis>{ formateSongsAuthor(row.ar) }</NEllipsis>
       </p>;

@@ -2,10 +2,11 @@
 import PlayIcon from '@/components/Base/PlayIcon.vue';
 import { formateNumber } from '@/utils';
 import { Play } from '@vicons/carbon';
+import { useRouter } from 'vue-router';
 import BaseEmpty from '../Base/BaseEmpty.vue';
 import LoadImg from '../Base/LoadImg.vue';
 
-
+const router = useRouter();
 defineProps<{
   songs?: any[]
 }>();
@@ -30,7 +31,7 @@ defineProps<{
           size="small"
         >
           <template #cover>
-            <div class="relative">
+            <div class="relative" @click="router.push(`/songList/${item.id}`);">
               <load-img
                 loading-height="12vw"
                 class-name="w-full h-full"

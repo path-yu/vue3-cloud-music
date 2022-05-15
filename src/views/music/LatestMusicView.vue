@@ -1,11 +1,12 @@
 <script setup lang="ts">
 import { formateSongsAuthor } from '@/utils';
 import { useThemeVars } from 'naive-ui';
-import { ref, type CSSProperties } from 'vue';
+import { computed, ref, type CSSProperties } from 'vue';
 import { getTopSong } from '../../service';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import PlayIcon from '@/components/Base/PlayIcon.vue';
 import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
+import { useRouter } from 'vue-router';
 const typeList = [
   {
     value: '0',
@@ -29,9 +30,16 @@ const typeList = [
   }
 ];
 const isLoading = ref(true);
+const router = useRouter();
 const newSongList = ref<any[]>([]);
 const activeType = ref('0');
 const themeVars = useThemeVars();
+const tagColor = computed(() => {
+  return {
+    textColor: themeVars.value.primaryColor,
+    borderColor: themeVars.value.primaryColor
+  };
+});
 const activeStyle = (value: string):CSSProperties => {
   return {
     color: value === activeType.value
@@ -79,7 +87,7 @@ const handleMouseLeave = (
   e:MouseEvent, value:string
 ) => {
   if (value === activeType.value) return;
-  (e.target as HTMLElement).style.opacity = '0.5';
+  (e.target as HTMLElement).style.opacity = '0.8';
 };
 fetchData();
 
@@ -147,15 +155,21 @@ fetchData();
             </div>
             <n-ellipsis class="ml-6 w-xs text-sm flex-30">
               {{ item.name }}
+              <n-tag
+                v-if="item.mvid !== 0" size="small" :color="tagColor"
+                @click=" router.push(`/mv/${item.mvid}`)"
+              >
+                MV
+              </n-tag>
             </n-ellipsis>
-            <p class="ml-2 w-xs text-sm opacity-50 flex-30">
+            <p class="ml-2 w-xs text-sm opacity-80 flex-30">
               <n-ellipsis>{{ formateSongsAuthor(item.artists) }}</n-ellipsis>
             </p>
-            <p class="flex-1 ml-2 w-xs text-sm opacity-50 flex-30">
+            <p class="flex-1 ml-2 w-xs text-sm opacity-80 flex-30">
               <n-ellipsis>{{ item.album.name }}</n-ellipsis>
             </p>
             <n-time
-              class="pl-4 mx-2 text-sm text-left opacity-50"
+              class="pl-4 mx-2 text-sm text-left opacity-80"
               :time="item.bMusic?.playTime"
               format="mm:ss"
             />
