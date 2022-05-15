@@ -227,8 +227,10 @@ const updateCommentLiked = (
   let { index, liked } = data;
   if (isHot) {
     songListComment.value.hotComments[index].liked = liked;
+    songListComment.value.hotComments[index].likedCount+=1;
   } else {
     songListComment.value.comments[index].liked = liked;
+    songListComment.value.comments[index].likedCount-=1;
   }
 };
 </script>
@@ -377,6 +379,9 @@ const updateCommentLiked = (
               @update-comment-list="updateCommentList"
               @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
             />
+            <p v-if="!songListComment.comments?.length" class="text-center opacity-50">
+              还没有评论, 快来抢沙发~
+            </p>
             <div v-if="pageParams.pageCount > 1" class="flex justify-end mt-6">
               <n-pagination
                 v-model:page="pageParams.page" 
