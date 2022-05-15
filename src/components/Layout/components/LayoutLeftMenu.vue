@@ -239,9 +239,9 @@ onMounted(() => {
       v-show="!hiddenLeftMenu"
       bordered
       collapse-mode="width"
-      class="h-main"
       :collapsed-width="64"
       :width="192"
+      style="height:800px"
       :collapsed="collapsed"
       show-trigger
       @collapse="collapsed = true"
@@ -256,7 +256,7 @@ onMounted(() => {
         :default-expand-all="true"
       />
     </n-layout-sider>
-    <n-layout class="h-main rightMain">
+    <n-layout class="rightMain">
       <router-view v-slot="{ Component }">
         <transition
           name="fade-transform"
@@ -283,5 +283,8 @@ onMounted(() => {
 }
 :deep(.n-submenu-children > .n-menu-item > .n-menu-item-content){
   padding-left: 40px !important; 
+}
+.rightMain{
+  height: 800px;
 }
 </style>

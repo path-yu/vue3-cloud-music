@@ -80,7 +80,7 @@ watch(
 </script>
 
 <template>
-  <div class="p-6" :style="{background:themeVars.bodyColor}">
+  <div class="overflow-hidden p-6 musicList" :style="{background:themeVars.bodyColor}">
     <n-space
       vertical class="sticky top-0 z-40 py-4" :style="{background:themeVars.bodyColor}"
       :size="20"
@@ -104,3 +104,11 @@ watch(
     </div>
   </div>
 </template>
+<style scoped>
+.n-layout .n-layout-scroll-container::-webkit-scrollbar-thumb{
+  background-color: transparent;
+}
+:deep(.n-layout .n-layout-scroll-container){
+  overflow:hidden;
+}
+</style>

@@ -110,7 +110,7 @@ const columns:DataTableColumns<RowData> = [
       striped
       :columns="columns"
       :data="songList"
-      :max-height="480"
+      :max-height="650"
       row-class-name="rowClassName"
       virtual-scroll
       :loading="loading"

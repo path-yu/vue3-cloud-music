@@ -197,8 +197,9 @@ fetchData();
   flex: 0.5;
 }
 .songList{
-  height: calc(100vh - 145px);
+  height: 700px;
   padding-left: 0;
   overflow-y: scroll;
+  
 }
 </style>
