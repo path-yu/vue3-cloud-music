@@ -1,18 +1,11 @@
 
 import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
+import state from './state';
 
 export const useMainStore = defineStore({
   id: 'main',
-  state: () => ({ 
-    theme: localStorage.theme || 'light',
-    backTopLeft: localStorage.backTopLeft || '7vw',
-    isLogin: localStorage.isLogin && JSON.parse(localStorage.isLogin) || false,
-    userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) ||null,
-    likeSongs: localStorage.likeSongs && JSON.parse(localStorage.likeSongs) || [],
-    playList: localStorage.playList && JSON.parse(localStorage.playList) || [],
-    currentPlayIndx: localStorage.currentPlayIndx && JSON.parse(localStorage.currentPlayIndx) || 0
-  }),
+  state: () => state,
   getters: {
     activeTheme(state) {
       return state.theme === 'dark'
@@ -32,7 +25,7 @@ export const useMainStore = defineStore({
       return map;
     },
     currentPlaySong(state) {
-      return state.playList[state.currentPlayIndx];
+      return state.playList[state.currentPlayIndex];
     }
   },
   actions: {
@@ -80,6 +73,14 @@ export const useMainStore = defineStore({
       return this.likeSongs[this.likeSongsIndexMap[id]]
         ? true
         : false;
+    },
+    initPlayList(
+      data:any[], index=0
+    ) {
+      this.playList = data;
+      this.currentPlayIndex = index;
+      localStorage.playList = JSON.stringify(data);
+      this.playMode = 'order';
     }
   }
 });

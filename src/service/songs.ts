@@ -20,3 +20,15 @@ export function getLikeList(uid: number) {
   });
   return service.get(`/likelist?${query}`);
 }
+// 获取音乐url
+export function getMusicUrl(id) {
+  const query = qs.stringify({
+    timestamp: Date.now(),
+    id
+  });
+  return service.get('/song/url?'+query);
+}
+// 获取歌词
+export function getLyric(id:string) {
+  return service.get('/lyric?id='+id);
+}
