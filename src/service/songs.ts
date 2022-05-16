@@ -21,7 +21,7 @@ export function getLikeList(uid: number) {
   return service.get(`/likelist?${query}`);
 }
 // 获取音乐url
-export function getMusicUrl(id) {
+export function getMusicUrl(id:string) {
   const query = qs.stringify({
     timestamp: Date.now(),
     id
@@ -31,4 +31,8 @@ export function getMusicUrl(id) {
 // 获取歌词
 export function getLyric(id:string) {
   return service.get('/lyric?id='+id);
+}
+// 检查音乐是否可用
+export function checkMusic(id:string) {
+  return service.get('/check/music?id='+id);
 }

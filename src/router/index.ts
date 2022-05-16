@@ -17,7 +17,7 @@ const router = createRouter({
       path: '/songList/:id',
       name: 'songListDetail',
       component: () => import('@/views/songList/SongListDetail.vue'),
-      meta: { auth: false }
+      meta: { auth: true }
     },
     {
       path: '/songList/edit/:id',

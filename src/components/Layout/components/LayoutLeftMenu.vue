@@ -124,7 +124,7 @@ watch(
 watch(
   () => mainStore.userProfile, (val) => {
     if (val) {
-      let userId = mainStore.userProfile.profile.userId;
+      let userId = mainStore.userProfile!.profile.userId;
       fetchUserPlaylist(userId);
       fetchMyLikeMusicList(userId);
     } else {

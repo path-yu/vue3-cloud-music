@@ -90,8 +90,13 @@ const fetchMusicList = (id:string=route.params.id as string) => {
       songList.value = res.data.songs.map((
         item:any, index:number
       ) => {
-        let hasLike = mainStore.hasLikeSong(item.id);
-        item.like = hasLike;
+        if (mainStore.likeSongs) {
+          let hasLike = mainStore.hasLikeSong(item.id);
+          item.like = hasLike;
+        } else {
+          item.like = false;
+        }
+    
         item.key = index;
         return item;
       });
@@ -384,7 +389,9 @@ const updateCommentLiked = (
           </div>
         </div>
         <div v-show="tabsValue === 'musicList'" class="mt-5">
-          <music-list :song-list="songList" :loading="songListAllDetailLoading" />
+          <music-list
+            :song-list="songList" :loading="songListAllDetailLoading" :play-list-id="+songListId"
+          />
         </div>
         <div v-show="tabsValue === 'comment'" class="mt-8">
           <div>

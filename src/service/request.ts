@@ -22,8 +22,15 @@ instance.interceptors.response.use(
   (data) => {
     return data;
   }, err => {
-    window.$message.error('network error');
-    console.log(err);
+    //过滤掉检查音乐是否可用接口
+    if (!err.response.config.url.includes('/check/music')) {
+      window.$message.error('network error');
+    } else {
+      return {
+        musicSuccess: false,
+        message: '亲爱的,暂无版权!'
+      };
+    }
     return err;
   }
 );
