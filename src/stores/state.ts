@@ -9,6 +9,7 @@ export interface StoreState{
   currentPlayIndex: number;
   playMode: 'order' | 'random' | 'heartbeat' | 'singleLoop'
 }
+export type playMode = 'order' | 'random' | 'heartbeat' | 'singleLoop';
 const state:StoreState = { 
   theme: localStorage.theme || 'light',
   backTopLeft: localStorage.backTopLeft || '7vw',
@@ -16,7 +17,7 @@ const state:StoreState = {
   userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) ||null,
   likeSongs: localStorage.likeSongs && JSON.parse(localStorage.likeSongs) || [],
   // 播放列表
-  playList: localStorage.playList && JSON.parse(localStorage.playList) || [],
+  playList: localStorage.playList && JSON.parse(localStorage.playList) || ['a', 'b', 'c'],
   // 当前播放的歌曲下标
   currentPlayIndex: localStorage.currentPlayIndex || 0,
   // 播放模式

@@ -6,9 +6,19 @@ import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound } from 
 import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import { useThemeVars } from 'naive-ui';
 import { computed, ref } from 'vue';
+import { useMainStore } from '@/stores/main';
 const themeVars = useThemeVars();
+const mainStore = useMainStore();
 const audioRef = ref<HTMLAudioElement>();
 const primaryColor = computed(() => themeVars.value.primaryColor);
+const handlePrevClick = () => {
+  mainStore.togglePrev();
+  // console.log(mainStore.currentPlayIndex);
+};
+const handleNextClick = () => {
+  mainStore.toggleNext();
+  console.log(mainStore.currentPlayIndex);
+};
 </script>
 
 <template>
@@ -34,11 +44,17 @@ const primaryColor = computed(() => themeVars.value.primaryColor);
     <div class="flex flex-col flex-1 items-center control">
       <div style="width:300px" class="flex justify-between items-center">
         <n-icon class="custom-icon" :size="22" :component="HeartbeatIcon" />
-        <n-icon class="prev custom-icon" :size="22" :component="SkipPreviousSharp" />
+        <n-icon
+          class="prev custom-icon" :size="22" :component="SkipPreviousSharp"
+          @click="handlePrevClick"
+        />
         <div class="flex justify-center items-center w-9 h-9  bg-neutral-200/60 hover:bg-neutral-200 dark:bg-slate-100/20 dark:hover:bg-slate-100/40 rounded-full">
           <n-icon :size="22" :component="PlayArrowSharp" />
         </div>
-        <n-icon class="next custom-icon" :size="22" :component="SkipNextSharp" />
+        <n-icon
+          class="next custom-icon" :size="22" :component="SkipNextSharp"
+          @click="handleNextClick"
+        />
         <n-button text>
           词
         </n-button>
