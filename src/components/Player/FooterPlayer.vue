@@ -11,6 +11,7 @@ import { computed, nextTick, onMounted, ref, watch, type CSSProperties } from 'v
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 const progressWidth = 500;
+const progressBarWidth = 486;
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const audioRef = ref<HTMLAudioElement>();
@@ -22,7 +23,7 @@ const primaryColor = computed(() => themeVars.value.primaryColor);
 const currentSong = computed(() => mainStore.currentPlaySong);
 
 const dotStyle = computed<CSSProperties>(() => {
-  let left = (486 * percentage.value) / 100;
+  let left = (progressBarWidth * percentage.value) / 100;
   return { transform: `translateX(${left+7}px)`, zIndex: 999 };
 });
 // 点击切换上一首
@@ -83,7 +84,17 @@ const handlePlay = () => {
   if (percentage.value === 100) {
     currentPlayTime.value = '00:00';
     percentage.value = 0;
-
+  }
+};
+// 点击进度条 切换播放进度
+const handleProgressClick = (ev:MouseEvent) => {
+  let target = ev.target as HTMLElement;
+  percentage.value = (ev.offsetX / progressBarWidth) * 100;
+  let currentTime = (currentSong.value.dt * percentage.value) / 100;
+  currentPlayTime.value = dayjs(currentTime).format('mm:ss');
+  audioRef.value!.currentTime = currentTime / 1000;
+  if (audioRef.value?.paused) {
+    audioRef.value.play();
   }
 };
 </script>
@@ -127,7 +138,7 @@ const handlePlay = () => {
         </n-button>
       </div>
       <div class="flex items-center mt-1">
-        <span class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
+        <span style="margin-right:-6px" class="text-xs opacity-50">{{ currentPlayTime }}</span>
         <div class="flex flex-1 items-center" :style="{width:progressWidth+'px'}">
           <n-icon
             :style="dotStyle" class="transition-transform" :component="DotMark"
@@ -136,7 +147,9 @@ const handlePlay = () => {
           <n-progress
             status="success" type="line" :percentage="percentage"
             :show-indicator="false"
-            rail-style="height:2px"
+            rail-style="height:4px"
+            style="padding:3px 0"
+            @click="handleProgressClick"
           />
         </div>
         <span class="ml-2 text-xs opacity-50">
