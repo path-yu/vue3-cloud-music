@@ -1,6 +1,7 @@
+/* eslint-disable consistent-return */
 
 import { checkMusic, getLyric, getMusicUrl } from '@/service';
-import { getRandomIntInclusive } from '@/utils';
+import { getNextIndex, getPrevIndex, getRandomIntInclusive } from '@/utils';
 import type { AnyObject } from 'env';
 import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
@@ -85,13 +86,15 @@ export const useMainStore = defineStore({
     ) {
       // 如果没有获取url, 则获取歌曲url
       if (!data[index].url) {
-        await this.setMusicData(
+        const res = await this.setMusicData(
           data, data[index].id, index
         );
+        if (!res.success) return;
       }
       this.playList = data;
       this.currentPlayIndex = index;
       localStorage.playList = JSON.stringify(this.playList);
+      localStorage.currentPlayListId = playListId;
       this.currentPlayListId = playListId;
       this.playMode = 'order';
     },
@@ -99,12 +102,14 @@ export const useMainStore = defineStore({
     async changePlayIndex(index:number) {
       // 如果没有获取url, 则获取歌曲url
       if (!this.playList[index].url) {
-        await this.setMusicData(
+        const res = await this.setMusicData(
           this.playList, this.playList[index].id, index
         );
+        if (!res.success) return { success: false };
       }
       this.currentPlayIndex = index;
       localStorage.currentPlayIndex = index;
+      console.log(localStorage.currentPlayIndex);
       localStorage.playList = JSON.stringify(this.playList);
     },
     // 切换播放模式
@@ -112,9 +117,11 @@ export const useMainStore = defineStore({
       this.playMode = mode;
     },
     // 切换下一首
-    async toggleNext() {
+    async toggleNext(index?:number) {
       const playListLen = this.playList.length;
-      const currentPlayIndex = +this.currentPlayIndex;
+      const currentPlayIndex = index
+        ? index
+        : +this.currentPlayIndex;
       prevIndex = currentPlayIndex;
       let resultIndex;
       // 判断播放模式 如果为随机播放
@@ -130,29 +137,41 @@ export const useMainStore = defineStore({
             resultIndex = randomIndex;
           } else {
             // 如果当前的随机数重复
-            resultIndex = randomIndex === playListLen - 1
-              ? 0
-              : randomIndex + 1;
+            resultIndex = getNextIndex(
+              randomIndex, playListLen - 1
+            );
           }
         }
       } else {
-        resultIndex = currentPlayIndex === playListLen - 1
-          ? 0
-          : currentPlayIndex + 1;
+        resultIndex = getNextIndex(
+          currentPlayIndex, playListLen - 1
+        );
       }
       
       if (!this.playList[resultIndex].url) {
-        await this.setMusicData(
+        const res = await this.setMusicData(
           this.playList, this.playList[resultIndex].id, resultIndex
         );
+        // 如果获取失败说明无版权,则获取下一首
+        if (!res.success) {
+          const nextIndex = getNextIndex(
+            this.currentPlayIndex, playListLen - 1
+          );
+          this.toggleNext(nextIndex);
+          return; 
+        }
       }
       this.currentPlayIndex = resultIndex;
+      localStorage.currentPlayIndex = resultIndex;
       localStorage.playList = JSON.stringify(this.playList);
+      return { success: true };
     },
     // 切换上一首
-    async togglePrev() {
+    async togglePrev(index?:number) {
       const playListLen = this.playList.length;
-      const currentPlayIndex = +this.currentPlayIndex;
+      const currentPlayIndex = index
+        ? index
+        : +this.currentPlayIndex;
       nextIndex = currentPlayIndex;
       let resultIndex;
       // 判断播放模式 如果为随机播放
@@ -168,23 +187,31 @@ export const useMainStore = defineStore({
             resultIndex = randomIndex;
           } else {
             // 如果当前的随机数重复
-            resultIndex = randomIndex === 0
-              ? playListLen - 1
-              : randomIndex - 1;
+            resultIndex = getPrevIndex(
+              currentPlayIndex, playListLen - 1
+            );
           }
         }
       } else {
-        resultIndex = currentPlayIndex === 0
-          ? playListLen - 1
-          : currentPlayIndex - 1;
-      }
-      if (!this.playList[resultIndex].url) {
-        await this.setMusicData(
-          this.playList, this.playList[resultIndex].id, resultIndex
+        resultIndex = getPrevIndex(
+          currentPlayIndex, playListLen - 1
         );
       }
+      if (!this.playList[resultIndex].url) {
+        const res = await this.setMusicData(
+          this.playList, this.playList[resultIndex].id, resultIndex
+        );
+        if (!res.success) {
+          const prevIndex = getPrevIndex(
+            this.currentPlayIndex, playListLen - 1
+          );
+          return this.togglePrev(prevIndex);
+        }
+      }
       this.currentPlayIndex = resultIndex;
+      localStorage.currentPlayIndex = resultIndex;
       localStorage.playList = JSON.stringify(this.playList);
+      return { success: true };
     },
     async setMusicData(
       data:any[], id:string, index:number
@@ -197,15 +224,17 @@ export const useMainStore = defineStore({
       const checkRes = await checkMusic(id) as any;
       if (!checkRes.musicSuccess && !checkRes?.data?.success) {
         window.$message.destroyAll();
-        window.$message.warning('亲爱的,暂无版权!');
-        return;  
+        window.$message.info('亲爱的,暂无版权!为你自动跳过此首歌曲');
+        return { success: false };
       }
       // 获取音乐url
       const res = await getMusicUrl(id);
       if (res.data.code === 200) {
         result.url = res.data.data[0].url;
       } else {
+        window.$message.warning('获取歌曲播放地址失败,已为您自动跳过');
         window.$message.error('获取歌曲播放地址失败!');
+        return { success: false };
       }
       // 获取歌曲歌词
       const lyricRes = await getLyric(id);
@@ -221,6 +250,7 @@ export const useMainStore = defineStore({
         ...data[index],
         ...result
       };
+      return { success: true };
     }
   }
 });

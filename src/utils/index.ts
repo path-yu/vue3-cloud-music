@@ -147,3 +147,19 @@ export function getRandomIntInclusive(
   max = Math.floor(max);
   return Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值 
 }
+// 当值等于最大值时,返回0,否则+1
+export function getNextIndex(
+  index:number, max:number
+) {
+  return index === max
+    ? 0
+    : index + 1;
+}
+// 当值等于0时,返回最大值,否则-1
+export function getPrevIndex(
+  index:number, max:number
+) {
+  return index === 0
+    ? max
+    : index - 1;
+}

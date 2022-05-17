@@ -1,4 +1,3 @@
-/* eslint-disable @typescript-eslint/no-array-constructor */
 <script lang="tsx">
 import { batchRequest, getLyric, getMusicUrl } from '@/service';
 import { useMainStore } from '@/stores/main';
