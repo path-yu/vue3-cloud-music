@@ -7,7 +7,7 @@ import { DotMark } from '@vicons/carbon';
 import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound } from '@vicons/material';
 import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import { useThemeVars } from 'naive-ui';
-import { computed, nextTick, onMounted, ref, watch, type CSSProperties } from 'vue';
+import { computed, nextTick, ref, watch, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 const progressWidth = 500;
