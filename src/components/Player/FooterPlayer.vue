@@ -2,20 +2,23 @@
 import LoadImg from '../Base/LoadImg.vue';
 import StopIcon from '@/components/Icon/StopIcon.vue';
 import { formateSongsAuthor } from '@/utils';
-import { Heart, List } from '@vicons/ionicons5';
-import { CaretLeftFilled, CaretRightFilled } from '@vicons/antd';
+import { List } from '@vicons/ionicons5';
 import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound } from '@vicons/material';
 import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
+
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const audioRef = ref<HTMLAudioElement>();
 const triggerEle = ref<HTMLDivElement>();
+const percentage = ref(0);
+const currentPlayTime = ref('00:00');
 const paused = ref(true); //是否为暂停状态
 const primaryColor = computed(() => themeVars.value.primaryColor);
 const currentSong = computed(() => mainStore.currentPlaySong);
+console.log(mainStore.currentPlaySong);
 
 // 点击切换上一首
 const handlePrevClick = () => {
@@ -46,6 +49,7 @@ const handleTriggerClick = () => {
 // 切换播放状态
 const togglePlayStatus = () => {
   if (audioRef.value?.paused) {
+    audioRef.value.load();
     audioRef.value?.play();
     paused.value = false;
   } else {
@@ -63,9 +67,13 @@ const playNextMusic = () => {
     mainStore.toggleNext();
   }
 };
-// 播放开始中
+// 播放中
 const handlePlaying = () => {
 
+};
+// 播放开始
+const handlePlay = () => {
+  percentage.value = 0;
 };
 </script>
 
@@ -108,22 +116,25 @@ const handlePlaying = () => {
         </n-button>
       </div>
       <div style="width:500px" class="flex items-center mt-1">
-        <span class="mr-3 text-xs opacity-50">02.44</span>
+        <span class="mr-3 text-xs opacity-50">{{ currentPlayTime }}</span>
         <n-progress
-          status="success" type="line" :percentage="50"
+          status="success" type="line" :percentage="percentage"
           :show-indicator="false"
           rail-style="height:5px"
         />
-        <span class="ml-3 text-xs opacity-50">02.44</span>
+        <span class="ml-3 text-xs opacity-50">
+          <n-time format="mm:ss" :time="currentSong?.dt" />
+        </span>
       </div>
     </div>
     <div class="flex items-center">
       <n-icon :component="VolumeUpRound" :size="25" class="mr-2 custom-icon" />
       <n-icon :component="List" :size="25" class="mr-2 custom-icon" />
     </div>
-    <audi
-      ref="audioRef" :src="currentSong?.url" @playing="handlePlaying"
-      @ended="playNextMusic"
+    <audio
+      ref="audioRef" :src="currentSong?.url"
+      @playing="handlePlaying" @ended="playNextMusic" 
+      @play="handlePlay"
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
   </div>
