@@ -3,13 +3,14 @@ import LoadImg from '../Base/LoadImg.vue';
 import StopIcon from '@/components/Icon/StopIcon.vue';
 import { formateSongsAuthor } from '@/utils';
 import { List } from '@vicons/ionicons5';
+import { DotMark } from '@vicons/carbon';
 import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound } from '@vicons/material';
 import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import { useThemeVars } from 'naive-ui';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
-
+const progressWidth = 500;
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const audioRef = ref<HTMLAudioElement>();
@@ -19,8 +20,11 @@ const currentPlayTime = ref('00:00');
 const paused = ref(true); //是否为暂停状态
 const primaryColor = computed(() => themeVars.value.primaryColor);
 const currentSong = computed(() => mainStore.currentPlaySong);
-console.log(mainStore.currentPlaySong);
 
+const dotStyle = computed<CSSProperties>(() => {
+  let left = (486 * percentage.value) / 100;
+  return { transform: `translateX(${left+7}px)`, zIndex: 999 };
+});
 // 点击切换上一首
 const handlePrevClick = () => {
   mainStore.togglePrev();
@@ -50,7 +54,6 @@ const handleTriggerClick = () => {
 // 切换播放状态
 const togglePlayStatus = () => {
   if (audioRef.value?.paused) {
-    audioRef.value.load();
     audioRef.value?.play();
     paused.value = false;
   } else {
@@ -77,8 +80,11 @@ const handleTimeupdate = (event:Event) => {
 };
 // 播放开始
 const handlePlay = () => {
-  percentage.value = 0;
-  currentPlayTime.value = '00:00';
+  if (percentage.value === 100) {
+    currentPlayTime.value = '00:00';
+    percentage.value = 0;
+
+  }
 };
 </script>
 
@@ -120,14 +126,20 @@ const handlePlay = () => {
           词
         </n-button>
       </div>
-      <div style="width:500px" class="flex items-center mt-1">
-        <span class="mr-3 text-xs opacity-50">{{ currentPlayTime }}</span>
-        <n-progress
-          status="success" type="line" :percentage="percentage"
-          :show-indicator="false"
-          rail-style="height:5px"
-        />
-        <span class="ml-3 text-xs opacity-50">
+      <div class="flex items-center mt-1">
+        <span class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
+        <div class="flex flex-1 items-center" :style="{width:progressWidth+'px'}">
+          <n-icon
+            :style="dotStyle" class="transition-transform" :component="DotMark"
+            :color="primaryColor"
+          />
+          <n-progress
+            status="success" type="line" :percentage="percentage"
+            :show-indicator="false"
+            rail-style="height:2px"
+          />
+        </div>
+        <span class="ml-2 text-xs opacity-50">
           <n-time format="mm:ss" :time="currentSong?.dt" />
         </span>
       </div>
