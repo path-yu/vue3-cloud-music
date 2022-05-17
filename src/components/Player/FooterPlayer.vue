@@ -17,9 +17,11 @@ const paused = ref(true); //是否为暂停状态
 const primaryColor = computed(() => themeVars.value.primaryColor);
 const currentSong = computed(() => mainStore.currentPlaySong);
 
+// 点击切换上一首
 const handlePrevClick = () => {
   mainStore.togglePrev();
 };
+// 点击切换下一首
 const handleNextClick = () => {
   mainStore.toggleNext();
 };
@@ -41,6 +43,7 @@ const handleTriggerClick = () => {
     paused.value = false;
   });
 };
+// 切换播放状态
 const togglePlayStatus = () => {
   if (audioRef.value?.paused) {
     audioRef.value?.play();
@@ -49,6 +52,20 @@ const togglePlayStatus = () => {
     audioRef.value?.pause();
     paused.value = true;
   }
+};
+
+const playNextMusic = () => {
+  // 如果为单曲循环模式,则重新播放
+  if (mainStore.playMode === 'singleLoop') {
+    audioRef.value!.currentTime = 0;
+    audioRef.value?.play();
+  } else {
+    mainStore.toggleNext();
+  }
+};
+// 播放开始中
+const handlePlaying = () => {
+
 };
 </script>
 
@@ -104,7 +121,10 @@ const togglePlayStatus = () => {
       <n-icon :component="VolumeUpRound" :size="25" class="mr-2 custom-icon" />
       <n-icon :component="List" :size="25" class="mr-2 custom-icon" />
     </div>
-    <audio ref="audioRef" :src="currentSong?.url" />
+    <audi
+      ref="audioRef" :src="currentSong?.url" @playing="handlePlaying"
+      @ended="playNextMusic"
+    />
     <div ref="triggerEle" @click="handleTriggerClick" />
   </div>
 </template>
