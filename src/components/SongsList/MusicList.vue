@@ -6,7 +6,7 @@ import { HeartOutline, Heart, DownloadOutline } from '@vicons/ionicons5';
 import type { AnyObject } from 'env';
 import { useThemeVars, type DataTableColumns } from 'naive-ui';
 import { NIcon, NTime, NEllipsis, NTag } from 'naive-ui';
-import { computed, defineComponent } from 'vue';
+import { computed, defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 type RowData= {
@@ -37,6 +37,7 @@ export default defineComponent({
         borderColor: themeVars.value.primaryColor
       };
     });
+    const isLoad = ref(false);
     const columns:DataTableColumns<RowData> = [
       {
         title: '操作',
@@ -112,20 +113,23 @@ export default defineComponent({
     const handleClick = async (
       row: any, index:number
     ) => {
+      if (isLoad.value) return;
+      isLoad.value = true;
       // 初始化歌曲列表
       if (!mainStore.playList.length) {
-        mainStore.initPlayList(
+        await mainStore.initPlayList(
           props.songList, index, props.playListId
         );
       } else {
         if (mainStore.currentPlayListId === props.playListId) {
-          mainStore.changePlayIndex(index);
+          await mainStore.changePlayIndex(index);
         } else {
-          mainStore.initPlayList(
+          await mainStore.initPlayList(
             props.songList, index, props.playListId
           );
         }
       }
+      isLoad.value = false;
     };
     return () => {
       return <div >
