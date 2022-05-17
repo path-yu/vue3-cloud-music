@@ -12,6 +12,7 @@
   "dependencies": {
     "@vueuse/core": "^8.2.3",
     "axios": "^0.26.1",
+    "dayjs": "^1.11.2",
     "eslint-plugin-tailwindcss": "^3.5.0",
     "lodash": "^4.17.21",
     "normalize.css": "^8.0.1",

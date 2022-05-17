@@ -18,6 +18,7 @@ specifiers:
   '@vueuse/core': ^8.2.3
   autoprefixer: ^10.4.4
   axios: ^0.26.1
+  dayjs: ^1.11.2
   eslint: ^8.5.0
   eslint-plugin-tailwindcss: ^3.5.0
   eslint-plugin-vue: ^8.2.0
@@ -46,6 +47,7 @@ specifiers:
 dependencies:
   '@vueuse/core': 8.2.3_vue@3.2.31
   axios: 0.26.1
+  dayjs: 1.11.2
   eslint-plugin-tailwindcss: 3.5.0_autoprefixer@10.4.4
   lodash: 4.17.21
   normalize.css: 8.0.1
@@ -533,6 +535,10 @@ packages:
     resolution: {integrity: sha512-8d35hViGYx/QH0icHYCeLmsLmMUheMmTyV9Fcm6gvNwdw31yXXH+O85sOBJ+OLnLQMKZowvpKb6FgMIQjcpvQw==}
     engines: {node: '>=0.11'}
     dev: true
+
+  /dayjs/1.11.2:
+    resolution: {integrity: sha512-F4LXf1OeU9hrSYRPTTj/6FbO4HTjPKXvEIC1P2kcnFurViINCVk3ZV0xAS3XVx9MkMsXbbqlK6hjseaYbgKEHw==}
+    dev: false
 
   /debug/3.2.7:
     resolution: {integrity: sha512-CFjzYYAi4ThfiQvizrFQevTTXHtnCqWfe7x1AhgEscTz6ZbLbfoLRLPugTQyBth6f8ZERVUSyWHFD/7Wu4t1XQ==}

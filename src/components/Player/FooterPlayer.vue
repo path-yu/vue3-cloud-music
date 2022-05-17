@@ -8,6 +8,7 @@ import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
+import dayjs from 'dayjs';
 
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
@@ -67,13 +68,17 @@ const playNextMusic = () => {
     mainStore.toggleNext();
   }
 };
-// 播放中
-const handlePlaying = () => {
-
+// 播放进度变化
+const handleTimeupdate = (event:Event) => {
+  const target = event.target as HTMLAudioElement;
+  currentPlayTime.value = dayjs(target.currentTime * 1000).format('mm:ss');
+  percentage.value = Math.round(((target.currentTime * 1000) / currentSong.value.dt) * 100);
+  
 };
 // 播放开始
 const handlePlay = () => {
   percentage.value = 0;
+  currentPlayTime.value = '00:00';
 };
 </script>
 
@@ -133,7 +138,7 @@ const handlePlay = () => {
     </div>
     <audio
       ref="audioRef" :src="currentSong?.url"
-      @playing="handlePlaying" @ended="playNextMusic" 
+      @timeupdate="handleTimeupdate" @ended="playNextMusic" 
       @play="handlePlay"
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
