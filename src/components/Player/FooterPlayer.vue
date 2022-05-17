@@ -13,10 +13,16 @@ const progressWidth = 500;
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const audioRef = ref<HTMLAudioElement>();
+// 触发交互元素
 const triggerEle = ref<HTMLDivElement>();
+// 进度条百分比
 const percentage = ref(0);
+// 当前播放时间
 const currentPlayTime = ref('00:00');
-const paused = ref(true); //是否为暂停状态
+//是否为暂停状态
+const paused = ref(true); 
+// 音量大小
+const volume = ref(+localStorage.volume || 0);
 const primaryColor = computed(() => themeVars.value.primaryColor);
 const currentSong = computed(() => mainStore.currentPlaySong);
 let slideValueChange = false;// 记录slider值是否手动发生了改变
@@ -98,6 +104,12 @@ const handleSliderMouseUp = () => {
   }
   slideValueChange = false;
 };
+// 音量滑动选择器监听回调
+const handleVolumeChange = (value:number) => {
+  localStorage.volume = value;
+  volume.value = value;
+  audioRef.value!.volume = volume.value / 100;
+};
 </script>
 
 <template>
@@ -152,7 +164,18 @@ const handleSliderMouseUp = () => {
       </div>
     </div>
     <div class="flex items-center">
-      <n-icon :component="VolumeUpRound" :size="25" class="mr-2 custom-icon" />
+      <n-popover
+        placement="bottom"
+        trigger="hover"
+      >
+        <template #trigger>
+          <n-icon :component="VolumeUpRound" :size="25" class="mr-2 custom-icon" />
+        </template>
+        <n-slider
+          :value="volume" vertical style="height:100px"
+          @update-value="handleVolumeChange"
+        />
+      </n-popover>
       <n-icon :component="List" :size="25" class="mr-2 custom-icon" />
     </div>
     <audio
