@@ -83,13 +83,13 @@ export const useMainStore = defineStore({
     async initPlayList(
       data:any[], index=0, playListId:number
     ) {
-      this.playList = data;
       // 如果没有获取url, 则获取歌曲url
-      if (!this.playList[index].url) {
+      if (!data[index].url) {
         await this.setMusicData(
-          this.playList[index].id, index
+          data, data[index].id, index
         );
       }
+      this.playList = data;
       this.currentPlayIndex = index;
       localStorage.playList = JSON.stringify(this.playList);
       this.currentPlayListId = playListId;
@@ -100,7 +100,7 @@ export const useMainStore = defineStore({
       // 如果没有获取url, 则获取歌曲url
       if (!this.playList[index].url) {
         await this.setMusicData(
-          this.playList[index].id, index
+          this.playList, this.playList[index].id, index
         );
       }
       this.currentPlayIndex = index;
@@ -143,7 +143,7 @@ export const useMainStore = defineStore({
       
       if (!this.playList[resultIndex].url) {
         await this.setMusicData(
-          this.playList[resultIndex].id, resultIndex
+          this.playList, this.playList[resultIndex].id, resultIndex
         );
       }
       this.currentPlayIndex = resultIndex;
@@ -180,15 +180,15 @@ export const useMainStore = defineStore({
       }
       if (!this.playList[resultIndex].url) {
         await this.setMusicData(
-          this.playList[resultIndex].id, resultIndex
+          this.playList, this.playList[resultIndex].id, resultIndex
         );
       }
       this.currentPlayIndex = resultIndex;
       localStorage.playList = JSON.stringify(this.playList);
     },
     async setMusicData(
-      id:string, index:number
-    ) {
+      data:any[], id:string, index:number
+    ):Promise<any> {
       const result:AnyObject={};
       window.$message.loading(
         '获取歌曲数据中...', { duration: 0 }
@@ -210,15 +210,15 @@ export const useMainStore = defineStore({
       // 获取歌曲歌词
       const lyricRes = await getLyric(id);
       if (res.data.code === 200) {
-        result.lyric = lyricRes.data.lrc.lyric;
-        result.tlyric = lyricRes.data.tlyric.lyric;
+        result.lyric = lyricRes.data?.lrc?.lyric;
+        result.tlyric = lyricRes.data?.tlyric?.lyric;
       } else {
         console.log('获取歌词失败');
       }
       window.$message.destroyAll();
       window.$message.success('获取成功');
-      this.playList[index] = {
-        ...this.playList[index],
+      data[index] = {
+        ...data[index],
         ...result
       };
     }
