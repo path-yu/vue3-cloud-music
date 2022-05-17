@@ -21,7 +21,9 @@ const saveBtnLoading = ref(false);
 const fileRef = ref<HTMLElement>();
 const coverUrl = ref(query.coverUrl);
 const modelRef = ref({ songListName: query.songListName });
-const selectTags = ref(query.tags.split(',') || []);
+const selectTags = ref(query.tags
+  ? query.tags.split(',')
+  : [] || []);
 
 const rules:FormRules = {
   songListName: {

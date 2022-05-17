@@ -76,7 +76,7 @@ const playNextMusic = () => {
 const handleTimeupdate = (event:Event) => {
   const target = event.target as HTMLAudioElement;
   currentPlayTime.value = dayjs(target.currentTime * 1000).format('mm:ss');
-  percentage.value = Math.round(((target.currentTime * 1000) / currentSong.value.dt) * 100);
+  percentage.value = Math.round(((target.currentTime * 1000) / currentSong.value?.dt) * 100);
   
 };
 // 播放开始
@@ -90,7 +90,7 @@ const handlePlay = () => {
 const handleProgressClick = (ev:MouseEvent) => {
   let target = ev.target as HTMLElement;
   percentage.value = (ev.offsetX / progressBarWidth) * 100;
-  let currentTime = (currentSong.value.dt * percentage.value) / 100;
+  let currentTime = (currentSong.value?.dt * percentage.value) / 100;
   currentPlayTime.value = dayjs(currentTime).format('mm:ss');
   audioRef.value!.currentTime = currentTime / 1000;
   if (audioRef.value?.paused) {
