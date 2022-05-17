@@ -3,15 +3,13 @@ import LoadImg from '../Base/LoadImg.vue';
 import StopIcon from '@/components/Icon/StopIcon.vue';
 import { formateSongsAuthor } from '@/utils';
 import { List } from '@vicons/ionicons5';
-import { DotMark } from '@vicons/carbon';
 import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound } from '@vicons/material';
 import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import { useThemeVars } from 'naive-ui';
-import { computed, nextTick, ref, watch, type CSSProperties } from 'vue';
+import { computed, nextTick, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 const progressWidth = 500;
-const progressBarWidth = 486;
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const audioRef = ref<HTMLAudioElement>();
@@ -21,11 +19,8 @@ const currentPlayTime = ref('00:00');
 const paused = ref(true); //是否为暂停状态
 const primaryColor = computed(() => themeVars.value.primaryColor);
 const currentSong = computed(() => mainStore.currentPlaySong);
+let slideValueChange = false;// 记录slider值是否手动发生了改变
 
-const dotStyle = computed<CSSProperties>(() => {
-  let left = (progressBarWidth * percentage.value) / 100;
-  return { transform: `translateX(${left+7}px)`, zIndex: 999 };
-});
 // 点击切换上一首
 const handlePrevClick = () => {
   mainStore.togglePrev();
@@ -76,8 +71,10 @@ const playNextMusic = () => {
 const handleTimeupdate = (event:Event) => {
   const target = event.target as HTMLAudioElement;
   currentPlayTime.value = dayjs(target.currentTime * 1000).format('mm:ss');
-  percentage.value = Math.round(((target.currentTime * 1000) / currentSong.value?.dt) * 100);
-  
+  // 如果当前滑动条正在改变,则不设置对应的值, 避免冲突
+  if (!slideValueChange) {
+    percentage.value = Math.round(((target.currentTime * 1000) / currentSong.value?.dt) * 100);
+  }
 };
 // 播放开始
 const handlePlay = () => {
@@ -86,16 +83,20 @@ const handlePlay = () => {
     percentage.value = 0;
   }
 };
-// 点击进度条 切换播放进度
-const handleProgressClick = (ev:MouseEvent) => {
-  let target = ev.target as HTMLElement;
-  percentage.value = (ev.offsetX / progressBarWidth) * 100;
+const handleUpdateSliderValue = (value:number) => {
+  percentage.value = value;
+  slideValueChange = true;
+};
+// 处理鼠标在进度条上抬起事件
+const handleSliderMouseUp = () => {
   let currentTime = (currentSong.value?.dt * percentage.value) / 100;
   currentPlayTime.value = dayjs(currentTime).format('mm:ss');
   audioRef.value!.currentTime = currentTime / 1000;
   if (audioRef.value?.paused) {
     audioRef.value.play();
+    paused.value = false;
   }
+  slideValueChange = false;
 };
 </script>
 
@@ -138,18 +139,11 @@ const handleProgressClick = (ev:MouseEvent) => {
         </n-button>
       </div>
       <div class="flex items-center mt-1">
-        <span style="margin-right:-6px" class="text-xs opacity-50">{{ currentPlayTime }}</span>
+        <span class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
         <div class="flex flex-1 items-center" :style="{width:progressWidth+'px'}">
-          <n-icon
-            :style="dotStyle" class="transition-transform" :component="DotMark"
-            :color="primaryColor"
-          />
-          <n-progress
-            status="success" type="line" :percentage="percentage"
-            :show-indicator="false"
-            rail-style="height:4px"
-            style="padding:3px 0"
-            @click="handleProgressClick"
+          <n-slider
+            :on-update:value="handleUpdateSliderValue" :value="percentage" :tooltip="false"
+            @mouseup="handleSliderMouseUp"
           />
         </div>
         <span class="ml-2 text-xs opacity-50">
@@ -164,7 +158,7 @@ const handleProgressClick = (ev:MouseEvent) => {
     <audio
       ref="audioRef" :src="currentSong?.url"
       @timeupdate="handleTimeupdate" @ended="playNextMusic" 
-      @play="handlePlay"
+      @play="handlePlay" 
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
   </div>
