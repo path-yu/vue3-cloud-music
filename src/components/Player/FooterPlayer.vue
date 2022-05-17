@@ -100,7 +100,7 @@ const handleProgressClick = (ev:MouseEvent) => {
 </script>
 
 <template>
-  <div class="flex items-center p-2 footer-player">
+  <div v-if="mainStore.playList.length" class="flex items-center p-2 footer-player">
     <div class="flex items-center w-40 h-full">
       <load-img
         loading-height="48px"
