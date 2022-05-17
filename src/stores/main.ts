@@ -114,71 +114,71 @@ export const useMainStore = defineStore({
     async toggleNext() {
       const playListLen = this.playList.length;
       prevIndex = this.currentPlayIndex;
+      let resultIndex;
       // 判断播放模式 如果为随机播放
       if (this.playMode === 'random') {
         if (nextIndex) {
-          this.currentPlayIndex = nextIndex;
+          resultIndex = nextIndex;
           nextIndex = null;
         } else {
           const randomIndex = getRandomIntInclusive(
             0, playListLen - 1
           );
           if (randomIndex !== this.currentPlayIndex) {
-            this.currentPlayIndex = randomIndex;
+            resultIndex = randomIndex;
           } else {
             // 如果当前的随机数重复
-            this.currentPlayIndex = randomIndex === playListLen - 1
+            resultIndex = randomIndex === playListLen - 1
               ? 0
               : randomIndex + 1;
           }
         }
       } else {
-        const index = this.currentPlayIndex === playListLen - 1
+        resultIndex = this.currentPlayIndex === playListLen - 1
           ? 0
           : this.currentPlayIndex + 1;
-        this.currentPlayIndex = index;
       }
-      const index = this.currentPlayIndex;
-      if (!this.playList[index].url) {
+      if (!this.playList[resultIndex].url) {
         await this.setMusicData(
-          this.playList[index].id, index
+          this.playList[resultIndex].id, resultIndex
         );
       }
+      this.currentPlayIndex = resultIndex;
     },
     // 切换上一首
     async togglePrev() {
       const playListLen = this.playList.length;
       nextIndex = this.currentPlayIndex;
+      let resultIndex;
       // 判断播放模式 如果为随机播放
       if (this.playMode === 'random') {
         if (prevIndex) {
-          this.currentPlayIndex = prevIndex;
+          resultIndex = prevIndex;
           prevIndex = null;
         } else {
           const randomIndex = getRandomIntInclusive(
             0, playListLen - 1
           );
           if (randomIndex !== this.currentPlayIndex) {
-            this.currentPlayIndex = randomIndex;
+            resultIndex = randomIndex;
           } else {
             // 如果当前的随机数重复
-            this.currentPlayIndex = randomIndex === 0
+            resultIndex = randomIndex === 0
               ? playListLen - 1
               : randomIndex - 1;
           }
         }
       } else {
-        const index = this.currentPlayIndex === 0
+        resultIndex = this.currentPlayIndex === 0
           ? playListLen - 1
           : this.currentPlayIndex - 1;
-        this.currentPlayIndex = index;
       }
-      const index = this.currentPlayIndex;
-      if (!this.playList[index].url) {
+      if (!this.playList[resultIndex].url) {
         await this.setMusicData(
-          this.playList[index].id, index
+          this.playList[resultIndex].id, resultIndex
         );
       }
+      this.currentPlayIndex = resultIndex;
     },
     async setMusicData(
       id:string, index:number

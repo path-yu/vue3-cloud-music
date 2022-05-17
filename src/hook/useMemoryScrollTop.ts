@@ -8,6 +8,7 @@ export function useMemoryScrollTop(ref:Ref<HTMLElement> | string) {
   const setScrollPosition = (key:string) => {
     setScrollTopLock = true;
     const scrollTop = sessionStorage.getItem(key);
+    
     if (scrollTop) {
       const options:ScrollToOptions = {
         behavior: 'smooth',
@@ -23,9 +24,7 @@ export function useMemoryScrollTop(ref:Ref<HTMLElement> | string) {
           setScrollTopLock = false;
         });
       }
-   
     }
-   
   };
   const handleListenScroll = () => {
     if (setScrollTopLock) return;
