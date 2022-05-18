@@ -7,10 +7,10 @@ export interface StoreState{
   playList: any[];
   userProfile: AnyObject | null;
   currentPlayIndex: number;
-  playMode: 'order' | 'random' | 'heartbeat' | 'singleLoop',
+  playMode: playMode,
   currentPlayListId: number,
 }
-export type playMode = 'order' | 'random' | 'heartbeat' | 'singleLoop';
+export type playMode = 'order' | 'random' | 'singleLoop';
 
 const state:StoreState = { 
   // 当前主题 默认light

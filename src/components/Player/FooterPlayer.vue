@@ -2,7 +2,6 @@
 import LoadImg from '../Base/LoadImg.vue';
 import StopIcon from '@/components/Icon/StopIcon.vue';
 import OrderPlay from '@/components/Icon/OrderPlay.vue';
-import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import RandomIcon from '@/components/Icon/RandomIcon.vue';
 import SingleLoop from '@/components/Icon/SingleLoop.vue';
 
@@ -34,8 +33,6 @@ const currentSong = computed(() => mainStore.currentPlaySong);
 const currentPlayModeIcon = computed(() => {
   if (mainStore.playMode === 'order') {
     return OrderPlay;
-  } else if (mainStore.playMode === 'heartbeat') {
-    return HeartbeatIcon;
   } else if (mainStore.playMode === 'random') {
     return RandomIcon;
   } else {
@@ -151,9 +148,6 @@ const handlePlayModeClick = () => {
     mainStore.changePlayMode('random');
   } else if (playMode === 'random') {
     mainStore.changePlayMode('singleLoop');
-  } else if (mainStore.playMode === 'singleLoop') {
-    // 开启心动模式
-    mainStore.changePlayMode('heartbeat');
   } else {
     mainStore.changePlayMode('order');
   }
