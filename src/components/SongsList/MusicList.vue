@@ -3,6 +3,7 @@ import { batchRequest, getLyric, getMusicUrl } from '@/service';
 import { useMainStore } from '@/stores/main';
 import { formateSongsAuthor } from '@/utils';
 import { HeartOutline, Heart, DownloadOutline } from '@vicons/ionicons5';
+import { VolumeMuteFilled, VolumeUpFilled } from '@vicons/material';
 import type { AnyObject } from 'env';
 import { useThemeVars, type DataTableColumns } from 'naive-ui';
 import { NIcon, NTime, NEllipsis, NTag } from 'naive-ui';
@@ -31,6 +32,7 @@ export default defineComponent({
     const router = useRouter();
     const themeVars = useThemeVars();
     const mainStore = useMainStore();
+    // const grayColor = computed(() => themeVars.value.)
     const tagColor = computed(() => {
       return {
         textColor: themeVars.value.primaryColor,
@@ -47,11 +49,17 @@ export default defineComponent({
           row, index
         ) {
           return <div class="flex items-center">
-            <span class="pr-4 opacity-50">
-              { index < 9
-                ? '0' + (index + 1)
-                : (index + 1) }
-            </span>
+            {
+              +mainStore.currentPlayIndex === index
+                ? <NIcon component={mainStore.playing
+                  ? VolumeUpFilled
+                  :VolumeMuteFilled } size={20} class="pr-4"></NIcon>
+                : <span class="pr-4 opacity-50">
+                  { index < 9
+                    ? '0' + (index + 1)
+                    : (index + 1) }
+                </span>
+            }
             <NIcon size={20} color={row.like
               ? themeVars.value.primaryColor
               : themeVars.value.textColor1} class="cursor-pointer" component={ row.like
@@ -110,6 +118,14 @@ export default defineComponent({
         }
       }
     ];
+    const rowClassName = (
+      _row: any, index:number
+    ) => {
+      if (index === +mainStore.currentPlayIndex) {
+        return 'current-play bg-gray-200/80 dark:bg-gray-200/20';
+      }
+      return '';
+    };
     const handleClick = async (
       row: any, index:number
     ) => {
@@ -138,7 +154,7 @@ export default defineComponent({
           columns={columns}
           data={props.songList}
           max-height={650}
-          row-class-name="rowClassName"
+          row-class-name={rowClassName}
           virtual-scroll
           loading={props.loading}
           row-props={(
@@ -160,5 +176,8 @@ export default defineComponent({
 <style scoped>
 :deep(.n-data-table-th:first-child){
   text-align: center;
+}
+:deep(.current-play>.n-data-table-td){
+ background-color: transparent;
 }
 </style>

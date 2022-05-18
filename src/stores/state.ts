@@ -9,6 +9,7 @@ export interface StoreState{
   currentPlayIndex: number;
   playMode: playMode,
   currentPlayListId: number,
+  playing:boolean
 }
 export type playMode = 'order' | 'random' | 'singleLoop';
 
@@ -30,7 +31,9 @@ const state:StoreState = {
   // 播放模式
   playMode: localStorage.playMode || 'order',
   // 当前播放歌单列表id
-  currentPlayListId: localStorage.currentPlayListId || 0
+  currentPlayListId: localStorage.currentPlayListId || 0,
+  // 是否正在播放中
+  playing: localStorage.playing && JSON.parse(localStorage.playing) || false
 };
 
 export default state;

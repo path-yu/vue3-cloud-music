@@ -120,6 +120,11 @@ export const useMainStore = defineStore({
       this.playMode = mode;
       localStorage.playMode = mode;
     },
+    // 切换播放状态
+    changePlaying(playing:boolean) {
+      this.playing = playing;
+      localStorage.playing = playing;
+    },
     // 切换下一首
     async toggleNext(index?:number) {
       const resultIndex = this.getNextPlayIndex(index);

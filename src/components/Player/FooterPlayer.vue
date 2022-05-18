@@ -82,6 +82,7 @@ const togglePlayStatus = () => {
     audioRef.value?.pause();
     paused.value = true;
   }
+  mainStore.changePlaying(!paused.value);
 };
 
 const playNextMusic = () => {
@@ -149,7 +150,7 @@ const handlePlayModeClick = () => {
     window.$message.info('随机播放');
   } else if (playMode === 'random') {
     mainStore.changePlayMode('singleLoop');
-    window.$message.info('随机播放');
+    window.$message.info('单曲循环');
   } else {
     mainStore.changePlayMode('order');
     window.$message.info('顺序播放');
