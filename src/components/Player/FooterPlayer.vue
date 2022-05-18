@@ -3,7 +3,7 @@ import LoadImg from '../Base/LoadImg.vue';
 import StopIcon from '@/components/Icon/StopIcon.vue';
 import { formateSongsAuthor } from '@/utils';
 import { List } from '@vicons/ionicons5';
-import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound } from '@vicons/material';
+import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound, VolumeOffRound } from '@vicons/material';
 import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, ref, watch } from 'vue';
@@ -110,6 +110,17 @@ const handleVolumeChange = (value:number) => {
   volume.value = value;
   audioRef.value!.volume = volume.value / 100;
 };
+// 点击音量选择,切换静音
+const handleVolumeClick = () => {
+  if (volume.value === 100) {
+    volume.value = 0;
+    localStorage.volume = 0;
+  } else {
+    volume.value = 100;
+    localStorage.volume = 100;
+  }
+   audioRef.value!.volume = volume.value / 100;
+};
 </script>
 
 <template>
@@ -169,7 +180,10 @@ const handleVolumeChange = (value:number) => {
         trigger="hover"
       >
         <template #trigger>
-          <n-icon :component="VolumeUpRound" :size="25" class="mr-2 custom-icon" />
+          <n-icon
+            :component="volume === 0 ? VolumeOffRound : VolumeUpRound" :size="25" class="mr-2 custom-icon"
+            @click="handleVolumeClick"
+          />
         </template>
         <n-slider
           :value="volume" vertical style="height:100px"
