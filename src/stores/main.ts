@@ -32,6 +32,9 @@ export const useMainStore = defineStore({
     },
     currentPlaySong(state) {
       return state.playList[state.currentPlayIndex];
+    },
+    playListCount(state) {
+      return state.playList.length;
     }
   },
   actions: {
@@ -93,6 +96,7 @@ export const useMainStore = defineStore({
       }
       this.playList = data;
       this.currentPlayIndex = index;
+      localStorage.currentPlayIndex = index;
       localStorage.playList = JSON.stringify(this.playList);
       localStorage.currentPlayListId = playListId;
       this.currentPlayListId = playListId;
@@ -109,7 +113,6 @@ export const useMainStore = defineStore({
       }
       this.currentPlayIndex = index;
       localStorage.currentPlayIndex = index;
-      console.log(localStorage.currentPlayIndex);
       localStorage.playList = JSON.stringify(this.playList);
     },
     // 切换播放模式
@@ -118,36 +121,7 @@ export const useMainStore = defineStore({
     },
     // 切换下一首
     async toggleNext(index?:number) {
-      const playListLen = this.playList.length;
-      const currentPlayIndex = index
-        ? index
-        : +this.currentPlayIndex;
-      prevIndex = currentPlayIndex;
-      let resultIndex;
-      // 判断播放模式 如果为随机播放
-      if (this.playMode === 'random') {
-        if (nextIndex) {
-          resultIndex = nextIndex;
-          nextIndex = null;
-        } else {
-          const randomIndex = getRandomIntInclusive(
-            0, playListLen - 1
-          );
-          if (randomIndex !== currentPlayIndex) {
-            resultIndex = randomIndex;
-          } else {
-            // 如果当前的随机数重复
-            resultIndex = getNextIndex(
-              randomIndex, playListLen - 1
-            );
-          }
-        }
-      } else {
-        resultIndex = getNextIndex(
-          currentPlayIndex, playListLen - 1
-        );
-      }
-      
+      const resultIndex = this.getNextPlayIndex(index);
       if (!this.playList[resultIndex].url) {
         const res = await this.setMusicData(
           this.playList, this.playList[resultIndex].id, resultIndex
@@ -155,7 +129,7 @@ export const useMainStore = defineStore({
         // 如果获取失败说明无版权,则获取下一首
         if (!res.success) {
           const nextIndex = getNextIndex(
-            this.currentPlayIndex, playListLen - 1
+            this.currentPlayIndex, this.playListCount - 1
           );
           this.toggleNext(nextIndex);
           return; 
@@ -168,44 +142,17 @@ export const useMainStore = defineStore({
     },
     // 切换上一首
     async togglePrev(index?:number) {
-      const playListLen = this.playList.length;
-      const currentPlayIndex = index
-        ? index
-        : +this.currentPlayIndex;
-      nextIndex = currentPlayIndex;
-      let resultIndex;
-      // 判断播放模式 如果为随机播放
-      if (this.playMode === 'random') {
-        if (prevIndex) {
-          resultIndex = prevIndex;
-          prevIndex = null;
-        } else {
-          const randomIndex = getRandomIntInclusive(
-            0, playListLen - 1
-          );
-          if (randomIndex !== currentPlayIndex) {
-            resultIndex = randomIndex;
-          } else {
-            // 如果当前的随机数重复
-            resultIndex = getPrevIndex(
-              currentPlayIndex, playListLen - 1
-            );
-          }
-        }
-      } else {
-        resultIndex = getPrevIndex(
-          currentPlayIndex, playListLen - 1
-        );
-      }
+      const resultIndex = this.getPrevPlayIndex(index);
       if (!this.playList[resultIndex].url) {
         const res = await this.setMusicData(
           this.playList, this.playList[resultIndex].id, resultIndex
         );
         if (!res.success) {
           const prevIndex = getPrevIndex(
-            this.currentPlayIndex, playListLen - 1
+            this.currentPlayIndex, this.playListCount - 1
           );
-          return this.togglePrev(prevIndex);
+          this.togglePrev(prevIndex);
+          return;
         }
       }
       this.currentPlayIndex = resultIndex;
@@ -214,7 +161,7 @@ export const useMainStore = defineStore({
       return { success: true };
     },
     async setMusicData(
-      data:any[], id:string, index:number
+      data:any[], id:string, index:number, showMessage=true
     ):Promise<any> {
       const result:AnyObject={};
       window.$message.loading(
@@ -251,6 +198,50 @@ export const useMainStore = defineStore({
         ...result
       };
       return { success: true };
+    },
+    getNextPlayIndex(index?:number) {
+      const currentPlayIndex = index
+        ? index
+        : +this.currentPlayIndex;
+      prevIndex = currentPlayIndex;
+      let resultIndex;
+      // 判断播放模式 如果为随机播放
+      if (this.playMode === 'random') {
+        resultIndex = getRandomIntInclusive(
+          0, this.playListCount - 1, currentPlayIndex
+        );
+      }
+      if (nextIndex) {
+        resultIndex = nextIndex;
+        nextIndex = null;
+      } else {
+        resultIndex = getNextIndex(
+          currentPlayIndex, this.playListCount - 1
+        );
+      }
+      return resultIndex;
+    },
+    getPrevPlayIndex(index?:number) {
+      const currentPlayIndex = index
+        ? index
+        : +this.currentPlayIndex;
+      nextIndex = currentPlayIndex;
+      let resultIndex;
+      // 判断播放模式 如果为随机播放
+      if (this.playMode === 'random') {
+        resultIndex = getRandomIntInclusive(
+          0, this.playListCount - 1, currentPlayIndex
+        );
+      }   
+      if (prevIndex) {
+        resultIndex = prevIndex;
+        prevIndex = null;
+      } else {
+        resultIndex = getPrevIndex(
+          currentPlayIndex, this.playListCount - 1
+        );
+      }
+      return resultIndex;
     }
   }
 });

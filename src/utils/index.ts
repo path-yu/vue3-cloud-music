@@ -1,4 +1,3 @@
-
 // 格式化数字
 export function formateNumber(num:number) {
   // 小于999的数字直接返回
@@ -139,13 +138,30 @@ export function getImgSize(file: File):Promise<{width:number, height:number}> {
     };
   });
 }
-// 得到一个两数之间的随机整数，包括两个数在内, 不包括指定数
+//记录下标所对应的生成随机下标
+const cacheRandomNumMap = new Map();
+// 得到一个两数之间的随机整数，包括两个数在内, 不包括指定下标
+// 并对指定下标生成的随机下标进行缓存
 export function getRandomIntInclusive(
-  min:number, max:number
+  min:number, max:number, index:number
 ) {
+  if (cacheRandomNumMap.has(index)) {
+    return cacheRandomNumMap.get(index);
+  }
   min = Math.ceil(min);
   max = Math.floor(max);
-  return Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值 
+  let randomIndex = Math.floor(Math.random() * (max - min + 1)) + min; //含最大值，含最小值 
+  while (randomIndex === index) {
+    randomIndex = Math.floor(Math.random() * (max - min + 1)) + min;
+  }
+  cacheRandomNumMap.set(
+    index, randomIndex
+  );
+  return randomIndex;
+}
+// 重置
+export function restRandomNumMap() {
+  cacheRandomNumMap.clear();
 }
 // 当值等于最大值时,返回0,否则+1
 export function getNextIndex(
