@@ -146,10 +146,13 @@ const handlePlayModeClick = () => {
   const playMode = mainStore.playMode;
   if (playMode === 'order') {
     mainStore.changePlayMode('random');
+    window.$message.info('随机播放');
   } else if (playMode === 'random') {
     mainStore.changePlayMode('singleLoop');
+    window.$message.info('随机播放');
   } else {
     mainStore.changePlayMode('order');
+    window.$message.info('顺序播放');
   }
 };
 </script>
@@ -160,7 +163,7 @@ const handlePlayModeClick = () => {
       <load-img
         loading-height="48px"
         class-name="w-12"
-        :src="currentSong?.al.picUrl"
+        :src="currentSong?.al?.picUrl"
       />
       <div class="ml-4">
         <p class="flex items-center text-base">

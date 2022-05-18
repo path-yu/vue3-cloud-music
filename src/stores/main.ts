@@ -204,47 +204,31 @@ export const useMainStore = defineStore({
       const currentPlayIndex = index
         ? +index
         : +this.currentPlayIndex;
-      prevIndex = currentPlayIndex;
-      let resultIndex;
-      if (nextIndex) {
-        resultIndex = nextIndex;
-        nextIndex = null;
+      // 判断播放模式 如果为随机播放
+      if (this.playMode === 'random') {
+        return getRandomIntInclusive(
+          0, this.playListCount - 1, currentPlayIndex
+        );
       } else {
-        // 判断播放模式 如果为随机播放
-        if (this.playMode === 'random') {
-          resultIndex = getRandomIntInclusive(
-            0, this.playListCount - 1, currentPlayIndex
-          );
-        } else {
-          resultIndex = getNextIndex(
-            currentPlayIndex, this.playListCount - 1
-          );
-        }
+        return getNextIndex(
+          currentPlayIndex, this.playListCount - 1
+        );
       }
-      return resultIndex;
     },
     getPrevPlayIndex(index?:number) {
       const currentPlayIndex = index
         ? +index
         : +this.currentPlayIndex;
-      nextIndex = currentPlayIndex;
-      let resultIndex;
-      if (prevIndex) {
-        resultIndex = prevIndex;
-        prevIndex = null;
+      // 判断播放模式 如果为随机播放
+      if (this.playMode === 'random') {
+        return getRandomIntInclusive(
+          0, this.playListCount - 1, currentPlayIndex
+        );
       } else {
-        // 判断播放模式 如果为随机播放
-        if (this.playMode === 'random') {
-          resultIndex = getRandomIntInclusive(
-            0, this.playListCount - 1, currentPlayIndex
-          );
-        } else {
-          resultIndex = getPrevIndex(
-            currentPlayIndex, this.playListCount - 1
-          );
-        }
+        return getPrevIndex(
+          currentPlayIndex, this.playListCount - 1
+        );
       }
-      return resultIndex;
     }
   }
 });
