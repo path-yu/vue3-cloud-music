@@ -118,6 +118,7 @@ export const useMainStore = defineStore({
     // 切换播放模式
     changePlayMode(mode:playMode) {
       this.playMode = mode;
+      localStorage.playMode = mode;
     },
     // 切换下一首
     async toggleNext(index?:number) {
@@ -201,45 +202,47 @@ export const useMainStore = defineStore({
     },
     getNextPlayIndex(index?:number) {
       const currentPlayIndex = index
-        ? index
+        ? +index
         : +this.currentPlayIndex;
       prevIndex = currentPlayIndex;
       let resultIndex;
-      // 判断播放模式 如果为随机播放
-      if (this.playMode === 'random') {
-        resultIndex = getRandomIntInclusive(
-          0, this.playListCount - 1, currentPlayIndex
-        );
-      }
       if (nextIndex) {
         resultIndex = nextIndex;
         nextIndex = null;
       } else {
-        resultIndex = getNextIndex(
-          currentPlayIndex, this.playListCount - 1
-        );
+        // 判断播放模式 如果为随机播放
+        if (this.playMode === 'random') {
+          resultIndex = getRandomIntInclusive(
+            0, this.playListCount - 1, currentPlayIndex
+          );
+        } else {
+          resultIndex = getNextIndex(
+            currentPlayIndex, this.playListCount - 1
+          );
+        }
       }
       return resultIndex;
     },
     getPrevPlayIndex(index?:number) {
       const currentPlayIndex = index
-        ? index
+        ? +index
         : +this.currentPlayIndex;
       nextIndex = currentPlayIndex;
       let resultIndex;
-      // 判断播放模式 如果为随机播放
-      if (this.playMode === 'random') {
-        resultIndex = getRandomIntInclusive(
-          0, this.playListCount - 1, currentPlayIndex
-        );
-      }   
       if (prevIndex) {
         resultIndex = prevIndex;
         prevIndex = null;
       } else {
-        resultIndex = getPrevIndex(
-          currentPlayIndex, this.playListCount - 1
-        );
+        // 判断播放模式 如果为随机播放
+        if (this.playMode === 'random') {
+          resultIndex = getRandomIntInclusive(
+            0, this.playListCount - 1, currentPlayIndex
+          );
+        } else {
+          resultIndex = getPrevIndex(
+            currentPlayIndex, this.playListCount - 1
+          );
+        }
       }
       return resultIndex;
     }

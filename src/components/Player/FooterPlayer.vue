@@ -1,10 +1,14 @@
 <script setup lang="ts">
 import LoadImg from '../Base/LoadImg.vue';
 import StopIcon from '@/components/Icon/StopIcon.vue';
+import OrderPlay from '@/components/Icon/OrderPlay.vue';
+import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
+import RandomIcon from '@/components/Icon/RandomIcon.vue';
+import SingleLoop from '@/components/Icon/SingleLoop.vue';
+
 import { formateSongsAuthor } from '@/utils';
 import { List } from '@vicons/ionicons5';
 import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound, VolumeOffRound } from '@vicons/material';
-import HeartbeatIcon from '@/components/Icon/HeartbeatIcon.vue';
 import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
@@ -13,6 +17,7 @@ const progressWidth = 500;
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const audioRef = ref<HTMLAudioElement>();
+let isLoad = false;
 // 触发交互元素
 const triggerEle = ref<HTMLDivElement>();
 // 进度条百分比
@@ -25,15 +30,33 @@ const paused = ref(true);
 const volume = ref(+localStorage.volume || 0);
 const primaryColor = computed(() => themeVars.value.primaryColor);
 const currentSong = computed(() => mainStore.currentPlaySong);
+
+const currentPlayModeIcon = computed(() => {
+  if (mainStore.playMode === 'order') {
+    return OrderPlay;
+  } else if (mainStore.playMode === 'heartbeat') {
+    return HeartbeatIcon;
+  } else if (mainStore.playMode === 'random') {
+    return RandomIcon;
+  } else {
+    return SingleLoop;
+  }
+});
 let slideValueChange = false;// 记录slider值是否手动发生了改变
 
 // 点击切换上一首
-const handlePrevClick = () => {
-  mainStore.togglePrev();
+const handlePrevClick = async () => {
+  if (isLoad) return;
+  isLoad = true;
+  await mainStore.togglePrev();
+  isLoad = false;
 };
 // 点击切换下一首
-const handleNextClick = () => {
-  mainStore.toggleNext();
+const handleNextClick = async () => {
+  if (isLoad) return;
+  isLoad = true;
+  await mainStore.toggleNext();
+  isLoad = false;
 };
 
 watch(
@@ -121,6 +144,20 @@ const handleVolumeClick = () => {
   }
    audioRef.value!.volume = volume.value / 100;
 };
+// 点击切换播放模式
+const handlePlayModeClick = () => {
+  const playMode = mainStore.playMode;
+  if (playMode === 'order') {
+    mainStore.changePlayMode('random');
+  } else if (playMode === 'random') {
+    mainStore.changePlayMode('singleLoop');
+  } else if (mainStore.playMode === 'singleLoop') {
+    // 开启心动模式
+    mainStore.changePlayMode('heartbeat');
+  } else {
+    mainStore.changePlayMode('order');
+  }
+};
 </script>
 
 <template>
@@ -145,7 +182,10 @@ const handleVolumeClick = () => {
     </div>
     <div class="flex flex-col flex-1 items-center control">
       <div style="width:300px" class="flex justify-between items-center">
-        <n-icon class="custom-icon" :size="22" :component="HeartbeatIcon" />
+        <n-icon
+          class="custom-icon" :size="22" :component="currentPlayModeIcon"
+          @click="handlePlayModeClick"
+        />
         <n-icon
           class="prev custom-icon" :size="22" :component="SkipPreviousSharp"
           @click="handlePrevClick"
