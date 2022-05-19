@@ -189,8 +189,8 @@ const handlePlayModeClick = () => {
           class="prev custom-icon" :size="22" :component="SkipPreviousSharp"
           @click="handlePrevClick"
         />
-        <div class="flex justify-center items-center w-9 h-9  bg-neutral-200/60 hover:bg-neutral-200 dark:bg-slate-100/20 dark:hover:bg-slate-100/40 rounded-full" @click="togglePlayStatus">
-          <n-icon :size="paused ? 22 : 18" :component="paused ? PlayArrowSharp :StopIcon" />
+        <div class="flex justify-center items-center w-7 h-7  bg-neutral-200/60 hover:bg-neutral-200 dark:bg-slate-100/20 dark:hover:bg-slate-100/40 rounded-full" @click="togglePlayStatus">
+          <n-icon :size="paused ? 20 : 14" :component="paused ? PlayArrowSharp :StopIcon" />
         </div>
         <n-icon
           class="next custom-icon" :size="22" :component="SkipNextSharp"
@@ -250,5 +250,9 @@ const handlePlayModeClick = () => {
 }
 :deep(.n-icon){
   cursor: pointer;
+}
+:deep(.n-slider-handle){
+  width: 12px !important;
+  height: 12px !important;
 }
 </style>
