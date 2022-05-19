@@ -1,10 +1,8 @@
 <script lang="tsx">
-import { batchRequest, getLyric, getMusicUrl } from '@/service';
 import { useMainStore } from '@/stores/main';
 import { formateSongsAuthor } from '@/utils';
 import { HeartOutline, Heart, DownloadOutline } from '@vicons/ionicons5';
 import { VolumeMuteFilled, VolumeUpFilled } from '@vicons/material';
-import type { AnyObject } from 'env';
 import { useThemeVars, type DataTableColumns } from 'naive-ui';
 import { NIcon, NTime, NEllipsis, NTag } from 'naive-ui';
 import { computed, defineComponent, ref } from 'vue';
@@ -32,7 +30,6 @@ export default defineComponent({
     const router = useRouter();
     const themeVars = useThemeVars();
     const mainStore = useMainStore();
-    // const grayColor = computed(() => themeVars.value.)
     const tagColor = computed(() => {
       return {
         textColor: themeVars.value.primaryColor,
@@ -50,7 +47,7 @@ export default defineComponent({
         ) {
           return <div class="flex items-center">
             {
-              +mainStore.currentPlayIndex === index
+              +mainStore.currentPlayIndex === index && mainStore.playList.length
                 ? <NIcon component={mainStore.playing
                   ? VolumeUpFilled
                   :VolumeMuteFilled } size={20} class="pr-4"></NIcon>

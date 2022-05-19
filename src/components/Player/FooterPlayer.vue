@@ -29,7 +29,7 @@ const paused = ref(true);
 const volume = ref(+localStorage.volume || 0);
 const primaryColor = computed(() => themeVars.value.primaryColor);
 const currentSong = computed(() => mainStore.currentPlaySong);
-
+const isShow = computed(() => !!mainStore.playList.length);
 const currentPlayModeIcon = computed(() => {
   if (mainStore.playMode === 'order') {
     return OrderPlay;
@@ -159,8 +159,8 @@ const handlePlayModeClick = () => {
 </script>
 
 <template>
-  <div v-if="mainStore.playList.length" class="flex items-center p-2 footer-player">
-    <div class="flex items-center w-40 h-full">
+  <div class="flex items-center p-2 footer-player">
+    <div v-if="isShow" class="flex items-center w-40 h-full">
       <load-img
         loading-height="48px"
         class-name="w-12"
@@ -178,7 +178,8 @@ const handlePlayModeClick = () => {
         </n-ellipsis>
       </div>
     </div>
-    <div class="flex flex-col flex-1 items-center control">
+    <div :style="{opacity:isShow ? '1' : '0.6'}" class="flex flex-col flex-1 items-center control">
+      <div v-if="!isShow" class="absolute z-50 w-full footer-player" />
       <div style="width:300px" class="flex justify-between items-center">
         <n-icon
           class="custom-icon" :size="22" :component="currentPlayModeIcon"
@@ -200,19 +201,19 @@ const handlePlayModeClick = () => {
         </n-button>
       </div>
       <div class="flex items-center mt-1">
-        <span class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
+        <span v-if="isShow" class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
         <div class="flex flex-1 items-center" :style="{width:progressWidth+'px'}">
           <n-slider
             :on-update:value="handleUpdateSliderValue" :value="percentage" :tooltip="false"
             @mouseup="handleSliderMouseUp"
           />
         </div>
-        <span class="ml-2 text-xs opacity-50">
+        <span v-if="isShow" class="ml-2 text-xs opacity-50">
           <n-time format="mm:ss" :time="currentSong?.dt" />
         </span>
       </div>
     </div>
-    <div class="flex items-center">
+    <div v-if="isShow" class="flex items-center">
       <n-popover
         placement="bottom"
         trigger="hover"
