@@ -185,7 +185,6 @@ export const useMainStore = defineStore({
       if (res.data.code === 200) {
         result.url = res.data.data[0].url;
       } else {
-        window.$message.warning('获取歌曲播放地址失败,已为您自动跳过');
         window.$message.error('获取歌曲播放地址失败!');
         return { success: false };
       }

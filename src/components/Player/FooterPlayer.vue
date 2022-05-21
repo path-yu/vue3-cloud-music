@@ -74,15 +74,25 @@ const handleTriggerClick = () => {
   });
 };
 // 切换播放状态
-const togglePlayStatus = () => {
-  if (audioRef.value?.paused) {
-    audioRef.value?.play();
+const togglePlayStatus = async () => {
+  // 歌曲url可能过期
+  try {
+    if (audioRef.value?.paused) {
+      audioRef.value?.play();
+      paused.value = false;
+    } else {
+      audioRef.value?.pause();
+      paused.value = true;
+    }
+    mainStore.changePlaying(!paused.value);
+  } catch (err) {
+    await mainStore.setMusicData(
+      mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
+    );
     paused.value = false;
-  } else {
-    audioRef.value?.pause();
-    paused.value = true;
+    audioRef.value?.play();
+    mainStore.changePlaying(true);
   }
-  mainStore.changePlaying(!paused.value);
 };
 
 const playNextMusic = () => {
@@ -189,7 +199,7 @@ const handlePlayModeClick = () => {
           class="prev custom-icon" :size="22" :component="SkipPreviousSharp"
           @click="handlePrevClick"
         />
-        <div class="flex justify-center items-center w-7 h-7  bg-neutral-200/60 hover:bg-neutral-200 dark:bg-slate-100/20 dark:hover:bg-slate-100/40 rounded-full" @click="togglePlayStatus">
+        <div class="flex justify-center items-center w-8 h-8  bg-neutral-200/60 hover:bg-neutral-200 dark:bg-slate-100/20 dark:hover:bg-slate-100/40 rounded-full" @click="togglePlayStatus">
           <n-icon :size="paused ? 20 : 14" :component="paused ? PlayArrowSharp :StopIcon" />
         </div>
         <n-icon
