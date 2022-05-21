@@ -9,6 +9,7 @@ window.$message = useMessage();
 
 <template>
   <div
+    id="layout-container"
     style="width: 85vw;margin: auto;"
   >
     <n-layout>

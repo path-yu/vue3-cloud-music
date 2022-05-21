@@ -1,6 +1,6 @@
 <script lang="tsx">
 import useLazyLoad from '@/hook/useLazyLoad';
-import { defineComponent, nextTick, ref, defineExpose, watch } from 'vue';
+import { defineComponent, nextTick, ref } from 'vue';
 
 export default defineComponent({
   props: {

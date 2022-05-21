@@ -12,13 +12,18 @@ import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
+import type { PlayListExpose } from './PlayList.vue';
+
+let slideValueChange = false;// 记录slider值是否手动发生了改变
 const progressWidth = 500;
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
-const audioRef = ref<HTMLAudioElement>();
+
 let isLoad = false;
 // 触发交互元素
 const triggerEle = ref<HTMLDivElement>();
+// audio元素
+const audioRef = ref<HTMLAudioElement>();
 // 进度条百分比
 const percentage = ref(0);
 // 当前播放时间
@@ -27,6 +32,9 @@ const currentPlayTime = ref('00:00');
 const paused = ref(true); 
 // 音量大小
 const volume = ref(+localStorage.volume || 0);
+// 播放列表组件ref
+const playListRef = ref<PlayListExpose>();
+//computed
 const primaryColor = computed(() => themeVars.value.primaryColor);
 const currentSong = computed(() => mainStore.currentPlaySong);
 const isShow = computed(() => !!mainStore.playList.length);
@@ -39,7 +47,6 @@ const currentPlayModeIcon = computed(() => {
     return SingleLoop;
   }
 });
-let slideValueChange = false;// 记录slider值是否手动发生了改变
 
 // 点击切换上一首
 const handlePrevClick = async () => {
@@ -237,7 +244,10 @@ const handlePlayModeClick = () => {
           @update-value="handleVolumeChange"
         />
       </n-popover>
-      <n-icon :component="List" :size="25" class="mr-2 custom-icon" />
+      <n-icon
+        :component="List" :size="25" class="mr-2 custom-icon"
+        @click="playListRef?.show()"
+      />
     </div>
     <audio
       ref="audioRef" :src="currentSong?.url"
@@ -245,6 +255,7 @@ const handlePlayModeClick = () => {
       @play="handlePlay"
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
+    <play-list ref="playListRef" />
   </div>
 </template>
 
