@@ -75,24 +75,22 @@ const handleTriggerClick = () => {
 };
 // 切换播放状态
 const togglePlayStatus = async () => {
-  // 歌曲url可能过期
-  try {
-    if (audioRef.value?.paused) {
-      audioRef.value?.play();
+  if (audioRef.value?.paused) {
+    // 歌曲url可能过期
+    audioRef.value?.play().catch(async err => {
+      await mainStore.setMusicData(
+        mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
+      );
       paused.value = false;
-    } else {
-      audioRef.value?.pause();
-      paused.value = true;
-    }
-    mainStore.changePlaying(!paused.value);
-  } catch (err) {
-    await mainStore.setMusicData(
-      mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
-    );
+      audioRef.value?.play();
+      mainStore.changePlaying(true);
+    });
     paused.value = false;
-    audioRef.value?.play();
-    mainStore.changePlaying(true);
+  } else {
+    audioRef.value?.pause();
+    paused.value = true;
   }
+  mainStore.changePlaying(!paused.value);
 };
 
 const playNextMusic = () => {
@@ -244,7 +242,7 @@ const handlePlayModeClick = () => {
     <audio
       ref="audioRef" :src="currentSong?.url"
       @timeupdate="handleTimeupdate" @ended="playNextMusic" 
-      @play="handlePlay" 
+      @play="handlePlay"
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
   </div>
