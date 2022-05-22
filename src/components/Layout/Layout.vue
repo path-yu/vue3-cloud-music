@@ -3,8 +3,10 @@ import BaseHeader from '@/components/Layout/components/LayoutHeader.vue';
 import LayoutLeftMenu from '@/components/Layout/components/LayoutLeftMenu.vue';
 
 import { useMessage } from 'naive-ui';
+import { useRoute } from 'vue-router';
 import FooterPlayer from '../Player/FooterPlayer.vue';
 window.$message = useMessage();
+const route = useRoute();
 </script>
 
 <template>
@@ -15,7 +17,7 @@ window.$message = useMessage();
     <n-layout>
       <base-header />
       <layout-left-menu />
-      <n-layout-footer :inverted="false" bordered>
+      <n-layout-footer v-if="!route.meta.hidden" :inverted="false" bordered>
         <footer-player />
       </n-layout-footer>
     </n-layout>

@@ -6,7 +6,7 @@ import { BackToTop, Music, User } from '@vicons/carbon';
 import { QueueMusicFilled } from '@vicons/material';
 import { List, SparklesOutline, VideocamOutline, StarOutline, Heart } from '@vicons/ionicons5';
 import { NIcon, useLoadingBar } from 'naive-ui';
-import { onMounted, ref, watch, type VNodeChild } from 'vue';
+import { computed, onMounted, ref, watch, type CSSProperties, type VNodeChild } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import LoginModal, { type LoginModalExpose } from './LoginModal.vue';
 import obverser from '@/utils/obverser';
@@ -64,6 +64,14 @@ let activeKey = ref<string | null>('');
 let hiddenLeftMenu = ref(false);
 const myMenuOptions = ref<MenuOptionItem[]>(menuOptions);
 const loginModalRef = ref<LoginModalExpose>();
+const mainStyle = computed<CSSProperties>(() => {
+  return {
+    height: route.meta.hidden
+      ? '100%'
+      : '800px' 
+  };
+});
+console.log(mainStyle);
 
 const changeMenuOption = (
   myCreatePlayList:any[]=[], collectPlayList:any[]=[]
@@ -241,7 +249,7 @@ onMounted(() => {
       collapse-mode="width"
       :collapsed-width="64"
       :width="192"
-      style="height;:800px"
+      :style="mainStyle"
       :collapsed="collapsed"
       show-trigger
       @collapse="collapsed = true"
@@ -256,7 +264,7 @@ onMounted(() => {
         :default-expand-all="true"
       />
     </n-layout-sider>
-    <n-layout style="height:800px">
+    <n-layout :style="mainStyle">
       <router-view v-slot="{ Component }">
         <transition
           name="fade-transform"
@@ -283,8 +291,5 @@ onMounted(() => {
 }
 :deep(.n-submenu-children > .n-menu-item > .n-menu-item-content){
   padding-left: 40px !important; 
-}
-.rightMain{
-  height: 800px;
 }
 </style>

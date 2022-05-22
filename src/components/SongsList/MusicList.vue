@@ -48,7 +48,9 @@ export default defineComponent({
           return <div class="flex items-center">
             {
               +mainStore.currentPlayIndex === index && mainStore.playList.length
-                ? <NIcon component={mainStore.playing
+                ? <NIcon color={mainStore.playing
+                  ? themeVars.value.primaryColor
+                  : themeVars.value.textColor1} component={mainStore.playing
                   ? VolumeUpFilled
                   :VolumeMuteFilled } size={20} class="pr-4"></NIcon>
                 : <span class="pr-4 opacity-50">

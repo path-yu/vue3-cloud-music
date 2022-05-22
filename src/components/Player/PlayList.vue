@@ -4,7 +4,7 @@ import { ref } from 'vue';
 export interface PlayListExpose{
   show:() => void
 }
-const active = ref(true);
+const active = ref(false);
 
 defineExpose({
   show() {
