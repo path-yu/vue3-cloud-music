@@ -71,8 +71,6 @@ const mainStyle = computed<CSSProperties>(() => {
       : '800px' 
   };
 });
-console.log(mainStyle);
-
 const changeMenuOption = (
   myCreatePlayList:any[]=[], collectPlayList:any[]=[]
 ) => {

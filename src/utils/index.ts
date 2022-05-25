@@ -179,3 +179,7 @@ export function getPrevIndex(
     ? max
     : index - 1;
 }
+// 是否为偶数
+export function isEven(num:number) {
+  return num % 2 === 0;
+}
