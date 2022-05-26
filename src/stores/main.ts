@@ -85,12 +85,12 @@ export const useMainStore = defineStore({
     },
     // 初始化播放 列表
     async initPlayList(
-      data:any[], index=0, playListId:number
+      data:any[], index=0, playListId:number, message='亲爱的, 暂无版权'
     ) {
       // 如果没有获取url, 则获取歌曲url
       if (!data[index].url) {
         const res = await this.setMusicData(
-          data, data[index].id, index
+          data, data[index].id, index, message
         );
         if (!res.success) return;
       }
@@ -103,11 +103,13 @@ export const useMainStore = defineStore({
       this.playMode = 'order';
     },
     // 切换播放音乐
-    async changePlayIndex(index:number) {
+    async changePlayIndex(
+      index:number, message='亲爱的, 暂无版权'
+    ) {
       // 如果没有获取url, 则获取歌曲url
       if (!this.playList[index].url) {
         const res = await this.setMusicData(
-          this.playList, this.playList[index].id, index
+          this.playList, this.playList[index].id, index, message
         );
         if (!res.success) return { success: false };
       }
@@ -167,7 +169,7 @@ export const useMainStore = defineStore({
       return { success: true };
     },
     async setMusicData(
-      data:any[], id:string, index:number, showMessage=true
+      data:any[], id:string, index:number, message='亲爱的,暂无版权!为你自动跳过此首歌曲'
     ):Promise<any> {
       const result:AnyObject={};
       window.$message.loading(
@@ -177,7 +179,7 @@ export const useMainStore = defineStore({
       const checkRes = await checkMusic(id) as any;
       if (!checkRes.musicSuccess && !checkRes?.data?.success) {
         window.$message.destroyAll();
-        window.$message.info('亲爱的,暂无版权!为你自动跳过此首歌曲');
+        window.$message.info(message);
         return { success: false };
       }
       // 获取音乐url

@@ -145,17 +145,20 @@ export default defineComponent({
       }
       if (isLoad.value) return;
       isLoad.value = true;
+      let message = '亲爱的, 暂无版权';
       // 初始化歌曲列表
       if (!mainStore.playList.length) {
         await mainStore.initPlayList(
-          props.songList, index, props.playListId
+          props.songList, index, props.playListId, message
         );
       } else {
         if (mainStore.currentPlayListId === props.playListId) {
-          await mainStore.changePlayIndex(index);
+          await mainStore.changePlayIndex(
+            index, message
+          );
         } else {
           await mainStore.initPlayList(
-            props.songList, index, props.playListId
+            props.songList, index, props.playListId, message
           );
         }
       }
