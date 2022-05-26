@@ -276,8 +276,4 @@ const handlePlayModeClick = () => {
 :deep(.n-icon){
   cursor: pointer;
 }
-:deep(.n-slider-handle){
-  width: 12px !important;
-  height: 12px !important;
-}
 </style>

@@ -1,6 +1,7 @@
 <script lang="tsx">
 /* eslint-disable consistent-return */
 
+import useValidateVipSong from '@/hook/useValidateVipSong';
 import { useMainStore } from '@/stores/main';
 import { formateSongsAuthor } from '@/utils';
 import { HeartOutline, Heart, DownloadOutline } from '@vicons/ionicons5';
@@ -130,19 +131,8 @@ export default defineComponent({
     const handleClick = async (
       row: any, index:number
     ) => {
-      // 如果为vip歌曲
-      if (row.fee === 1) {
-        // 未登录下, 不能进行播放
-        if (!mainStore.isLogin) {
-          return window.$message.warning('请先登录');
-        } else {
-          // 非vip不能播放
-          if (mainStore.userProfile.profile.vipType === 0) {
-            return window.$message.warning('歌曲为会员专享');
-          }
-        }
-        
-      }
+      const value = useValidateVipSong(row);
+      if (value) return;
       if (isLoad.value) return;
       isLoad.value = true;
       let message = '亲爱的, 暂无版权';

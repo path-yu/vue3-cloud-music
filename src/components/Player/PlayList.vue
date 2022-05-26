@@ -1,4 +1,5 @@
 <script setup lang="ts">
+import useValidateVipSong from '@/hook/useValidateVipSong';
 import { useMainStore } from '@/stores/main';
 import { formateSongsAuthor, isEven } from '@/utils';
 import { VolumeMuteFilled, VolumeUpFilled } from '@vicons/material';
@@ -38,6 +39,8 @@ defineExpose({
 });
 // 双击播放
 const handleDoubleClick = async (index:number) => {
+  const value = useValidateVipSong(mainStore.playList[index]);
+  if (value) return;
   if (isLoad) return;
   isLoad= true;
   await mainStore.changePlayIndex(index);
