@@ -30,7 +30,21 @@ export const throttle = (
     );
   };
 };
-
+// 防抖
+export const debounce = (
+  fn:Function, delay:number
+) => {
+  let timer:any = null;
+  return function (...rest: any) {
+    if (timer) clearTimeout(timer);
+    timer = setTimeout(
+      () => {
+        fn.apply(rest);
+        timer = null;
+      }, delay
+    );
+  };
+};
 // 根据不同类型记忆函数
 export const memorize = (fn:Function) => {
   const cache = new Map();

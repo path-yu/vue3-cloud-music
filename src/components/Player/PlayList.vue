@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMainStore } from '@/stores/main';
-import { formateSongsAuthor, isEven } from '@/utils';
+import { formateSongsAuthor, isEven, de } from '@/utils';
+import { debounce } from 'lodash';
 import { useThemeVars } from 'naive-ui';
 import { computed, ref } from 'vue';
 import { useRouter } from 'vue-router';
@@ -12,6 +13,7 @@ const active = ref(false);
 const mainStore = useMainStore();
 const themeVars = useThemeVars();
 const router = useRouter();
+let isLoad = false;
 const tagColor = computed(() => {
   return {
     textColor: themeVars.value.primaryColor,
@@ -24,7 +26,13 @@ defineExpose({
     active.value = true;
   }
 });
-
+// 双击播放
+const handleDoubleClick = async (index:number) => {
+  if (isLoad) return;
+  isLoad= true;
+  await mainStore.changePlayIndex(index);
+  isLoad= false;
+};
 </script>
 
 <template>
@@ -51,7 +59,11 @@ defineExpose({
         :item-size="45"
         key-field="id"
       >
-        <div :style="{background:isEven(index) ? themeVars.tableColorStriped : themeVars.tableColor}" class="flex justify-between text-sm item">
+        <div
+          :style="{background:isEven(index) ? themeVars.tableColorStriped : themeVars.tableColor}"
+          class="flex justify-between text-sm item"
+          @dblclick="handleDoubleClick(index)"
+        >
           <div class="flex-1 pr-2 w-28 truncate">
             {{ item.name }}
             <n-tag
