@@ -165,8 +165,8 @@ const btnSaveLoading = ref(false);
 const btnSaveDisabled = ref(true);
 const updateAvatarLoading = ref(false);
 const fileRef = ref<HTMLElement>();
-const profile = mainStore.userProfile.profile;
-const avatarUrl = ref(profile.avatarUrl);
+const profile = mainStore.userProfile?.profile;
+const avatarUrl = ref(profile?.avatarUrl);
 
 const model = ref<{
   nickname: string,
@@ -288,8 +288,8 @@ const handleValidateButtonClick = (e: MouseEvent) => {
           window.$message.success('修改个人资料成功!');
           // 保存成功更新原始数据
           rawModel = JSON.parse(JSON.stringify(toRaw(model.value)));
-          mainStore.userProfile.profile = {
-            ...mainStore.userProfile.profile,
+          mainStore.userProfile!.profile = {
+            ...mainStore.userProfile!.profile,
             ...params
           };
           localStorage.userProfile = JSON.stringify(toRaw(mainStore.userProfile));
@@ -321,7 +321,7 @@ const handleFileChange = async (event: Event) => {
         window.$message.success('修改头像成功!');
         updateAvatarLoading.value = false;
         avatarUrl.value = res.data.data.url;
-        mainStore.userProfile.profile.avatarUrl = res.data.data.url;
+        mainStore.userProfile!.profile.avatarUrl = res.data.data.url;
         localStorage.userProfile = JSON.stringify(toRaw(mainStore.userProfile));
       }
     });

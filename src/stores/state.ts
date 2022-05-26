@@ -5,7 +5,7 @@ export interface StoreState{
   isLogin: boolean;
   likeSongs: number[];
   playList: any[];
-  userProfile: AnyObject | null;
+  userProfile: AnyObject;
   currentPlayIndex: number;
   playMode: playMode,
   currentPlayListId: number,
@@ -21,7 +21,7 @@ const state:StoreState = {
   // 是否登录
   isLogin: localStorage.isLogin && JSON.parse(localStorage.isLogin) || false,
   // 用户详情
-  userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) || null,
+  userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) || {},
   //我喜欢的歌曲列表
   likeSongs: localStorage.likeSongs && JSON.parse(localStorage.likeSongs) || [],
   // 播放列表
