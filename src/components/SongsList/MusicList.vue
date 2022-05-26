@@ -47,7 +47,7 @@ export default defineComponent({
         ) {
           return <div class="flex items-center">
             {
-              +mainStore.currentPlayIndex === index && mainStore.playList.length
+              +mainStore.currentPlayIndex === index && mainStore.playList.length && mainStore.currentPlayListId === props.playListId
                 ? <NIcon color={mainStore.playing
                   ? themeVars.value.primaryColor
                   : themeVars.value.textColor1} component={mainStore.playing

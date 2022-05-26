@@ -6,7 +6,7 @@ import { BackToTop, Music, User } from '@vicons/carbon';
 import { QueueMusicFilled } from '@vicons/material';
 import { List, SparklesOutline, VideocamOutline, StarOutline, Heart } from '@vicons/ionicons5';
 import { NIcon, useLoadingBar } from 'naive-ui';
-import { computed, onMounted, ref, watch, type CSSProperties, type VNodeChild } from 'vue';
+import { computed, onMounted, ref, watch, type CSSProperties, type VNodeChild, KeepAlive } from 'vue';
 import { RouterLink, useRoute, useRouter } from 'vue-router';
 import LoginModal, { type LoginModalExpose } from './LoginModal.vue';
 import obverser from '@/utils/obverser';
@@ -129,8 +129,8 @@ watch(
 );
 watch(
   () => mainStore.userProfile, (val) => {
-    if (val) {
-      let userId = mainStore.userProfile!.profile.userId;
+    let userId = mainStore.userProfile?.profile?.userId;
+    if (val && userId) {
       fetchUserPlaylist(userId);
       fetchMyLikeMusicList(userId);
     } else {
@@ -273,7 +273,9 @@ onMounted(() => {
             <n-back-top :right="mainStore.backTopLeft" :bottom="220" :visibility-height="800">
               <n-icon :component="BackToTop" />
             </n-back-top>
-            <component :is="Component" />
+            <keep-alive>
+              <component :is="Component" />
+            </keep-alive>
           </div>
         </transition>
       </router-view>

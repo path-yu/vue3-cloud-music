@@ -84,7 +84,7 @@ onClickOutside(
 // 获取用户账号数据
 const getUserProfile = () => {
   // 如果已经设置过,则从store读取userId
-  if (mainStore.userProfile) {
+  if (mainStore.userProfile?.userId) {
     getUserDetailInfo(mainStore.userProfile.profile.userId);
   } else {
     getUserInfo().then(res => {
@@ -107,7 +107,7 @@ const checkLoginStatus = () => {
     if (res.data.data.code === 200) {
       if (!res.data.data.account) {
         window.$message.warning('登录状态过期,请重新登录');
-        mainStore.userProfile = null;
+        mainStore.userProfile = {};
         localStorage.clear();
         mainStore.isLogin = false;
       }
@@ -121,7 +121,7 @@ const handlePositiveClick = () => {
   logout().then(res => {
     if (res.data.code === 200) {
       mainStore.isLogin = false;
-      mainStore.userProfile = null;
+      mainStore.userProfile = {};
       localStorage.isLogin = false;
       localStorage.clear();
       mainStore.removeAllLikeList();
@@ -174,7 +174,7 @@ if (mainStore.isLogin) {
       <!-- 用户信息入口 -->
       <div v-if="mainStore.isLogin">
         <div v-if="mainStore.userProfile" class="flex items-center mr-2">
-          <n-avatar round :size="30" :src="mainStore.userProfile.profile.avatarUrl" />
+          <n-avatar round :size="30" :src="mainStore.userProfile?.profile?.avatarUrl" />
           <n-popover
             :show="showUserPopover"
             trigger="click" style="padding:0"
@@ -186,26 +186,26 @@ if (mainStore.isLogin) {
                 @click="() => (userDetail && (showUserPopover = !showUserPopover ))
                 "
               >
-                {{ mainStore.userProfile.profile.nickname }}
+                {{ mainStore.userProfile?.profile?.nickname }}
               </p>
             </template>
             <div ref="popoverContainerRef" style="width:300px">
               <div class="flex justify-evenly py-4">
                 <div class="flex flex-col items-center">
                   <p class="text-lg font-bold">
-                    {{ mainStore.userProfile.profile.eventCount }}
+                    {{ mainStore.userProfile?.profile.eventCount }}
                   </p>
                   动态
                 </div>
                 <div>
                   <p class="text-lg font-bold">
-                    {{ mainStore.userProfile.profile.follows }}
+                    {{ mainStore.userProfile?.profile?.follows }}
                   </p>
                   关注
                 </div>
                 <div>
                   <p class="text-lg font-bold">
-                    {{ mainStore.userProfile.profile.followeds }}
+                    {{ mainStore.userProfile?.profile?.followeds }}
                   </p>
                   粉丝
                 </div>

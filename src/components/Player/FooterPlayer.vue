@@ -31,7 +31,7 @@ const currentPlayTime = ref('00:00');
 //是否为暂停状态
 const paused = ref(true); 
 // 音量大小
-const volume = ref(+localStorage.volume || 0);
+const volume = ref(+localStorage.volume || 100);
 // 播放列表组件ref
 const playListRef = ref<PlayListExpose>();
 //computed

@@ -42,17 +42,16 @@ const songListId = ref(route.params.id as string);
 const isMySongList = computed(() => {
   return songListDetail.value 
    && mainStore.userProfile
-   && songListDetail.value.userId === mainStore.userProfile.profile.userId;
+   && songListDetail.value?.userId === mainStore.userProfile?.profile?.userId;
 });
 const starButtonDisabled = computed(() => {
   return songListDetail.value 
    && mainStore.userProfile
-    && songListDetail.value.userId === mainStore.userProfile.profile.userId;
+    && songListDetail.value?.userId === mainStore.userProfile?.profile?.userId;
 });
 // 获取歌单详情
 const fetchSongListDetail = (id:string=route.params.id as string) => {
   isLoading.value = true;
-  // fetchSongListComment();
   getPlaylistDetail(id).then(res => {
     if (res.data.playlist.name === (res.data.playlist.creator.nickname +'喜欢的音乐')) {
       res.data.playlist.isMyLike = true;
@@ -78,7 +77,7 @@ const fetchSongListComment = (id:string=route.params.id as string) => {
   }
   commentLoading.value = true;
   getPlaylistComment(params).then(res => {
-    pageParams.pageCount = Math.round(res.data.total / pageParams.pageSize) || 1;
+    pageParams.pageCount = Math.round(res.data?.total || 1 / pageParams.pageSize) || 1;
     songListComment.value = res.data;
   })
     .finally(() => commentLoading.value = false);
