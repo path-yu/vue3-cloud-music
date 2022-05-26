@@ -47,7 +47,18 @@ const currentPlayModeIcon = computed(() => {
     return SingleLoop;
   }
 });
-
+watch(
+  () => mainStore.currentPlayIndex, (val) => {
+    triggerEle.value?.click();
+  }
+);
+watch(
+  () => mainStore.playList, (val) => {
+    if (val.length === 0) {
+      percentage.value = 0;
+    }
+  }
+);
 // 点击切换上一首
 const handlePrevClick = async () => {
   if (isLoad) return;
@@ -63,11 +74,6 @@ const handleNextClick = async () => {
   isLoad = false;
 };
 
-watch(
-  () => mainStore.currentPlayIndex, (val) => {
-    triggerEle.value?.click();
-  }
-);
 
 const handleTriggerClick = () => {
   setTimeout(async () => {

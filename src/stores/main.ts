@@ -101,6 +101,16 @@ export const useMainStore = defineStore({
       localStorage.currentPlayListId = playListId;
       this.currentPlayListId = playListId;
       this.playMode = 'order';
+      this.changePlaying(true);
+    },
+    resetPlayList() {
+      this.playList = [];
+      this.currentPlayIndex = 0;
+      localStorage.currentPlayIndex = 0;
+      localStorage.playList = JSON.stringify(this.playList);
+      localStorage.currentPlayListId = 0;
+      this.currentPlayListId = 0;
+      this.playMode = 'order';
     },
     // 切换播放音乐
     async changePlayIndex(
@@ -116,6 +126,7 @@ export const useMainStore = defineStore({
       this.currentPlayIndex = index;
       localStorage.currentPlayIndex = index;
       localStorage.playList = JSON.stringify(this.playList);
+      this.changePlaying(true);
     },
     // 切换播放模式
     changePlayMode(mode:playMode) {
@@ -146,6 +157,7 @@ export const useMainStore = defineStore({
       this.currentPlayIndex = resultIndex;
       localStorage.currentPlayIndex = resultIndex;
       localStorage.playList = JSON.stringify(this.playList);
+      this.changePlaying(true);
       return { success: true };
     },
     // 切换上一首
@@ -166,6 +178,7 @@ export const useMainStore = defineStore({
       this.currentPlayIndex = resultIndex;
       localStorage.currentPlayIndex = resultIndex;
       localStorage.playList = JSON.stringify(this.playList);
+      this.changePlaying(true);
       return { success: true };
     },
     async setMusicData(

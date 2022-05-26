@@ -43,6 +43,10 @@ const handleDoubleClick = async (index:number) => {
   await mainStore.changePlayIndex(index);
   isLoad= false;
 };
+// 点击清空播放列表
+const handleRestClick = () => {
+  mainStore.resetPlayList();
+};
 </script>
 
 <template>
@@ -57,53 +61,64 @@ const handleDoubleClick = async (index:number) => {
       <template #header>
         <div class="flex justify-between odd:" style="width:400px"> 
           <span class="text-sm opacity-50">共 {{ mainStore.playListCount }} 首 </span>
-          <n-button type="primary" text>
+          <n-button type="primary" text @click="handleRestClick">
             清空列表
           </n-button>
         </div>
       </template>
-      <RecycleScroller
-        v-slot="{ item,index }"
+      <DynamicScroller
         class="scroller"
         :items="mainStore.playList"
-        :item-size="45"
+        :min-item-size="45"
         key-field="id"
       >
-        <div
-          :style="itemStyle(index)"
-          class="flex justify-between text-sm item"
-          @dblclick="handleDoubleClick(index)"
-        >
-          <div class="flex-1 pr-2 w-28 truncate">
-            <n-icon
-              v-if="+mainStore.currentPlayIndex === index"
-              :color="mainStore.playing
-                ? themeVars.primaryColor
-                : themeVars.textColor1" :component="mainStore.playing
-                ? VolumeUpFilled
-                :VolumeMuteFilled"
-            />
-            {{ item.name }}
-            <n-tag
-              v-if="item.mv !== 0"
-              size="small" :color="tagColor" class="ml-2"
-              @click="router.push(`/mv/${item.mv}`)"
+        <template #default="{ item, index }">
+          <DynamicScrollerItem
+            :item="item"
+            :active="active"
+            :size-dependencies="[
+              item.message,
+            ]"
+            :data-index="index"
+          >
+            <div
+              :style="itemStyle(index)"
+              class="flex justify-between text-sm item"
+              @dblclick="handleDoubleClick(index)"
             >
-              MV
-            </n-tag>
-            <n-tag
-              v-if="item.fee === 1"
-              size="small" :color="tagColor" class="ml-2"
-            >
-              VIP
-            </n-tag>
-          </div>
-          <p class=" w-24 truncate">
-            {{ formateSongsAuthor(item?.ar || []) }}
-          </p>
-          <n-time class="pl-4 opacity-40" format="mm:ss" :time="item?.dt" />
-        </div>
-      </RecycleScroller>
+              <div class="flex-1 items-center pr-2 w-28 truncate">
+                <n-icon
+                  v-if="+mainStore.currentPlayIndex === index"
+                  style="padding-right:5px"
+                  :color="mainStore.playing
+                    ? themeVars.primaryColor
+                    : themeVars.textColor1" :component="mainStore.playing
+                    ? VolumeUpFilled
+                    :VolumeMuteFilled"
+                />
+                <span> {{ item.name }}</span>
+                <n-tag
+                  v-if="item.mv !== 0"
+                  size="small" :color="tagColor" class="ml-2"
+                  @click="router.push(`/mv/${item.mv}`)"
+                >
+                  MV
+                </n-tag>
+                <n-tag
+                  v-if="item.fee === 1"
+                  size="small" :color="tagColor" class="ml-2"
+                >
+                  VIP
+                </n-tag>
+              </div>
+              <p class=" w-24 truncate">
+                {{ formateSongsAuthor(item?.ar || []) }}
+              </p>
+              <n-time class="pl-4 opacity-40" format="mm:ss" :time="item?.dt" />
+            </div>
+          </DynamicScrollerItem>
+        </template>
+      </DynamicScroller>
     </n-drawer-content>
   </n-drawer>
 </template>
