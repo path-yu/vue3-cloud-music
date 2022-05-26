@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMainStore } from '@/stores/main';
-import { formateSongsAuthor, isEven, de } from '@/utils';
+import { formateSongsAuthor, isEven } from '@/utils';
+import { VolumeMuteFilled, VolumeUpFilled } from '@vicons/material';
 import { debounce } from 'lodash';
 import { useThemeVars } from 'naive-ui';
 import { computed, ref } from 'vue';
@@ -18,6 +19,15 @@ const tagColor = computed(() => {
   return {
     textColor: themeVars.value.primaryColor,
     borderColor: themeVars.value.primaryColor
+  };
+});
+const itemStyle = computed(() => {
+  return (index:number) => {
+    return {
+      background: isEven(index)
+        ? themeVars.value.tableColorStriped
+        : themeVars.value.tableColor
+    };
   };
 });
 
@@ -60,11 +70,19 @@ const handleDoubleClick = async (index:number) => {
         key-field="id"
       >
         <div
-          :style="{background:isEven(index) ? themeVars.tableColorStriped : themeVars.tableColor}"
+          :style="itemStyle(index)"
           class="flex justify-between text-sm item"
           @dblclick="handleDoubleClick(index)"
         >
           <div class="flex-1 pr-2 w-28 truncate">
+            <n-icon
+              v-if="+mainStore.currentPlayIndex === index"
+              :color="mainStore.playing
+                ? themeVars.primaryColor
+                : themeVars.textColor1" :component="mainStore.playing
+                ? VolumeUpFilled
+                :VolumeMuteFilled"
+            />
             {{ item.name }}
             <n-tag
               v-if="item.mv !== 0"
