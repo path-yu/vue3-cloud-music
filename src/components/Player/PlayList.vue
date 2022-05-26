@@ -50,6 +50,10 @@ const handleDoubleClick = async (index:number) => {
 const handleRestClick = () => {
   mainStore.resetPlayList();
 };
+const handleGoHemeClick = () => {
+  router.push('/discovery');
+  active.value = false;
+};
 </script>
 
 <template>
@@ -69,6 +73,17 @@ const handleRestClick = () => {
           </n-button>
         </div>
       </template>
+      <!--  -->
+      <n-empty v-if="mainStore.playList.length===0" class="mt-20" description="您还未添加任何歌曲">
+        <template #extra>
+          <n-button
+            size="small" text type="primary"
+            @click="handleGoHemeClick"
+          >
+            去首页发现音乐
+          </n-button>
+        </template>
+      </n-empty>
       <DynamicScroller
         class="scroller"
         :items="mainStore.playList"

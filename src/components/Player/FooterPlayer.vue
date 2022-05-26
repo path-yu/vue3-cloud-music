@@ -80,7 +80,7 @@ const handleTriggerClick = () => {
     await nextTick();
     audioRef.value?.load();
     audioRef.value?.pause();
-    if (currentSong.value.url) {
+    if (currentSong.value?.url) {
       audioRef.value?.play();
     }
     paused.value = false;
