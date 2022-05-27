@@ -92,8 +92,8 @@ export default defineComponent({
         key: 'singer',
         width: '140',
         render(row) {
-          return <p class="text-sm">
-            <NEllipsis>{ row.al.name }</NEllipsis>
+          return <p class="text-sm truncate">
+            { row.al.name }
           </p>;
         }
       },
@@ -102,8 +102,8 @@ export default defineComponent({
         key: 'album',
         width: '120',
         render(row) {
-          return <p class="text-sm">
-            <NEllipsis>{ formateSongsAuthor(row.ar) }</NEllipsis>
+          return <p class="text-sm truncate">
+            { formateSongsAuthor(row.ar) }
           </p>;
         }
       },
