@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import LoadImg from '../Base/LoadImg.vue';
+
 import StopIcon from '@/components/Icon/StopIcon.vue';
 import OrderPlay from '@/components/Icon/OrderPlay.vue';
 import RandomIcon from '@/components/Icon/RandomIcon.vue';
@@ -7,17 +7,21 @@ import SingleLoop from '@/components/Icon/SingleLoop.vue';
 
 import { formateSongsAuthor } from '@/utils';
 import { List } from '@vicons/ionicons5';
-import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound, VolumeOffRound } from '@vicons/material';
+import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound, VolumeOffRound, KeyboardArrowUpOutlined } from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 import type { PlayListExpose } from './PlayList.vue';
+import { useElementHover } from '@vueuse/core';
 
 let slideValueChange = false;// 记录slider值是否手动发生了改变
 const progressWidth = 500;
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
+// 触发显示打开歌曲详情交互元素
+const triggerRef = ref();
+const isHover = useElementHover(triggerRef);
 
 let isLoad = false;
 // 触发交互元素
@@ -199,11 +203,19 @@ onUnmounted(() => {
 <template>
   <div class="flex items-center p-2 footer-player">
     <div v-if="isShow" class="flex items-center w-40 h-full">
-      <load-img
-        loading-height="48px"
-        class-name="w-12"
-        :src="currentSong?.al?.picUrl"
-      />
+      <div ref="triggerRef" class="relative">
+        <n-image
+          class="w-12 h-12"
+          :src="currentSong?.al?.picUrl"
+          :preview-disabled="true"
+          :style="{filter:isHover ? 'blur(1px)' : 'none'}"
+        />
+        <transition v-show="isHover" name="fade">
+          <div class="absolute top-0 left-0 z-10 w-12  h-12 bg-black/60 flex-items-justify-center">
+            <n-icon :component="KeyboardArrowUpOutlined" size="35" color="white" />
+          </div>
+        </transition>
+      </div>
       <div class="ml-4">
         <p class="flex items-center text-base">
           <n-ellipsis>
