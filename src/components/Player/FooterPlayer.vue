@@ -9,7 +9,7 @@ import { formateSongsAuthor } from '@/utils';
 import { List } from '@vicons/ionicons5';
 import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound, VolumeOffRound } from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
-import { computed, nextTick, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 import type { PlayListExpose } from './PlayList.vue';
@@ -74,11 +74,12 @@ const handleNextClick = async () => {
   isLoad = false;
 };
 
-
 const handleTriggerClick = () => {
   setTimeout(async () => {
     await nextTick();
-    audioRef.value?.load();
+    if (!audioRef.value?.paused) {
+      audioRef.value!.load();
+    }
     audioRef.value?.pause();
     if (currentSong.value?.url) {
       audioRef.value?.play();
@@ -177,6 +178,22 @@ const handlePlayModeClick = () => {
     window.$message.info('顺序播放');
   }
 };
+// 点击空格播放
+const handlePressSpace = (e:KeyboardEvent) => {
+  if (e.code === 'Space' && mainStore.currentPlaySong) {
+    togglePlayStatus();
+  }
+};
+onMounted(() => {
+  document.body.addEventListener(
+    'keypress', handlePressSpace
+  );
+});
+onUnmounted(() => {
+  document.body.removeEventListener(
+    'keypress', handlePressSpace
+  );
+});
 </script>
 
 <template>
