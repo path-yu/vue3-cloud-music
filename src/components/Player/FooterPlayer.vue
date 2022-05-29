@@ -7,7 +7,12 @@ import SingleLoop from '@/components/Icon/SingleLoop.vue';
 
 import { formateSongsAuthor } from '@/utils';
 import { List } from '@vicons/ionicons5';
-import { SkipPreviousSharp, SkipNextSharp, PlayArrowSharp, VolumeUpRound, VolumeOffRound, KeyboardArrowUpOutlined } from '@vicons/material';
+import {
+  SkipPreviousSharp, SkipNextSharp,
+  PlayArrowSharp, VolumeUpRound,
+  KeyboardArrowDownOutlined,
+  VolumeOffRound, KeyboardArrowUpOutlined 
+} from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
@@ -51,6 +56,15 @@ const currentPlayModeIcon = computed(() => {
   } else {
     return SingleLoop;
   }
+});
+const activeStyle = computed(() => {
+  let transformStyle;
+  if (!musicDetailRef.value?.active) {
+    transformStyle = 'translateY(0)';
+  } else {
+    transformStyle = 'translateY(-54px)';
+  }
+  return { transform: transformStyle };
 });
 watch(
   () => mainStore.currentPlayIndex, (val) => {
@@ -206,31 +220,41 @@ onUnmounted(() => {
 </script>
 
 <template>
-  <div class="flex items-center p-2 footer-player">
-    <div v-if="isShow" class="flex items-center w-40 h-full">
-      <div ref="triggerRef" class="relative" @click="handleArrowClick">
-        <n-image
-          class="w-12 h-12"
-          :src="currentSong?.al?.picUrl"
-          :preview-disabled="true"
-          :style="{filter:isHover ? 'blur(1px)' : 'none'}"
-        />
-        <transition v-show="isHover" name="fade">
-          <div class="absolute top-0 left-0 z-10 w-12  h-12 bg-black/60 flex-items-justify-center">
-            <n-icon :component="KeyboardArrowUpOutlined" size="35" color="white" />
+  <div class="flex z-30 items-center p-2 footer-player">
+    <div v-if="isShow" class="overflow-hidden h-12">
+      <div :style="activeStyle" class="transition-transform open-detail-control-wrap">
+        <div class="flex items-center w-40 h-full">
+          <div ref="triggerRef" class="relative" @click="handleArrowClick">
+            <n-image
+              class="w-12 h-12"
+              :src="currentSong?.al?.picUrl"
+              :preview-disabled="true"
+              :style="{filter:isHover ? 'blur(1px)' : 'none'}"
+            />
+            <transition v-show="isHover" name="fade">
+              <div class="absolute top-0 left-0 z-10 w-12  h-12 bg-black/60 flex-items-justify-center">
+                <n-icon :component="KeyboardArrowUpOutlined" size="35" color="white" />
+              </div>
+            </transition>
           </div>
-        </transition>
-      </div>
-      <div class="ml-4">
-        <p class="flex items-center text-base">
-          <n-ellipsis>
-            {{ currentSong?.name }}
-          </n-ellipsis>
-          <heart-icon class="ml-2" :like="true" /> 
-        </p>
-        <n-ellipsis>
-          <p>{{ formateSongsAuthor(currentSong?.ar || []) }}</p>
-        </n-ellipsis>
+          <div class="ml-4">
+            <p class="flex items-center text-base">
+              <n-ellipsis>
+                {{ currentSong?.name }}
+              </n-ellipsis>
+              <heart-icon class="ml-2" :like="true" /> 
+            </p>
+            <n-ellipsis>
+              <p>{{ formateSongsAuthor(currentSong?.ar || []) }}</p>
+            </n-ellipsis>
+          </div>
+        </div>
+        <div class="flex items-center w-40 h-full">
+          <n-icon
+            size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
+            @click="musicDetailRef?.close()"
+          />
+        </div>
       </div>
     </div>
     <div :style="{opacity:isShow ? '1' : '0.6'}" class="flex flex-col flex-1 items-center control">
@@ -310,5 +334,25 @@ onUnmounted(() => {
 }
 :deep(.n-icon){
   cursor: pointer;
+}
+.open-detail-control-wrap{
+  transform: translateY(0);
+}
+.slide-up-enter-active,
+.slide-up-leave-active {
+  transition: all 0.4s ease-out;
+}
+.slide-up-enter-from{
+  transform: translateY(48px);
+}
+.slide-up-enter-to {
+  transform: translateY(0);
+}
+
+.slide-up-leave-from{
+  transform: translateY(0);
+}
+.slide-up-leave-to {
+  transform: translateY(48px);
 }
 </style>

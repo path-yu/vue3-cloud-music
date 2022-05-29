@@ -4,9 +4,9 @@ export interface MusicDetailExpose {
   show:() => void;
   close:() => void;
   toggle:() => void;
+  active: Ref<boolean>;
 }
-
-
+const active = ref(false);
 defineExpose({
   show() {
     active.value = true;
@@ -20,10 +20,9 @@ defineExpose({
     } else {
       active.value = true;
     }
-  }
-  
+  },
+  active
 });
-const active = ref(false);
 </script>
 
 <template>
@@ -38,24 +37,23 @@ const active = ref(false);
 .music-detail{
   bottom:73px;
   width: 85vw;
-  height:calc(100vh - 73px);
-  transform: translateY(0);
+  height: calc(100vh - 73px);
 }
 /* 从底部弹出或隐藏过渡 */
 .bottom-slide-transform-leave-active{
-  transition: transform .2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: height .2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .bottom-slide-transform-enter-active {
-  transition: transform .4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
 }
 .bottom-slide-transform-enter-from {
-   transform: translateY(100vh);
+   height: 0;
 }
 .bottom-slide-transform-enter-to {
-   transform: translateY(0);
+   height: calc(100vh - 73px);
 }
 .bottom-slide-transform-leave-to {
-  transform: translateY(100vh);
+   height: 0;
 }
 
 </style>
