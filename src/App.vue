@@ -13,7 +13,7 @@ onMounted(() => {
 <template>
   <n-config-provider :locale="zhCN" :theme="mainStore.activeTheme">
     <n-loading-bar-provider>
-      <div class="w-100vw">
+      <div class="transition-colors w-100vw">
         <n-message-provider>
           <n-dialog-provider>
             <LayOut />

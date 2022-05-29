@@ -1,11 +1,10 @@
 <script setup lang="ts">
+import useThemeStyle from '@/hook/useThemeStyle';
 import useValidateVipSong from '@/hook/useValidateVipSong';
 import { useMainStore } from '@/stores/main';
-import { formateSongsAuthor, isEven } from '@/utils';
+import { formateSongsAuthor } from '@/utils';
 import { VolumeMuteFilled, VolumeUpFilled } from '@vicons/material';
-import { debounce } from 'lodash';
-import { useThemeVars } from 'naive-ui';
-import { computed, ref } from 'vue';
+import { ref } from 'vue';
 import { useRouter } from 'vue-router';
 
 export interface PlayListExpose{
@@ -13,24 +12,9 @@ export interface PlayListExpose{
 }
 const active = ref(false);
 const mainStore = useMainStore();
-const themeVars = useThemeVars();
 const router = useRouter();
 let isLoad = false;
-const tagColor = computed(() => {
-  return {
-    textColor: themeVars.value.primaryColor,
-    borderColor: themeVars.value.primaryColor
-  };
-});
-const itemStyle = computed(() => {
-  return (index:number) => {
-    return {
-      background: isEven(index)
-        ? themeVars.value.tableColorStriped
-        : themeVars.value.tableColor
-    };
-  };
-});
+const { tableStripedStyle, themeVars, tagColor } = useThemeStyle();
 
 defineExpose({
   show() {
@@ -100,11 +84,11 @@ const handleGoHemeClick = () => {
             :data-index="index"
           >
             <div
-              :style="itemStyle(index)"
+              :style="tableStripedStyle(index)"
               class="flex justify-between text-sm item"
               @dblclick="handleDoubleClick(index)"
             >
-              <div class="flex-1 items-center pr-2 w-28 truncate">
+              <div class="flex overflow-hidden flex-1 items-center pr-2">
                 <n-icon
                   v-if="+mainStore.currentPlayIndex === index"
                   style="padding-right:5px"
@@ -114,7 +98,9 @@ const handleGoHemeClick = () => {
                     ? VolumeUpFilled
                     :VolumeMuteFilled"
                 />
-                <span> {{ item.name }}</span>
+                <p class="truncate" style="max-width:'140px'">
+                  {{ item.name }}
+                </p>
                 <n-tag
                   v-if="item.mv !== 0"
                   size="small" :color="tagColor" class="ml-2"
@@ -169,5 +155,4 @@ const handleGoHemeClick = () => {
   padding: 0 !important;
   padding-bottom: 15px;
 }
-
 </style>

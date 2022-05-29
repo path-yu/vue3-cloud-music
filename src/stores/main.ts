@@ -85,7 +85,7 @@ export const useMainStore = defineStore({
     },
     // 初始化播放 列表
     async initPlayList(
-      data:any[], index=0, playListId:number, message='亲爱的, 暂无版权'
+      data:any[], index=0, playListId:number|string, message='亲爱的, 暂无版权'
     ) {
       // 如果没有获取url, 则获取歌曲url
       if (!data[index].url) {

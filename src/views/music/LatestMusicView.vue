@@ -1,12 +1,13 @@
 <script setup lang="ts">
 import { formateSongsAuthor } from '@/utils';
-import { useThemeVars } from 'naive-ui';
 import { computed, ref, type CSSProperties } from 'vue';
 import { getTopSong } from '../../service';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import PlayIcon from '@/components/Base/PlayIcon.vue';
 import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
 import { useRouter } from 'vue-router';
+import useThemeStyle from '@/hook/useThemeStyle';
+import { useDbClickPlay } from '@/hook/useDbClickPlay';
 const typeList = [
   {
     value: '0',
@@ -33,7 +34,7 @@ const isLoading = ref(true);
 const router = useRouter();
 const newSongList = ref<any[]>([]);
 const activeType = ref('0');
-const themeVars = useThemeVars();
+const { tableStripedStyle, themeVars } = useThemeStyle();
 const tagColor = computed(() => {
   return {
     textColor: themeVars.value.primaryColor,
@@ -62,21 +63,31 @@ const fetchData = () => {
         setTimeout(
           () => {
             isLoading.value = false;
-            newSongList.value = res.data.data;
+            newSongList.value = newSongList.value = setNewSongList(res.data.data);
           }, 600
         );
       } else {
         isLoading.value = false;
-        newSongList.value = res.data.data;
+        newSongList.value = setNewSongList(res.data.data);
       }
 
     });
 };
-
+const setNewSongList = (data:any[]) => {
+  return data.map((item:any) => {
+    item.dt = item.duration;
+    item.al = item.album;
+    item.ar = item.artists;
+    return item;
+  });
+};
 const handleTypeClick = (value:string) => {
   activeType.value = value;
   fetchData();
 };
+const handleDBClick = useDbClickPlay(
+  newSongList, 'newMusic'
+);
 const handleMouseEnter = (
   e:MouseEvent, value:string
 ) => {
@@ -94,8 +105,8 @@ fetchData();
 </script>
 
 <template>
-  <div class="px-6">
-    <div class="py-4">
+  <div>
+    <div class="p-4">
       <span
         v-for="item in typeList"
         :key="item.value" class="px-2 rounded-md opacity-50 transition duration-150 ease-in-out cursor-pointer"
@@ -108,7 +119,7 @@ fetchData();
     <!-- 新歌速递列表 -->
     <div class="mt-4">
       <div v-show="isLoading">
-        <div v-for="item in 15" :key="item" class="flex justify-between items-center">
+        <div v-for="item in 15" :key="item" class="flex justify-between items-center p-2">
           <div class="flex items-center">
             <n-skeleton width="15px" class="mt-2" type="text" />
             <n-skeleton
@@ -132,7 +143,11 @@ fetchData();
         mode="out-in"
       >
         <ul v-show="!isLoading" class="songList">
-          <li v-for="(item,index) in newSongList" :key="item.id" class="flex items-center px-2 mt-4"> 
+          <li
+            v-for="(item,index) in newSongList" :key="item.id" :style="tableStripedStyle(index)"
+            class="flex items-center py-2 px-4 transition-colors"
+            @dblclick="() => handleDBClick(item,index)"
+          > 
             <div class="flex items-center" style="{ width: '120px' }">
               <p class="w-5 text-sm opacity-80">
                 {{ index < 9
@@ -145,6 +160,7 @@ fetchData();
                   class-name="w-16 h-16 rounded-md"
                   :src="item.album.picUrl"
                   :show-message="false"
+                  :double-click-preview="false"
                 />
                 <play-icon
                   :size="15"
@@ -153,7 +169,7 @@ fetchData();
                 />
               </div>
             </div>
-            <n-ellipsis class="ml-6 w-xs text-sm flex-30">
+            <p class="ml-6 w-xs text-sm truncate flex-30">
               {{ item.name }}
               <n-tag
                 v-if="item.mvid !== 0" size="small" :color="tagColor"
@@ -161,12 +177,12 @@ fetchData();
               >
                 MV
               </n-tag>
-            </n-ellipsis>
+            </p>
             <p class="ml-2 w-xs text-sm opacity-80 flex-30">
               <n-ellipsis>{{ formateSongsAuthor(item.artists) }}</n-ellipsis>
             </p>
-            <p class="flex-1 ml-2 w-xs text-sm opacity-80 flex-30">
-              <n-ellipsis>{{ item.album.name }}</n-ellipsis>
+            <p class="flex-1 ml-2 w-xs text-sm truncate opacity-80 flex-30">
+              {{ item.album.name }}
             </p>
             <n-time
               class="pl-4 mx-2 text-sm text-left opacity-80"

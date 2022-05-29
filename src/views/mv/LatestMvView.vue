@@ -90,8 +90,8 @@ watch(
       <category-tab v-model="params.order" name="排序" :list="orderList" />
     </n-space>
     <div class="py-4">
-      <MvListSkeleton v-show="listIsLoading" :count="pageParams.pageSize" />
-      <mv-list v-show="!listIsLoading" :list="list" />
+      <MvListSkeleton v-if="listIsLoading" :count="pageParams.pageSize" />
+      <mv-list v-if="!listIsLoading" :list="list" />
       <div v-if="firstFetchDataSuccess" class="flex justify-end mt-4">
         <n-pagination
           v-model:page="pageParams.page" 

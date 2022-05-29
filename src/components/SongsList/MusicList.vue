@@ -1,13 +1,12 @@
 <script lang="tsx">
 /* eslint-disable consistent-return */
-
-import useValidateVipSong from '@/hook/useValidateVipSong';
+import { useDbClickPlay } from '@/hook/useDbClickPlay';
 import { useMainStore } from '@/stores/main';
 import { formateSongsAuthor } from '@/utils';
 import { HeartOutline, Heart, DownloadOutline } from '@vicons/ionicons5';
 import { VolumeMuteFilled, VolumeUpFilled } from '@vicons/material';
 import { useThemeVars, type DataTableColumns } from 'naive-ui';
-import { NIcon, NTime, NEllipsis, NTag } from 'naive-ui';
+import { NIcon, NTime, NTag } from 'naive-ui';
 import { computed, defineComponent, ref } from 'vue';
 import { useRouter } from 'vue-router';
 
@@ -39,7 +38,6 @@ export default defineComponent({
         borderColor: themeVars.value.primaryColor
       };
     });
-    const isLoad = ref(false);
     const columns:DataTableColumns<RowData> = [
       {
         title: '操作',
@@ -128,32 +126,9 @@ export default defineComponent({
       }
       return '';
     };
-    const handleClick = async (
-      row: any, index:number
-    ) => {
-      const value = useValidateVipSong(row);
-      if (value) return;
-      if (isLoad.value) return;
-      isLoad.value = true;
-      let message = '亲爱的, 暂无版权';
-      // 初始化歌曲列表
-      if (!mainStore.playList.length) {
-        await mainStore.initPlayList(
-          props.songList, index, props.playListId, message
-        );
-      } else {
-        if (mainStore.currentPlayListId === props.playListId) {
-          await mainStore.changePlayIndex(
-            index, message
-          );
-        } else {
-          await mainStore.initPlayList(
-            props.songList, index, props.playListId, message
-          );
-        }
-      }
-      isLoad.value = false;
-    };
+    const handleClick = useDbClickPlay(
+      props.songList, props.playListId
+    );
     return () => {
       return <div >
         <n-data-table

@@ -8,7 +8,7 @@ export interface StoreState{
   userProfile: AnyObject;
   currentPlayIndex: number;
   playMode: playMode,
-  currentPlayListId: number,
+  currentPlayListId: number | string,
   playing:boolean
 }
 export type playMode = 'order' | 'random' | 'singleLoop';
