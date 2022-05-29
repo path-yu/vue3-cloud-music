@@ -14,6 +14,7 @@ import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 import type { PlayListExpose } from './PlayList.vue';
 import { useElementHover } from '@vueuse/core';
+import type { MusicDetailExpose } from './MusicDetail.vue';
 
 let slideValueChange = false;// 记录slider值是否手动发生了改变
 const progressWidth = 500;
@@ -22,7 +23,7 @@ const mainStore = useMainStore();
 // 触发显示打开歌曲详情交互元素
 const triggerRef = ref();
 const isHover = useElementHover(triggerRef);
-
+const musicDetailRef = ref<MusicDetailExpose>();
 let isLoad = false;
 // 触发交互元素
 const triggerEle = ref<HTMLDivElement>();
@@ -188,6 +189,10 @@ const handlePressSpace = (e:KeyboardEvent) => {
     togglePlayStatus();
   }
 };
+// 点击箭头打开歌曲详情
+const handleArrowClick = () => {
+  musicDetailRef.value?.toggle();
+};
 onMounted(() => {
   document.body.addEventListener(
     'keypress', handlePressSpace
@@ -203,7 +208,7 @@ onUnmounted(() => {
 <template>
   <div class="flex items-center p-2 footer-player">
     <div v-if="isShow" class="flex items-center w-40 h-full">
-      <div ref="triggerRef" class="relative">
+      <div ref="triggerRef" class="relative" @click="handleArrowClick">
         <n-image
           class="w-12 h-12"
           :src="currentSong?.al?.picUrl"
@@ -291,6 +296,7 @@ onUnmounted(() => {
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
+    <music-detail ref="musicDetailRef" />
   </div>
 </template>
 
