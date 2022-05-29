@@ -126,9 +126,7 @@ export default defineComponent({
       }
       return '';
     };
-    const handleClick = useDbClickPlay(
-      props.songList, props.playListId
-    );
+    const handleClick = useDbClickPlay();
     return () => {
       return <div >
         <n-data-table
@@ -144,7 +142,7 @@ export default defineComponent({
           ) => {
             return {
               ondblclick: () => handleClick(
-                row, index
+                props.songList, props.playListId, row, index
               ) 
             };
           }}

@@ -146,7 +146,7 @@ fetchData();
           <li
             v-for="(item,index) in newSongList" :key="item.id" :style="tableStripedStyle(index)"
             class="flex items-center py-2 px-4 transition-colors"
-            @dblclick="() => handleDBClick(item,index)"
+            @dblclick="() => handleDBClick(newSongList,'newSongList',item,index)"
           > 
             <div class="flex items-center" style="{ width: '120px' }">
               <p class="w-5 text-sm opacity-80">

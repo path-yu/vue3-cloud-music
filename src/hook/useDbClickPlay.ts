@@ -2,12 +2,10 @@ import { useMainStore } from '@/stores/main';
 import type { Ref } from 'vue';
 import useValidateVipSong from './useValidateVipSong';
 
-export function useDbClickPlay(
-  list:any[]| Ref<any[]>, playListId:number|string
-) {
+export function useDbClickPlay() {
   let isLoad = false;
   return async (
-    item:any, index:number
+    list:any[]| Ref<any[]>, playListId:number|string, item:any, index:number
   ) => {
     const value = useValidateVipSong(item);
     if (value) return;
@@ -19,7 +17,9 @@ export function useDbClickPlay(
     } else {
       songList = list.value;
     }
-    console.log(index);
+    console.log(
+      index, songList
+    );
     
     isLoad = true;
     const message = '亲爱的, 暂无版权';
@@ -29,7 +29,7 @@ export function useDbClickPlay(
         songList, index, playListId, message
       );
     } else {
-      if (+mainStore.currentPlayListId === playListId) {
+      if (mainStore.currentPlayListId === playListId) {
         await mainStore.changePlayIndex(
           index, message
         );
