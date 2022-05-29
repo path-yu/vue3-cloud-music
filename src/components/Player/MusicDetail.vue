@@ -9,25 +9,26 @@ export interface MusicDetailExpose {
 
 defineExpose({
   show() {
-    show.value = true;
+    active.value = true;
   },
   close() {
-    show.value = false;
+    active.value = false;
   },
   toggle() {
-    if (show.value) {
-      show.value = false;
+    if (active.value) {
+      active.value = false;
     } else {
-      show.value = true;
+      active.value = true;
     }
   }
+  
 });
-const show = ref(false);
+const active = ref(false);
 </script>
 
 <template>
   <transition name="bottom-slide-transform">
-    <div v-show="show" class="fixed inset-x-0 z-20 m-auto bg-slate-200 music-detail">
+    <div v-show="active" class="fixed inset-x-0 z-20 m-auto bg-slate-200 music-detail">
       音乐详情
     </div>
   </transition>
