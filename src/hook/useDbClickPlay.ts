@@ -19,7 +19,7 @@ export function useDbClickPlay(
     } else {
       songList = list.value;
     }
-    console.log(item);
+    console.log(index);
     
     isLoad = true;
     const message = '亲爱的, 暂无版权';
