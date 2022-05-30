@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref } from 'vue';
+import { ref, type Ref } from 'vue';
 export interface MusicDetailExpose {
   show:() => void;
   close:() => void;
