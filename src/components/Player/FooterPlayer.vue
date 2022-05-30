@@ -221,7 +221,7 @@ onUnmounted(() => {
 
 <template>
   <div class="flex z-30 items-center p-2 footer-player">
-    <div v-if="isShow" class="overflow-hidden h-12">
+    <div v-if="isShow" class="overflow-hidden w-48 h-12">
       <div :style="activeStyle" class="open-detail-control-wrap">
         <div class="flex items-center w-40 h-full">
           <div ref="triggerRef" class="relative" @click="handleArrowClick">
