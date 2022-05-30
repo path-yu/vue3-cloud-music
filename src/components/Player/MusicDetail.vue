@@ -41,10 +41,10 @@ defineExpose({
 }
 /* 从底部弹出或隐藏过渡 */
 .bottom-slide-transform-leave-active{
-  transition: height .2s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .bottom-slide-transform-enter-active {
-  transition: height 0.4s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);;
 }
 .bottom-slide-transform-enter-from {
    height: 0;

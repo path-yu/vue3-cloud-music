@@ -222,7 +222,7 @@ onUnmounted(() => {
 <template>
   <div class="flex z-30 items-center p-2 footer-player">
     <div v-if="isShow" class="overflow-hidden h-12">
-      <div :style="activeStyle" class="transition-transform open-detail-control-wrap">
+      <div :style="activeStyle" class="open-detail-control-wrap">
         <div class="flex items-center w-40 h-full">
           <div ref="triggerRef" class="relative" @click="handleArrowClick">
             <n-image
@@ -336,23 +336,6 @@ onUnmounted(() => {
   cursor: pointer;
 }
 .open-detail-control-wrap{
-  transform: translateY(0);
-}
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: all 0.4s ease-out;
-}
-.slide-up-enter-from{
-  transform: translateY(48px);
-}
-.slide-up-enter-to {
-  transform: translateY(0);
-}
-
-.slide-up-leave-from{
-  transform: translateY(0);
-}
-.slide-up-leave-to {
-  transform: translateY(48px);
+  transition: transform .6s ease;
 }
 </style>
