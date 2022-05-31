@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { computed, ref, watch, type CSSProperties, type Ref } from 'vue';
+import { computed, onMounted, ref, watch, watchEffect, type CSSProperties, type Ref } from 'vue';
 import analyze from 'rgbaster';
 import color from 'color';
 import { useMainStore } from '@/stores/main';
@@ -12,6 +12,7 @@ export interface MusicDetailExpose {
 }
 const mainStore = useMainStore();
 const themeVars = useThemeVars();
+const background = ref<CSSProperties>({});
 const active = ref(false);
 defineExpose({
   show() {
@@ -29,53 +30,51 @@ defineExpose({
   },
   active
 });
-const backgroundColor = computed(() => {
-  return { backgroundColor: '#fff' };
-});
 
 watch(
   () => mainStore.currentPlaySong.value, (val) => {
-    if (!val.backgroundStyle) {
-      setBackgroundStyle();
-     
-    }  
+    setBackgroundStyle(); 
   }
 );
+watch(
+  () => mainStore.theme, () => {
+    setBackgroundStyle();
+  }
+);
+
 const setBackgroundStyle = async () => {
-  if (!mainStore.currentPlaySong.backgroundStyle) {
-    const result = await analyze(mainStore.currentPlaySong.al?.picUrl);
-    let primary, secondary, third;
-    if (mainStore.theme === 'dark') {
-      primary = color(result[0].color).darken(0.9)
-        .hex();
-      secondary = color(result[1].color).darken(0.8)
-        .hex();
-      third = color(result[2].color).darken(1)
-        .hex();
-    } else {
-      primary = color(result[0].color).lighten(0.9)
-        .hex();
-      secondary = color(result[1].color).lighten(0.8)
-        .hex();
-      third = color(result[2].color).lighten(1)
-        .hex();
-    }
-    
-    // 匹配rgb颜色,添加高斯模糊
-    let style:CSSProperties = {
-      // background: `linear-gradient(to bottom,${result[20].color},${themeVars.value.baseColor} )`,
-      background: `linear-gradient(to bottom,${primary},${secondary},${third} )`
-    };
-    mainStore.currentPlaySong.backgroundStyle = style;
-  }  
+  if (!mainStore.currentPlaySong) return;
+  let primary;
+  if (!mainStore.currentPlaySong.primaryColor) {
+    const result = await analyze(mainStore.currentPlaySong.al.picUrl);
+    mainStore.currentPlaySong.primaryColor = result[1].color;
+    primary = result[1].color;
+  } else {
+    primary = mainStore.currentPlaySong.primaryColor;
+  }
+  console.log(primary);
+  let baseColor = mainStore.theme === 'dark'
+    ? '#121212'
+    : '#f5f5f5';
+  let bgColor = color(baseColor).mix(
+    color(primary), 0.2
+  ) 
+    .hex();
+  background.value = { background: `linear-gradient(to bottom,${bgColor}, ${baseColor}` };
 };
 setBackgroundStyle();
 </script>
 
 <template>
   <transition name="bottom-slide-transform">
-    <div v-show="active" :style="mainStore.currentPlaySong.backgroundStyle" class="fixed inset-x-0 m-auto music-detail">
-      音乐详情
+    <div v-show="active" class="fixed inset-x-0 m-auto music-detail">
+      <div
+        class="absolute inset-0 container-bg"
+        :style="background"
+      />
+      <div class="absolute inset-0 z-66">
+        434
+      </div> 
     </div>
   </transition>
 </template>
@@ -103,5 +102,4 @@ setBackgroundStyle();
 .bottom-slide-transform-leave-to {
    height: 0;
 }
-
 </style>
