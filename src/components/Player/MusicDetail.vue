@@ -32,7 +32,7 @@ defineExpose({
 });
 
 watch(
-  () => mainStore.currentPlaySong.value, (val) => {
+  () => mainStore.currentPlaySong, (val) => {
     setBackgroundStyle(); 
   }
 );
