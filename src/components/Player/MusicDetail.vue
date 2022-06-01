@@ -1,6 +1,7 @@
 <script setup lang="ts">
-import { computed, onMounted, ref, watch, watchEffect, type CSSProperties, type Ref } from 'vue';
+import { ref, watch, type CSSProperties, type Ref } from 'vue';
 import analyze from 'rgbaster';
+import { KeyboardArrowDownOutlined } from '@vicons/material';
 import color from 'color';
 import { useMainStore } from '@/stores/main';
 import { useThemeVars } from 'naive-ui';
@@ -55,7 +56,7 @@ const setBackgroundStyle = async () => {
   console.log(primary);
   let baseColor = mainStore.theme === 'dark'
     ? '#121212'
-    : '#f5f5f5';
+    : 'white';
   let bgColor = color(baseColor).mix(
     color(primary), 0.2
   ) 
@@ -73,7 +74,11 @@ setBackgroundStyle();
         :style="background"
       />
       <div class="absolute inset-0 z-66">
-        434
+        <n-icon
+          size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
+          @click="active = false"
+        />
+        <p>歌曲详情</p>
       </div> 
     </div>
   </transition>

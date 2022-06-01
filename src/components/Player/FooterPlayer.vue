@@ -249,7 +249,7 @@ onUnmounted(() => {
             </n-ellipsis>
           </div>
         </div>
-        <div class="flex items-center w-40 h-full">
+        <div class="flex items-center h-12">
           <n-icon
             size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
             @click="musicDetailRef?.close()"
