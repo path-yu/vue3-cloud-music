@@ -78,6 +78,9 @@ setBackgroundStyle();
           <layout-header-search />
         </div>
       </div> 
+      <div>
+        <rotate-cd />
+      </div>
     </div>
   </transition>
 </template>

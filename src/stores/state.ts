@@ -33,7 +33,7 @@ const state:StoreState = {
   // 当前播放歌单列表id
   currentPlayListId: localStorage.currentPlayListId || 0,
   // 是否正在播放中
-  playing: localStorage.playing && JSON.parse(localStorage.playing) || false
+  playing: false
 };
 
 export default state;

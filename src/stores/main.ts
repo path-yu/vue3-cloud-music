@@ -79,9 +79,7 @@ export const useMainStore = defineStore({
       localStorage.likeSongs = JSON.stringify(this.likeSongs);
     },
     hasLikeSong(id:number) {
-      return this.likeSongs[this.likeSongsIndexMap[id]]
-        ? true
-        : false;
+      return !!this.likeSongs[this.likeSongsIndexMap[id]];
     },
     // 初始化播放 列表
     async initPlayList(
@@ -136,7 +134,6 @@ export const useMainStore = defineStore({
     // 切换播放状态
     changePlaying(playing:boolean) {
       this.playing = playing;
-      localStorage.playing = playing;
     },
     // 切换下一首
     async toggleNext(index?:number) {
