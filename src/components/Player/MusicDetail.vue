@@ -68,17 +68,15 @@ setBackgroundStyle();
 
 <template>
   <transition name="bottom-slide-transform">
-    <div v-show="active" class="fixed inset-x-0 m-auto music-detail">
-      <div
-        class="absolute inset-0 container-bg"
-        :style="background"
-      />
-      <div class="absolute inset-0 z-66">
+    <div v-show="active" class="fixed inset-x-0 m-auto music-detail" :style="background">
+      <div class="flex items-center p-4">
         <n-icon
           size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
           @click="active = false"
         />
-        <p>歌曲详情</p>
+        <div class="flex flex-1 items-center ml-20">
+          <layout-header-search />
+        </div>
       </div> 
     </div>
   </transition>

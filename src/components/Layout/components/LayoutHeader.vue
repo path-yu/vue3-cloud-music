@@ -1,67 +1,26 @@
 <script setup lang="ts">
 import { useMainStore } from '@/stores/main';
-import { Moon, Search, SunnySharp } from '@vicons/ionicons5';
+import { Moon, SunnySharp } from '@vicons/ionicons5';
+import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { UserProfile } from '@vicons/carbon';
-import { ArrowBackIosSharp, ArrowForwardIosRound, ExitToAppRound } from '@vicons/material';
-import { useThemeVars } from 'naive-ui';
+import { ExitToAppRound } from '@vicons/material';
 import { ref, watch } from 'vue';
-import { userHistory } from '../hook/useHistoryRoutePath';
-import { useElementHover, onClickOutside } from '@vueuse/core';
+import { onClickOutside } from '@vueuse/core';
 import { getLoginStatus, getUserDetail, getUserInfo, logout, signIn } from '@/service';
 import type { AnyObject } from 'env';
 import { useRouter } from 'vue-router';
 
 let mainStore = useMainStore();
-const themeVars = useThemeVars();
 const router = useRouter();
-const { backPath, forwardPath } = userHistory();
-const backIconRef = ref();
-const forwardIconRef = ref();
 const popoverContainerRef = ref();
 const active = ref(mainStore.isActiveDarkTheme);
 const userDetail = ref<AnyObject>();
 const showUserPopover = ref(false);
-const backHover = useElementHover(backIconRef);
-const forwardHover = useElementHover(forwardIconRef);
 const signBtnLoading = ref(false);
+
 watch(
   () => active.value, () => {
     mainStore.changeTheme();
-  }
-);
-const arrowIconClass = (value: string) => {
-  return value
-    ? 'opacity-100 cursor-pointer'
-    : 'opacity-50';
-};
-const handleArrowClick = (type: 'back' | 'forward') => {
-  if (type === 'back' && backPath) {
-    history.back();
-  }
-  if (type === 'forward' && forwardPath) {
-    history.forward();
-  }
-};
-watch(
-  [backHover, forwardHover], (value: boolean[]) => {
-    let [backIsHover, forwardIsHover] = value;
-    let backIconEle = (backIconRef.value as HTMLSpanElement);
-    let forwardIconEle = (forwardIconRef.value as HTMLSpanElement);
-
-    if (backPath.value) {
-      backIsHover
-        ? backIconEle.style.color = themeVars.value.primaryColor
-        : backIconEle.style.color = '';
-    } else {
-      backIconEle.style.color = '';
-    }
-    if (forwardPath.value) {
-      forwardIsHover
-        ? forwardIconEle.style.color = themeVars.value.primaryColor
-        : forwardIconEle.style.color = '';
-    } else {
-      forwardIconEle.style.color = '';
-    }
   }
 );
 // 监听登录状态 获取用户信息
@@ -150,24 +109,7 @@ if (mainStore.isLogin) {
   <n-layout-header bordered class="flex justify-between items-center px-4 h-14 sm:px-3">
     <div class="flex">
       <span class=" truncate">奇妙音乐屋！</span>
-      <div class="flex items-center ml-8">
-        <div ref="backIconRef" class="text-base" @click="handleArrowClick('back')">
-          <n-icon :class="[arrowIconClass(backPath)]" :component="ArrowBackIosSharp" />
-        </div>
-        <div ref="forwardIconRef" class="ml-2 text-base" @click="handleArrowClick('forward')">
-          <n-icon :class="[arrowIconClass(forwardPath)]" :component="ArrowForwardIosRound" />
-        </div>
-      </div>
-      <div class="w-50">
-        <n-input
-          size="small" class="ml-5" placeholder="请输入"
-          round
-        >
-          <template #prefix>
-            <n-icon :component="Search" />
-          </template>
-        </n-input>
-      </div>
+      <layout-header-search />
     </div>
 
     <div class="flex items-center">
