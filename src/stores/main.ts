@@ -35,6 +35,9 @@ export const useMainStore = defineStore({
     },
     playListCount(state) {
       return state.playList.length;
+    },
+    isDark(state) {
+      return state.theme === 'dark';
     }
   },
   actions: {

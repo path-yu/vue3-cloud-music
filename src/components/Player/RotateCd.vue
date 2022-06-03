@@ -2,6 +2,7 @@
 import { useMainStore } from '@/stores/main';
 import playBar from '@/assets/img/play-bar.png';
 import { ref, watch } from 'vue';
+
 let maxCircleLine = 7;
 let baseSize = 280;
 let gap = 10;
@@ -11,12 +12,11 @@ let cancelAnimationFrameId:number;
 let imgSize = baseSize - (maxCircleLine * gap);
 const mainStore = useMainStore();
 const computedCircleStyle = (index:number) => {
-  const style = {
+  return {
     width: `${baseSize - (gap * index)}px`,
-    height: `${ baseSize - (gap * index)}px`,
+    height: `${baseSize - (gap * index)}px`,
     border: '1px solid #232426'
   };
-  return style;
 };
 
 watch(
@@ -48,8 +48,8 @@ const loopSetRotate = (timestamp:number) => {
 <template>
   <div class="wrapContainer">
     <img :src="playBar" class="playBar" :style="{transform: mainStore.playing ? 'rotate(0deg)' : 'rotate(-40deg)'}">
-    <div class="cd">
-      <div class="transition-all  blackCenter" :style="{transform:`rotate(${rotate}deg)`}">
+    <div class="cd" :style="{background: mainStore.isDark ? '#373636' : '#DBDCDA'}">
+      <div class="transition-all  blackCenter" :style="{transform:`rotate(${rotate}deg)`,background: mainStore.isDark ? '#1D1E21' : '#1B1C1F'}">
         <div
           v-for="item in maxCircleLine" :key="item" class="rounded-full circleItem"
           :style="computedCircleStyle(item)"
