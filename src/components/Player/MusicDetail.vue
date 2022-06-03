@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { computed, type CSSProperties, ref, type Ref, watch } from 'vue';
 import analyze from 'rgbaster';
+import { formateSongsAuthor } from '@/utils';
 import { KeyboardArrowDownOutlined } from '@vicons/material';
 import color from 'color';
 import { useMainStore } from '@/stores/main';
@@ -66,9 +67,7 @@ const setBackgroundStyle = async () => {
     .hex();
   background.value = { background: `linear-gradient(to bottom,${bgColor}, ${baseColor}` };
 };
-const authorName = computed(() => {
-  return mainStore.currentPlaySong.ar.map((item: { name: any; }) => item.name).join('-');
-});
+
 setBackgroundStyle();
 </script>
 
@@ -87,20 +86,24 @@ setBackgroundStyle();
       <div class="flex px-20 pt-5">
         <rotate-cd />
         <div class="ml-10 text-center">
-          <div class="flex justify-center">
-            <p class="text-3xl text-center">
-              {{ mainStore.currentPlaySong.name }}
-            </p>
-            <n-tag
-              v-if="mainStore.currentPlaySong.mv !== 0"
-              size="small" :color="tagColor" class="ml-2"
-              @click="router.push(`/mv/${mainStore.currentPlaySong.mv.mv}`)"
-            >
-              MV
-            </n-tag>
+          <div class="relative">
+            <div class="text-3xl text-center">
+              <span> {{ mainStore.currentPlaySong.name }}</span>
+              <div class="absolute">
+                <!-- <n-tag
+                  v-if="mainStore.currentPlaySong.mv !== 0"
+                  size="small" :color="tagColor"
+                  @click="router.push(`/mv/${mainStore.currentPlaySong.mv.mv}`)"
+                >
+                  MV
+                </n-tag> -->
+              </div>
+            </div>
           </div>
           <p class="mt-2 text-sm opacity-50">
-            {{ authorName }}
+            {{ mainStore.currentPlaySong.al.name }}
+            <span>-</span>
+            {{ formateSongsAuthor(mainStore.currentPlaySong.ar || []) }}
           </p>
           <music-lyric />
         </div>

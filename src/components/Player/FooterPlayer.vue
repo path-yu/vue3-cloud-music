@@ -20,6 +20,7 @@ import dayjs from 'dayjs';
 import type { PlayListExpose } from './PlayList.vue';
 import { useElementHover } from '@vueuse/core';
 import type { MusicDetailExpose } from './MusicDetail.vue';
+import obverser from '@/utils/obverser';
 
 let slideValueChange = false;// 记录slider值是否手动发生了改变
 const progressWidth = 500;
@@ -108,22 +109,29 @@ const handleTriggerClick = () => {
 };
 // 切换播放状态
 const togglePlayStatus = async () => {
+
   if (audioRef.value?.paused) {
     // 歌曲url可能过期
     audioRef.value?.play().catch(async err => {
+      if (isLoad) return;
+      isLoad = true;
       await mainStore.setMusicData(
         mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
       );
+      isLoad = false;
       paused.value = false;
       audioRef.value?.play();
       mainStore.changePlaying(true);
-    });
+    })
+      .then(() => {
+        mainStore.changePlaying(true);
+      });
     paused.value = false;
   } else {
     audioRef.value?.pause();
     paused.value = true;
+    mainStore.changePlaying(false);
   }
-  mainStore.changePlaying(!paused.value);
 };
 
 const playNextMusic = () => {
@@ -150,6 +158,7 @@ const handlePlay = () => {
     currentPlayTime.value = '00:00';
     percentage.value = 0;
   }
+  obverser.emit('play');
 };
 const handleUpdateSliderValue = (value:number) => {
   percentage.value = value;
@@ -206,6 +215,9 @@ const handlePressSpace = (e:KeyboardEvent) => {
 // 点击箭头打开歌曲详情
 const handleArrowClick = () => {
   musicDetailRef.value?.toggle();
+};
+const handlePause = () => {
+  obverser.emit('pause');
 };
 onMounted(() => {
   document.body.addEventListener(
@@ -316,7 +328,7 @@ onUnmounted(() => {
     <audio
       ref="audioRef" :src="currentSong?.url"
       @timeupdate="handleTimeupdate" @ended="playNextMusic" 
-      @play="handlePlay"
+      @play="handlePlay" @pause="handlePause"
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
