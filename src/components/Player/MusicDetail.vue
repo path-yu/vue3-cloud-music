@@ -1,10 +1,11 @@
 <script setup lang="ts">
-import { ref, watch, type CSSProperties, type Ref } from 'vue';
+import { computed, ref, watch, type CSSProperties, type Ref } from 'vue';
 import analyze from 'rgbaster';
 import { KeyboardArrowDownOutlined } from '@vicons/material';
 import color from 'color';
 import { useMainStore } from '@/stores/main';
-import { useThemeVars } from 'naive-ui';
+import useThemeStyle from '@/hook/useThemeStyle';
+import { useRouter } from 'vue-router';
 export interface MusicDetailExpose {
   show:() => void;
   close:() => void;
@@ -12,7 +13,8 @@ export interface MusicDetailExpose {
   active: Ref<boolean>;
 }
 const mainStore = useMainStore();
-const themeVars = useThemeVars();
+const router = useRouter();
+const { tagColor } = useThemeStyle();
 const background = ref<CSSProperties>({});
 const active = ref(false);
 defineExpose({
@@ -53,7 +55,6 @@ const setBackgroundStyle = async () => {
   } else {
     primary = mainStore.currentPlaySong.primaryColor;
   }
-  console.log(primary);
   let baseColor = mainStore.theme === 'dark'
     ? '#121212'
     : 'white';
@@ -63,6 +64,9 @@ const setBackgroundStyle = async () => {
     .hex();
   background.value = { background: `linear-gradient(to bottom,${bgColor}, ${baseColor}` };
 };
+const authorName = computed(() => {
+  return mainStore.currentPlaySong.ar.map((item: { name: any; }) => item.name).join('-'); 
+})
 setBackgroundStyle();
 </script>
 
@@ -78,8 +82,21 @@ setBackgroundStyle();
           <layout-header-search />
         </div>
       </div> 
-      <div>
+      <div class="flex  px-20 pt-5">
         <rotate-cd />
+        <div class="text-center ml-10">
+          <div class="flex">
+             <p class="text-3xl"> {{mainStore.currentPlaySong.name}} </p>
+             <n-tag
+                v-if="mainStore.currentPlaySong.mv !== 0"
+                size="small" :color="tagColor" class="ml-2"
+                @click="router.push(`/mv/${mainStore.currentPlaySong.mv.mv}`)"
+              >
+                MV
+              </n-tag>
+          </div>
+          <p class="text-sm opacity-50 mt-2"> {{authorName}} </p>
+        </div>
       </div>
     </div>
   </transition>
