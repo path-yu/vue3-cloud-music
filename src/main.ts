@@ -7,12 +7,9 @@ import './assets/css/common.css';
 import './assets/css/transition.css';
 import './index.css';
 import router from './router';
-import 'default-passive-events';
 const app = createApp(App);
 
 app.use(createPinia());
 app.use(VueVirtualScroller);
 app.use(router);
 app.mount('#app');
-
-
