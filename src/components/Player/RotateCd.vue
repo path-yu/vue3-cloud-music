@@ -1,6 +1,7 @@
 <script setup lang="ts">
 import { useMainStore } from '@/stores/main';
 import playBar from '@/assets/img/play-bar.png';
+import playBarSupport from '@/assets/img/play-bar-support.png';
 import { ref, watch } from 'vue';
 
 let maxCircleLine = 7;
@@ -18,7 +19,6 @@ const computedCircleStyle = (index:number) => {
     border: '1px solid #232426'
   };
 };
-
 watch(
   () => mainStore.playing, (
     val, oldVal
@@ -42,12 +42,16 @@ const loopSetRotate = (timestamp:number) => {
   }
   cancelAnimationFrameId = window.requestAnimationFrame(loopSetRotate);
 };
-
 </script>
 
 <template>
   <div class="wrapContainer">
-    <img :src="playBar" class="playBar" :style="{transform: mainStore.playing ? 'rotate(0deg)' : 'rotate(-40deg)'}">
+    <div class="playerBarContainer" :style="{transform: mainStore.playing ? 'rotate(0deg)' : 'rotate(-40deg)'}">
+      <img :src="playBar" class="playBar">
+      <div class="playBarSupport">
+        <div class="center" ><div class="dot"></div></div>
+      </div>
+    </div>
     <div class="cd" :style="{background: mainStore.isDark ? '#373636' : '#DBDCDA'}">
       <div class="transition-all  blackCenter" :style="{transform:`rotate(${rotate}deg)`,background: mainStore.isDark ? '#1D1E21' : '#1B1C1F'}">
         <div
@@ -78,7 +82,7 @@ const loopSetRotate = (timestamp:number) => {
   position:relative;
   width:500px;
   height:500px;
-  .playBar{
+  .playerBarContainer{
     position:absolute;
     top:20px;
     right:150px;
@@ -88,6 +92,34 @@ const loopSetRotate = (timestamp:number) => {
     transform-origin: 0 0;
     transition:transform 300ms linear;
     transform: rotate(0deg);
+    >img{
+      position:absolute;
+      width:100px;
+      height:150px;
+    }
+    .playBarSupport{
+      position:absolute;
+      width:26px;
+      height:26px;
+      z-index:999;
+      background: #E4E4E4;
+      border-radius:50%;
+      transform:translate(-7px, -12px);;
+      .center{
+        width:15px;
+        height:15px;
+        border-radius: 50%;
+        background:#FFFFFF;
+        .absolute-center();
+        .dot{
+          width:5px;
+          height:5px;
+          background: #E4E4E4;
+          border-radius: 50%;
+          .absolute-center();
+        }
+      }
+    }
   }
   >.cd{
     position:absolute;
