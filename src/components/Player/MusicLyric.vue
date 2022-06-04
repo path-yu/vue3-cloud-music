@@ -1,39 +1,38 @@
 <script setup lang="ts">
-import Lyric from 'lyric-parser';
+
 import { useThemeVars } from 'naive-ui';
 import obverser from '@/utils/obverser';
-import { computed, onMounted } from 'vue';
+import { computed, onMounted, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
+import { parseLyric, type LineItem } from '@/utils/lyric';
 const mainStore = useMainStore();
 const themeVars = useThemeVars();
 const currentPlayLine = ref(0);
 const scrollBarRef = ref<{scrollTo:(data:{ left?: number, top?: number, behavior:string })=>void}>();
+
 const lyricData = computed(() => {
-  let tlyricData: any;
+  let tlyricData: LineItem[] | undefined;
   if (mainStore.currentPlaySong?.tlyric) {
-    tlyricData = new Lyric(mainStore.currentPlaySong.tlyric);
+    tlyricData = parseLyric(mainStore.currentPlaySong?.tlyric);
   }
   if (!mainStore.currentPlaySong.lyric) {
     return [];
   } else {
-    let lyric = new Lyric(mainStore.currentPlaySong.lyric);
+    let lyric = parseLyric(mainStore.currentPlaySong?.lyric);
     if (tlyricData) {
-      return lyric.lines.map((
-        item: { time: number, txt: string, translateTxt: string }, index: number
+      return lyric.map((
+        item, index: number
       ) => {
-        item.translateTxt = tlyricData.lines[index].txt;
+        item.translateContent = tlyricData![index].content;
         return item;
-      }) as { time: number, txt: string, translateTxt: string }[];
+      });
+    } else {
+      return lyric;
     }
-    return [];
   }
 });
-const currentLyricData = computed(() => {
-  return new Lyric(
-    mainStore.currentPlaySong.lyric, handlePlayLyric
-  );
-});
+
 const currentLyricStyle = (index:number) => {
   let isCurrent = index === currentPlayLine.value;
   return {
@@ -46,40 +45,41 @@ const currentLyricStyle = (index:number) => {
     fontSize: isCurrent
       ? '16px'
       :'14px'
-  };
+  } as CSSProperties;
 };
-function handlePlayLyric(data:{ lineNum:number, txt:string }) {
-  currentPlayLine.value = data.lineNum;
-  let currentTime = currentLyricData.value.lines[data.lineNum].time;
-  let targetELe = document.querySelector(`#time${currentTime}`) as HTMLElement;
-  scrollBarRef.value?.scrollTo({ top: targetELe!.offsetTop - 25, behavior: 'smooth' });
+function handlePlayLyric(time:number) {
+  let currentLyricIndx = lyricData.value.findIndex(item => item.time === time);
+  if (currentLyricIndx !== -1 && !lyricData.value[currentLyricIndx].isFind) {
+    lyricData.value[currentLyricIndx].isFind = true;
+    currentPlayLine.value = currentLyricIndx;
+    let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
+    scrollBarRef.value?.scrollTo({ top: targetELe!.offsetTop - 175, behavior: 'smooth' });
+  }
 }
+
 onMounted(() => {
   obverser.on(
-    'play', () => {
-      currentLyricData.value.togglePlay();
+    'timeUpdate', (time:number) => {
+      handlePlayLyric(time);
     }
   );
-  obverser.on(
-    'pause', () => {
-      currentLyricData.value.togglePlay();
-    }
-  );
+ 
 });
 </script>
 
 <template>
   <div class="mt-10">
-    <n-scrollbar ref="scrollBarRef" style="max-height: 350px" trigger="none">
+    <n-scrollbar ref="scrollBarRef" style="max-height: 350px;width:400px" trigger="none">
+      <div style="height:175px" />
       <div
         v-for="(item,index) in lyricData" :id="'time'+item.time" :key="index"
         class="max-w-xs lyric-item"
-      >
+      > 
         <p :style="currentLyricStyle(index)">
-          {{ item.txt }}
+          {{ item.content }}
         </p>
-        <p v-if="item.translateTxt" :style="currentLyricStyle(index)">
-          {{ item.translateTxt }}
+        <p v-if="item.translateContent" :style="currentLyricStyle(index)">
+          {{ item.translateContent }}
         </p>
       </div>
     </n-scrollbar>
@@ -91,9 +91,9 @@ onMounted(() => {
   padding-right:80px;
 }
 .lyric-item{
-  margin-top:25px;
+  // margin-top:20px;
   p{
-    line-height:30px;
+    line-height:45px;
     color:#646463;
   }
 }

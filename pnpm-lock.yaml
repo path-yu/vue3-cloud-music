@@ -26,7 +26,6 @@ specifiers:
   jsdom: ^19.0.0
   less: ^4.1.2
   lodash: ^4.17.21
-  lyric-parser: ^1.0.1
   naive-ui: ^2.27.0
   normalize.css: ^8.0.1
   pinia: ^2.0.11
@@ -54,7 +53,6 @@ dependencies:
   dayjs: 1.11.2
   eslint-plugin-tailwindcss: 3.5.0
   lodash: 4.17.21
-  lyric-parser: 1.0.1
   normalize.css: 8.0.1
   pinia: 2.0.14_typescript@4.5.5+vue@3.2.36
   qs: 6.10.3
@@ -2633,10 +2631,6 @@ packages:
     dependencies:
       yallist: 4.0.0
     dev: true
-
-  /lyric-parser/1.0.1:
-    resolution: {integrity: sha512-klGkA3gsKMyHENefKj1OnbscWRAxvxNsYNuxgmSIQg6KqVx/HnTrfcD/gNP74XBcu7HSh+kGhCjetPlH91OtFA==}
-    dev: false
 
   /magic-string/0.25.9:
     resolution: {integrity: sha512-RmF0AsMzgt25qzqqLc1+MbHmhdx0ojF2Fvs4XnOqz2ZOBXzzkEwc/dJQZCYHAn7v1jbVOjAZfK8msRn4BxO4VQ==}

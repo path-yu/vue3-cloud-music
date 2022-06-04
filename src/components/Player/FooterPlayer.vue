@@ -151,6 +151,9 @@ const handleTimeupdate = (event:Event) => {
   if (!slideValueChange) {
     percentage.value = Math.round(((target.currentTime * 1000) / currentSong.value?.dt) * 100);
   }
+  obverser.emit(
+    'timeUpdate', Math.round(target.currentTime)
+  );
 };
 // 播放开始
 const handlePlay = () => {
@@ -158,7 +161,6 @@ const handlePlay = () => {
     currentPlayTime.value = '00:00';
     percentage.value = 0;
   }
-  obverser.emit('play');
 };
 const handleUpdateSliderValue = (value:number) => {
   percentage.value = value;
@@ -216,9 +218,7 @@ const handlePressSpace = (e:KeyboardEvent) => {
 const handleArrowClick = () => {
   musicDetailRef.value?.toggle();
 };
-const handlePause = () => {
-  obverser.emit('pause');
-};
+
 onMounted(() => {
   document.body.addEventListener(
     'keypress', handlePressSpace
@@ -328,7 +328,7 @@ onUnmounted(() => {
     <audio
       ref="audioRef" :src="currentSong?.url"
       @timeupdate="handleTimeupdate" @ended="playNextMusic" 
-      @play="handlePlay" @pause="handlePause"
+      @play="handlePlay"
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
