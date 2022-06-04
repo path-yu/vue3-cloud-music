@@ -5,7 +5,7 @@ import obverser from '@/utils/obverser';
 import { computed, onMounted, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
-import { parseLyric, type LineItem } from '@/utils/lyric';
+import { parseLyric, parseRangeLyric, type LineItem, type RangeLyricItem } from '@/utils/lyric';
 const mainStore = useMainStore();
 const themeVars = useThemeVars();
 const currentPlayLine = ref(0);
@@ -32,7 +32,9 @@ const lyricData = computed(() => {
     }
   }
 });
-
+const rangeLyricList = computed(() => {
+  return parseRangeLyric(parseLyric(mainStore.currentPlaySong?.lyric));
+});
 const currentLyricStyle = (index:number) => {
   let isCurrent = index === currentPlayLine.value;
   return {
@@ -49,21 +51,34 @@ const currentLyricStyle = (index:number) => {
 };
 function handlePlayLyric(time:number) {
   let currentLyricIndx = lyricData.value.findIndex(item => item.time === time);
-  if (currentLyricIndx !== -1 && !lyricData.value[currentLyricIndx].isFind) {
-    lyricData.value[currentLyricIndx].isFind = true;
+  let currentLyric = lyricData.value[currentLyricIndx];
+  if (currentLyricIndx !== -1 && !currentLyric.isFind) {
+    currentLyric.isFind = true;
     currentPlayLine.value = currentLyricIndx;
-    let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
-    scrollBarRef.value?.scrollTo({ top: targetELe!.offsetTop - 175, behavior: 'smooth' });
+    setScroll(currentLyric.time);
   }
 }
-
+const setScroll = (time:number) => {
+  let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
+  scrollBarRef.value?.scrollTo({ top: targetELe!.offsetTop - 175, behavior: 'smooth' });
+};
 onMounted(() => {
   obverser.on(
-    'timeUpdate', (time:number) => {
+    'timeUpdate', (
+      time:number, action
+    ) => {
       handlePlayLyric(time);
     }
   );
- 
+  obverser.on(
+    'slideValueChange', (time:number) => {
+      let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
+      lyricData.value.forEach(item => item.isFind = false);
+      lyricData.value[currentLyric.index].isFind = true;
+      currentPlayLine.value = currentLyric.index;
+      setScroll(currentLyric.time);
+    }
+  );
 });
 </script>
 

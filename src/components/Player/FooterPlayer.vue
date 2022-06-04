@@ -160,11 +160,13 @@ const handlePlay = () => {
   if (percentage.value === 100) {
     currentPlayTime.value = '00:00';
     percentage.value = 0;
+    slideValueChange = false;
   }
 };
 const handleUpdateSliderValue = (value:number) => {
   percentage.value = value;
   slideValueChange = true;
+  
 };
 // 处理鼠标在进度条上抬起事件
 const handleSliderMouseUp = () => {
@@ -176,6 +178,9 @@ const handleSliderMouseUp = () => {
     paused.value = false;
   }
   slideValueChange = false;
+  obverser.emit(
+    'slideValueChange', Math.round(currentTime / 1000)
+  );
 };
 // 音量滑动选择器监听回调
 const handleVolumeChange = (value:number) => {

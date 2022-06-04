@@ -22,9 +22,42 @@ export function parseLyric(lrc:string): LineItem[] {
   }
   return lrcObj;
 }
+export function parseRangeLyric(lyricList:LineItem[]) {
+  const map = new Map<number, RangeLyricItem>();
+  let currentIndex = 0;
+  let nextIndex = 1;
+  while (currentIndex !== lyricList.length - 1) {
+    const cur = lyricList[currentIndex];
+    const next = lyricList[nextIndex];
+    for (let start = cur.time; start < next.time; start++) {
+      map.set(
+        start, {
+          ...cur,
+          index: currentIndex
+        }
+      );
+    }
+    if (next) {
+      currentIndex++;
+      nextIndex++;
+    }
+    if (currentIndex === lyricList.length - 1) {
+      map.set(
+        next.time, {
+          ...next,
+          index: currentIndex
+        }
+      );
+    }
+  }
+  return map;
+}
 export interface LineItem{
   time:number;
   content:string;
   translateContent?:string;
   isFind:boolean;
+}
+export interface RangeLyricItem extends LineItem{
+  index:number;
 }
