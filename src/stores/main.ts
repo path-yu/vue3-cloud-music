@@ -198,7 +198,7 @@ export const useMainStore = defineStore({
       // 获取音乐url
       const res = await getMusicUrl(id);
       if (res.data.code === 200) {
-        result.url = res.data.data[0].url;
+        result.url = res.data.data[0].url + '?id=' + id;
       } else {
         window.$message.error('获取歌曲播放地址失败!');
         return { success: false };

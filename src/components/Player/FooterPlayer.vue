@@ -118,6 +118,7 @@ const togglePlayStatus = async () => {
       await mainStore.setMusicData(
         mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
       );
+      localStorage.playList = JSON.stringify(mainStore.playList);
       isLoad = false;
       paused.value = false;
       audioRef.value?.play();
