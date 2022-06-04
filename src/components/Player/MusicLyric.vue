@@ -21,10 +21,11 @@ const lyricData = computed(() => {
   } else {
     let lyric = parseLyric(mainStore.currentPlaySong?.lyric);
     if (tlyricData) {
-      return lyric.map((
-        item, index: number
-      ) => {
-        item.translateContent = tlyricData![index].content;
+      return lyric.map((item) => {
+        let target = tlyricData!.find(val => val.time === item.time);
+        if (target) {
+          item.translateContent = target.content;
+        }
         return item;
       });
     } else {
