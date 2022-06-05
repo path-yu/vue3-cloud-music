@@ -1,17 +1,17 @@
 <script setup lang="ts">
 import { useMainStore } from '@/stores/main';
 import playBar from '@/assets/img/play-bar.png';
-import playBarSupport from '@/assets/img/play-bar-support.png';
 import { ref, watch } from 'vue';
+import useThemeStyle from '@/hook/useThemeStyle';
 
 let maxCircleLine = 7;
 let baseSize = 280;
 let gap = 10;
 let rotate = ref(0);
-let timer:number|undefined;
 let cancelAnimationFrameId:number;
 let imgSize = baseSize - (maxCircleLine * gap);
 const mainStore = useMainStore();
+const { baseColor } = useThemeStyle();
 const computedCircleStyle = (index:number) => {
   return {
     width: `${baseSize - (gap * index)}px`,
@@ -20,9 +20,7 @@ const computedCircleStyle = (index:number) => {
   };
 };
 watch(
-  () => mainStore.playing, (
-    val, oldVal
-  ) => {
+  () => mainStore.playing, (val) => {
     if (val) {
       cancelAnimationFrameId = window.requestAnimationFrame(loopSetRotate);
     } else {
@@ -49,7 +47,9 @@ const loopSetRotate = (timestamp:number) => {
     <div class="playerBarContainer" :style="{transform: mainStore.playing ? 'rotate(0deg)' : 'rotate(-40deg)'}">
       <img :src="playBar" class="playBar">
       <div class="playBarSupport">
-        <div class="center" ><div class="dot"></div></div>
+        <div class="center">
+          <div class="dot" />
+        </div>
       </div>
     </div>
     <div class="cd" :style="{background: mainStore.isDark ? '#373636' : '#DBDCDA'}">
@@ -96,6 +96,7 @@ const loopSetRotate = (timestamp:number) => {
       position:absolute;
       width:100px;
       height:150px;
+     
     }
     .playBarSupport{
       position:absolute;
@@ -150,6 +151,7 @@ const loopSetRotate = (timestamp:number) => {
         align-items: center;
         .n-image{
           border-radius:50%;
+           background: v-bind(baseColor);
         }
       }
     }

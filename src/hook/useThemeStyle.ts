@@ -23,6 +23,8 @@ export default function useThemeStyle(otherStyle?:CSSProperties) {
       borderColor: themeVars.value.primaryColor
     };
   });
-  
-  return { tableStripedStyle, themeVars, tagColor };
+  const baseColor = computed(() => {
+    return themeVars.value.baseColor;
+  });
+  return { tableStripedStyle, themeVars, tagColor, baseColor };
 }
