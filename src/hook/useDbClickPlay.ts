@@ -17,10 +17,6 @@ export function useDbClickPlay() {
     } else {
       songList = list.value;
     }
-    console.log(
-      index, songList
-    );
-    
     isLoad = true;
     const message = '亲爱的, 暂无版权';
     // 初始化歌曲列表

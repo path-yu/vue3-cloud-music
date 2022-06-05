@@ -67,10 +67,12 @@ function handlePlayLyric(time:number) {
 const handleSliderChange = (time:number) => {
   if (!lyricData.value.length) return;
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
-  lyricData.value.forEach(item => item.isFind = false);
-  lyricData.value[currentLyric.index].isFind = true;
-  currentPlayLine.value = currentLyric.index;
-  setScroll(currentLyric.time);
+  if (currentLyric) {
+    lyricData.value.forEach(item => item.isFind = false);
+    lyricData.value[currentLyric.index].isFind = true;
+    currentPlayLine.value = currentLyric.index;
+    setScroll(currentLyric.time);
+  }
 };
 const setScroll = (time:number) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
@@ -90,6 +92,7 @@ onMounted(() => {
 
 <template>
   <div class="mt-10">
+    <div class="header-mask" />
     <n-scrollbar ref="scrollBarRef" style="max-height: 350px;width:400px" trigger="none">
       <div style="height:175px" />
       <div
