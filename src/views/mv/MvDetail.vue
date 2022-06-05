@@ -132,10 +132,14 @@ const updateCommentLiked = (
   let { index, liked } = data;
   if (isHot) {
     mvComment.value.hotComments[index].liked = liked;
-    mvComment.value.hotComments[index].likedCount+=1;
+    liked
+      ? mvComment.value.hotComments[index].likedCount + 1
+      : mvComment.value.hotComments[index].likedCount - 1;
   } else {
     mvComment.value.comments[index].liked = liked;
-    mvComment.value.comments[index].likedCount+=1;
+    liked
+      ? mvComment.value.comments[index].likedCount + 1
+      : mvComment.value.comments[index].likedCount - 1;
   }
 };
 const handleCommentClick = () => {

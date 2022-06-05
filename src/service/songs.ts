@@ -36,3 +36,16 @@ export function getLyric(id:string) {
 export function checkMusic(id:string) {
   return service.get('/check/music?id='+id);
 }
+// 歌曲评论
+export function getMusicComment(data:{
+  id:string;
+  limit?:number;
+  offset?:number;
+  before?:string;}) {
+  const query = qs.stringify({
+    timestamp: Date.now(),
+    ...data
+  });
+  console.log(query);
+  return service.get('/comment/music?'+query);
+}

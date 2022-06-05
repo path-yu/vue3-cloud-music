@@ -47,10 +47,7 @@ const currentLyricStyle = (index:number) => {
       :'500',
     fontSize: isCurrent
       ? '16px'
-      :'14px',
-    transform: `scale(${isCurrent
-      ? '1.1'
-      : 1})`
+      :'14px'
   } as CSSProperties;
 
 };
@@ -74,6 +71,7 @@ const handleSliderChange = (time:number) => {
     setScroll(currentLyric.time);
   }
 };
+
 const setScroll = (time:number) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
   if (targetELe) {

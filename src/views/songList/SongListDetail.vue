@@ -253,10 +253,14 @@ const updateCommentLiked = (
   let { index, liked } = data;
   if (isHot) {
     songListComment.value.hotComments[index].liked = liked;
-    songListComment.value.hotComments[index].likedCount+=1;
+    liked
+      ? songListComment.value.hotComments[index].likedCount + 1
+      : songListComment.value.hotComments[index].likedCount - 1;
   } else {
     songListComment.value.comments[index].liked = liked;
-    songListComment.value.comments[index].likedCount-=1;
+    liked
+      ? songListComment.value.comments[index].likedCount + 1
+      : songListComment.value.comments[index].likedCount - 1;
   }
 };
 </script>
