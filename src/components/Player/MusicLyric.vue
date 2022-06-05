@@ -34,8 +34,9 @@ const lyricData = computed(() => {
   }
 });
 const rangeLyricList = computed(() => {
-  return parseRangeLyric(parseLyric(mainStore.currentPlaySong?.lyric));
+  return parseRangeLyric(lyricData.value);
 });
+console.log(rangeLyricList.value);
 const currentLyricStyle = (index:number) => {
   let isCurrent = index === currentPlayLine.value;
   return {
@@ -51,34 +52,30 @@ const currentLyricStyle = (index:number) => {
   } as CSSProperties;
 };
 function handlePlayLyric(time:number) {
-  let currentLyricIndx = lyricData.value.findIndex(item => item.time === time);
-  let currentLyric = lyricData.value[currentLyricIndx];
-  if (currentLyricIndx !== -1 && !currentLyric.isFind) {
-    currentLyric.isFind = true;
-    currentPlayLine.value = currentLyricIndx;
+  let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
+  if (!currentLyric.isFind) {
+    lyricData.value[currentLyric.index].isFind = true;
+    currentPlayLine.value = currentLyric.index;
     setScroll(currentLyric.time);
   }
 }
+const handleSliderChange = (time:number) => {
+  let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
+  lyricData.value.forEach(item => item.isFind = false);
+  lyricData.value[currentLyric.index].isFind = true;
+  currentPlayLine.value = currentLyric.index;
+  setScroll(currentLyric.time);
+};
 const setScroll = (time:number) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
   scrollBarRef.value?.scrollTo({ top: targetELe!.offsetTop - 175, behavior: 'smooth' });
 };
 onMounted(() => {
   obverser.on(
-    'timeUpdate', (
-      time:number, action
-    ) => {
-      handlePlayLyric(time);
-    }
+    'timeUpdate', handlePlayLyric
   );
   obverser.on(
-    'slideValueChange', (time:number) => {
-      let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
-      lyricData.value.forEach(item => item.isFind = false);
-      lyricData.value[currentLyric.index].isFind = true;
-      currentPlayLine.value = currentLyric.index;
-      setScroll(currentLyric.time);
-    }
+    'slideValueChange', handleSliderChange
   );
 });
 </script>
@@ -109,7 +106,7 @@ onMounted(() => {
 .lyric-item{
   // margin-top:20px;
   p{
-    line-height:45px;
+    line-height:35px;
     color:#646463;
   }
 }
