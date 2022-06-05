@@ -2,7 +2,7 @@
 
 import { useThemeVars } from 'naive-ui';
 import obverser from '@/utils/obverser';
-import { computed, onMounted, type CSSProperties } from 'vue';
+import { computed, onMounted, toRaw, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
 import { parseLyric, parseRangeLyric, type LineItem, type RangeLyricItem } from '@/utils/lyric';
@@ -34,9 +34,8 @@ const lyricData = computed(() => {
   }
 });
 const rangeLyricList = computed(() => {
-  return parseRangeLyric(lyricData.value);
+  return parseRangeLyric(toRaw(lyricData.value));
 });
-console.log(rangeLyricList.value);
 const currentLyricStyle = (index:number) => {
   let isCurrent = index === currentPlayLine.value;
   return {
@@ -48,18 +47,25 @@ const currentLyricStyle = (index:number) => {
       :'500',
     fontSize: isCurrent
       ? '16px'
-      :'14px'
+      :'14px',
+    transform: `scale(${isCurrent
+      ? '1.1'
+      : 1})`
   } as CSSProperties;
+
 };
+
 function handlePlayLyric(time:number) {
+  if (!lyricData.value.length) return;
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
-  if (!currentLyric.isFind) {
+  if (currentLyric && !currentLyric.isFind) {
     lyricData.value[currentLyric.index].isFind = true;
     currentPlayLine.value = currentLyric.index;
     setScroll(currentLyric.time);
   }
 }
 const handleSliderChange = (time:number) => {
+  if (!lyricData.value.length) return;
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
   lyricData.value.forEach(item => item.isFind = false);
   lyricData.value[currentLyric.index].isFind = true;
@@ -68,7 +74,9 @@ const handleSliderChange = (time:number) => {
 };
 const setScroll = (time:number) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
-  scrollBarRef.value?.scrollTo({ top: targetELe!.offsetTop - 175, behavior: 'smooth' });
+  if (targetELe) {
+    scrollBarRef.value?.scrollTo({ top: targetELe!.offsetTop - 175, behavior: 'smooth' });
+  }
 };
 onMounted(() => {
   obverser.on(

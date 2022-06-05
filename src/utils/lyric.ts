@@ -26,6 +26,13 @@ export function parseRangeLyric(lyricList:LineItem[]) {
   const map = new Map<number, RangeLyricItem>();
   let currentIndex = 0;
   let nextIndex = 1;
+  // 如果第一项播放时间不为0，则手动插入一个
+  if (lyricList[currentIndex].time !== 0) {
+    lyricList.unshift({
+      ...lyricList[currentIndex],
+      time: 0
+    });
+  }
   while (currentIndex !== lyricList.length - 1) {
     const cur = lyricList[currentIndex];
     const next = lyricList[nextIndex];
