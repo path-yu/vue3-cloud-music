@@ -20,9 +20,9 @@ export interface MusicDetailExpose {
 let backTopEle:HTMLElement;
 const mainStore = useMainStore();
 const router = useRouter();
+const { tagColor } = useThemeStyle();
 const commentLoading = ref(false);
 const scrollContainerRef = ref<HTMLElement>(null as unknown as HTMLElement);
-const { tagColor } = useThemeStyle();
 const background = ref<CSSProperties>({});
 const active = ref(false);
 const musicComment = ref<AnyObject>({});
@@ -106,7 +106,6 @@ const updateCommentLiked = (
   data:{liked:boolean, index:number}, isHot:boolean
 ) => {
   let { index, liked } = data;
-  console.log(isHot);
   if (isHot) {
     musicComment.value.hotComments[index].liked = liked;
     liked
@@ -121,7 +120,6 @@ const updateCommentLiked = (
 };
 watch(
   () => mainStore.currentPlaySong, (val) => {
-    console.log(3);
     if (val) {
       fetchMusicComment(val.id);
     }
@@ -180,23 +178,26 @@ setBackgroundStyle();
           <music-lyric />
         </div>
       </div>
-      <div style="width:600px;height:300px;padding-left: 500px;">
-        <comment-list
-          :type="0"
-          :comment-total-num="musicComment.total"
-          :resource-id="mainStore.currentPlaySong.id" title="精彩评论" :list="musicComment.hotComments || []"
-          @update-comment-list="updateCommentList"
-          @update-comment-liked="(data:any) => updateCommentLiked(data,true)"
-        />
-        <!-- 最新评论 -->
-        <comment-list
-          :resource-id="mainStore.currentPlaySong.id"
-          :type="0"
-          :comment-total-num="musicComment.total" title="最新评论" :list="musicComment.comments || []"
-          @update-comment-list="updateCommentList"
-          @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
-        />
-        <p v-if="!musicComment.comments?.length" class="text-center opacity-50">
+      <!-- 占位 -->
+      <div style="width:600px;height:300px;margin-left:500px">
+        <n-spin :show="commentLoading" description="加载中">
+          <comment-list
+            :type="0"
+            :comment-total-num="musicComment.total"
+            :resource-id="mainStore.currentPlaySong.id" title="精彩评论" :list="musicComment.hotComments || []"
+            @update-comment-list="updateCommentList"
+            @update-comment-liked="(data:any) => updateCommentLiked(data,true)"
+          />
+          <!-- 最新评论 -->
+          <comment-list
+            :resource-id="mainStore.currentPlaySong.id"
+            :type="0"
+            :comment-total-num="musicComment.total" title="最新评论" :list="musicComment.comments || []"
+            @update-comment-list="updateCommentList"
+            @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
+          />
+        </n-spin>
+        <p v-if="!musicComment.comments?.length && commentLoading" class="text-center opacity-50">
           还没有评论, 快来抢沙发~
         </p>
         <div v-if="pageParams.pageCount > 1 && musicComment.comments" class="flex justify-end mt-6">
@@ -208,8 +209,8 @@ setBackgroundStyle();
             :page-sizes="[10, 20, 30, 40,50]"
           />
         </div>
-        <div class="h-10" />
       </div>
+      <div class="h-10" />
     </div>
   </transition>
   <n-back-top

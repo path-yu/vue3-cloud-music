@@ -92,15 +92,15 @@ onMounted(() => {
   <div class="mt-10">
     <div class="header-mask" />
     <n-scrollbar ref="scrollBarRef" style="max-height: 350px;width:400px" trigger="none">
-      <div style="height:175px" />
+      <div style="height:175" />
       <div
         v-for="(item,index) in lyricData" :id="'time'+item.time" :key="index"
         class="max-w-xs lyric-item"
       > 
-        <p :style="currentLyricStyle(index)">
+        <p :style="currentLyricStyle(index)" class="transition-color">
           {{ item.content }}
         </p>
-        <p v-if="item.translateContent" :style="currentLyricStyle(index)">
+        <p v-if="item.translateContent" :style="currentLyricStyle(index)" class="transition-color">
           {{ item.translateContent }}
         </p>
       </div>
