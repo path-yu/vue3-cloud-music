@@ -1,13 +1,14 @@
 <script setup lang="ts">
 import LayOut from '@/components/Layout/Layout.vue';
-import { zhCN } from 'naive-ui';
+import { zhCN, useDialog } from 'naive-ui';
 import { onMounted } from 'vue';
 import { useMainStore } from './stores/main';
 const mainStore = useMainStore();
 
 onMounted(() => {
   mainStore.initDocumentTheme();
-  
+
+ 
 });
 </script>
 <template>

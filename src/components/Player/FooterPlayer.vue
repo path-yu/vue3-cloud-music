@@ -338,7 +338,7 @@ onUnmounted(() => {
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
-    <music-detail ref="musicDetailRef" />
+    <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
   </div>
 </template>
 
