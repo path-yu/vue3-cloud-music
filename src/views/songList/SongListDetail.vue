@@ -33,9 +33,6 @@ const pageParams = reactive({
 const imageRef = ref();
 const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
 const btnLoading = ref(false);
-const isLoading = ref(true);
-const songListAllDetailLoading = ref(true);
-const commentLoading = ref(false);
 const commentBtnLoading = ref(false);
 const subscribeBtnLoading = ref(false);
 const dialog = useDialog();
@@ -50,20 +47,26 @@ const starButtonDisabled = computed(() => {
    && mainStore.userProfile
     && songListDetail.value?.userId === mainStore.userProfile?.profile?.userId;
 });
+const { wrapRequest: wrapFetchPlayList, requestLoading: isLoading, loadSuccess: loadPlayListSuccess } = useMemorizeRequest(
+  getPlaylistDetail, 'getPlaylistDetail'
+);
+
 // 获取歌单详情
 const fetchSongListDetail = (id:string=route.params.id as string) => {
-  isLoading.value = true;
-  getPlaylistDetail(id).then((res: { data: { playlist: AnyObject }; }) => {
+  wrapFetchPlayList(id).then((res: { data: { playlist: AnyObject }; }) => {
     if (res.data.playlist.name === (res.data.playlist.creator.nickname +'喜欢的音乐')) {
       res.data.playlist.isMyLike = true;
       res.data.playlist.name = '我喜欢的音乐';
     } else {
       res.data.playlist.isMyLike = false;
     }
-    isLoading.value = false;
     songListDetail.value = res.data.playlist;
+    loadPlayListSuccess();
   });
 };
+const { wrapRequest: wrapFetchPlayListComment, requestLoading: isCommentLoading, loadSuccess: loadPlayListCommentSuccess } = useMemorizeRequest(
+  getPlaylistComment, 'getPlaylistComment'
+);
 // 获取歌单评论
 const fetchSongListComment = (id:string=route.params.id as string) => {
   let params:{
@@ -76,19 +79,18 @@ const fetchSongListComment = (id:string=route.params.id as string) => {
   if (songListComment.value.total > 5000) {
     params.before = songListComment.value.comments[getArrLast(songListComment.value.comments)];
   }
-  commentLoading.value = true;
-  getPlaylistComment(params).then(res => {
+  wrapFetchPlayListComment(params).then((res: { data: { [x: string]: any; total?: any; }; }) => {
     pageParams.pageCount = Math.round(res.data?.total || 1 / pageParams.pageSize) || 1;
     songListComment.value = res.data;
-  })
-    .finally(() => commentLoading.value = false);
+    loadPlayListCommentSuccess();
+  });
 };
-const { wrapRequest } = useMemorizeRequest(getPlaylistAllDetail);
+const { wrapRequest, requestLoading, loadSuccess } = useMemorizeRequest(
+  getPlaylistAllDetail, 'getPlaylistAllDetail'
+);
 
 const fetchMusicList = (id:string=route.params.id as string) => {
-  songListAllDetailLoading.value = true;
   wrapRequest({ id }).then((res: { data: { code: number; songs: any[]; }; }) => {
-    songListAllDetailLoading.value = false;
     if (res.data.code === 200) {
       songList.value = res.data.songs.map((
         item:any, index:number
@@ -103,10 +105,9 @@ const fetchMusicList = (id:string=route.params.id as string) => {
         item.key = index;
         return item;
       });
-
+      loadSuccess();
     }
-  })
-    .finally(() => songListAllDetailLoading.value = false);
+  });
 };
 
 watch(
@@ -398,7 +399,7 @@ const updateCommentLiked = (
         </div>
         <div v-show="tabsValue === 'musicList'" class="mt-5">
           <music-list
-            :song-list="songList" :loading="songListAllDetailLoading" :play-list-id="+songListId"
+            :song-list="songList" :loading="requestLoading" :play-list-id="+songListId"
           />
         </div>
         <div v-show="tabsValue === 'comment'" class="mt-8">
@@ -413,20 +414,22 @@ const updateCommentLiked = (
               </n-button>
             </div>
             <!-- 精彩评论 -->
-            <comment-list
-              :type="2"
-              :resource-id="+songListId" title="精彩评论" :list="songListComment.hotComments || []"
-              @update-comment-list="updateCommentList"
-              @update-comment-liked="(data:any) => updateCommentLiked(data,true)"
-            />
-            <!-- 最新评论 -->
-            <comment-list
-              :resource-id="+songListId"
-              :type="2"
-              :comment-total-num="songListComment.total" title="最新评论" :list="songListComment.comments || []"
-              @update-comment-list="updateCommentList"
-              @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
-            />
+            <n-spin :show="isCommentLoading">
+              <comment-list
+                :type="2"
+                :resource-id="+songListId" title="精彩评论" :list="songListComment.hotComments || []"
+                @update-comment-list="updateCommentList"
+                @update-comment-liked="(data:any) => updateCommentLiked(data,true)"
+              />
+              <!-- 最新评论 -->
+              <comment-list
+                :resource-id="+songListId"
+                :type="2"
+                :comment-total-num="songListComment.total" title="最新评论" :list="songListComment.comments || []"
+                @update-comment-list="updateCommentList"
+                @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
+              />
+            </n-spin>
             <p v-if="!songListComment.comments?.length" class="text-center opacity-50">
               还没有评论, 快来抢沙发~
             </p>
