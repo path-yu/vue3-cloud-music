@@ -46,6 +46,5 @@ export function getMusicComment(data:{
     timestamp: Date.now(),
     ...data
   });
-  console.log(query);
   return service.get('/comment/music?'+query);
 }

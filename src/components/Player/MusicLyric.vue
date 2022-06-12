@@ -6,11 +6,13 @@ import { computed, onMounted, toRaw, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
 import { parseLyric, parseRangeLyric, type LineItem, type RangeLyricItem } from '@/utils/lyric';
+import { useElementHover } from '@vueuse/core';
 const mainStore = useMainStore();
 const themeVars = useThemeVars();
 const currentPlayLine = ref(0);
 const scrollBarRef = ref<{scrollTo:(data:{ left?: number, top?: number, behavior:string })=>void}>();
-
+const scrollContainerRef = ref();
+const isHover = useElementHover(scrollContainerRef);
 const lyricData = computed(() => {
   let tlyricData: LineItem[] | undefined;
   if (mainStore.currentPlaySong?.tlyric) {
@@ -54,6 +56,8 @@ const currentLyricStyle = (index:number) => {
 
 function handlePlayLyric(time:number) {
   if (!lyricData.value.length) return;
+  // 如果当前鼠标正在悬停在歌词上，则不滚动
+  if (isHover.value) return;
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
   if (currentLyric && !currentLyric.isFind) {
     lyricData.value[currentLyric.index].isFind = true;
@@ -89,7 +93,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div class="mt-10">
+  <div ref="scrollContainerRef" class="mt-10">
     <div class="header-mask" />
     <n-scrollbar ref="scrollBarRef" style="max-height: 350px;width:400px" trigger="none">
       <div style="height:175" />
