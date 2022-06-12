@@ -7,8 +7,6 @@ import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
 import state, { type playMode } from './state';
 
-// 记录随机播放情况下, 歌曲的上一首和下一首下标
-let prevIndex:number|null, nextIndex: number|null;
 export const useMainStore = defineStore({
   id: 'main',
   state: () => state,

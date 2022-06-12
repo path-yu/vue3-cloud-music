@@ -12,7 +12,6 @@ defineProps<{
 }>();
 
 </script>
-
 <template>
   <div v-if="songs && songs.length !== 0">
     <n-grid
@@ -58,7 +57,6 @@ defineProps<{
 </template>
 
 <style scoped>
-
 .play-icon {
   @apply absolute right-4 bottom-4 w-10 h-10 bg-white
    rounded-full opacity-0 group-hover:opacity-100

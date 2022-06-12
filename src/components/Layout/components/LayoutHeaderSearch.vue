@@ -48,7 +48,6 @@ watch(
   }
 );
 </script>
-
 <template>
   <div class="flex items-center ml-8">
     <div ref="backIconRef" class="text-base" @click="handleArrowClick('back')">

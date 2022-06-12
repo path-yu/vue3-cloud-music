@@ -9,8 +9,7 @@ export function formateNumber(num:number) {
  
   return num.toString();
 }
-
-
+// 获取数组最后一位
 export const getArrLast = (arr:any[]) => {
   return arr[arr.length - 1];
 };

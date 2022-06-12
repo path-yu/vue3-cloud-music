@@ -1,7 +1,7 @@
 <script setup lang="ts">
-import { computed, type CSSProperties, ref, type Ref, watch, reactive } from 'vue';
+import { type CSSProperties, ref, type Ref, watch, reactive } from 'vue';
 import analyze from 'rgbaster';
-import { BackToTop, Music, User } from '@vicons/carbon';
+import { BackToTop } from '@vicons/carbon';
 import { formateSongsAuthor, getArrLast } from '@/utils';
 import { KeyboardArrowDownOutlined } from '@vicons/material';
 import color from 'color';

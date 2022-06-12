@@ -1,6 +1,5 @@
 <script setup lang="ts">
 import { getTopPlayListTags } from '@/service';
-import { useAsyncState } from '@vueuse/core';
 import { useThemeVars } from 'naive-ui';
 import { computed, ref, toRaw } from 'vue';
 export interface SelectSongListTagModalExpose{
@@ -102,7 +101,3 @@ const handleCompleteOnClick = () => {
     </n-card>
   </n-modal>
 </template>
-
-<style scoped>
-
-</style>

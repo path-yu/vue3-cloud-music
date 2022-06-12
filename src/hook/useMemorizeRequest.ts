@@ -15,7 +15,6 @@ export const useMemorizeRequest = (
   const wrapRequest = (params?:any) => {
     const cloneParams = cloneDeep(params || 'key');
     const key = requestKey + JSON.stringify(cloneParams);
-
     const request = () => {
       const requestData = requestFn(params);
       cacheResponseMap.set(
@@ -27,6 +26,7 @@ export const useMemorizeRequest = (
       );
       return requestData;
     };
+    
     if (!cacheResponseMap.has(key)) {
       return request();
     } else {
@@ -34,7 +34,6 @@ export const useMemorizeRequest = (
       if (Date.now() - cacheTimeMap.get(key) > cacheTime) {
         return request();
       } 
-        
       return cacheResponseMap.get(key);
     }
   };

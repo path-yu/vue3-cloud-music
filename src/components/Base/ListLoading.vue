@@ -58,7 +58,6 @@ onUnmounted(() => {
   loadingTarget.value && observer.disconnect();
 });
 </script>
-
 <template>
   <div
     v-if="!noMore" ref="loadingTarget"
@@ -75,7 +74,6 @@ onUnmounted(() => {
     我也是有底线的!
   </n-divider>
 </template>
-
 <style scoped>
 .wrapLoading {
   width: 100%;

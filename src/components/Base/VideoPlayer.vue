@@ -1,7 +1,6 @@
 <template>
   <div ref="playerRef" class=" video-player" />
 </template>
-
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui';
 import { computed, ref, watch } from 'vue';

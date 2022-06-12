@@ -197,16 +197,13 @@ const loadMore = (successCallback: any) => {
 :deep(.n-tabs-bar) {
   display: none;
 }
-
 :deep(.n-tabs .n-tabs-nav.n-tabs-nav--line-type .n-tabs-nav-scroll-content) {
   transition: border-color 0.3s var(--n-bezier);
   border: none;
 }
-
 :deep(.n-tag__content) {
   display: flex;
 }
-
 :deep(.n-tabs .n-tab-pane){
   padding-top: 0;
 }
@@ -218,16 +215,13 @@ const loadMore = (successCallback: any) => {
   padding-top: 10px;
   background-color: v-bind(bodyColor);
 }
-
 :deep(.n-tabs .n-tabs-nav::-webkit-scrollbar-thumb) {
   height: 15px;
   background-color: transparent;
 }
-
 :deep(.n-tabs .n-tabs-nav):hover.n-tabs-nav::-webkit-scrollbar-thumb {
   @apply bg-gray-400/40;
 }
-
 :deep(.n-tabs .n-tabs-nav-scroll-wrapper) {
   overflow: visible;
 }</style>

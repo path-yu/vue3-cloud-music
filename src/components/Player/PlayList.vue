@@ -131,8 +131,6 @@ const handleGoHemeClick = () => {
 .scroller {
   height: 100%;
 }
-
-
 :deep(.resize-observer){
   position: absolute;
   top: 0;

@@ -117,11 +117,9 @@ export default defineComponent({
   }
 });
 </script>
-
 <style scoped>
 :deep(.warpImg > img) {
   width: 100%;
   height: 100%;
 }
-
 </style>

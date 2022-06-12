@@ -17,7 +17,3 @@ defineProps<{
       :HeartOutline"
   />
 </template>
-
-<style scoped>
-
-</style>

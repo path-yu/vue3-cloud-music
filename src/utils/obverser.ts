@@ -18,13 +18,11 @@ class Observer {
   }
   // 发布
   emit(
-    name:string, ...data: any
+    name:string, ...data: any[]
   ) {
     // 如果不存在这个订阅者就打断函数执行
     if (!this.subscribes[name]) throw new Error('未找到订阅者');
-    this.subscribes[name].forEach(fn => fn.apply(
-      null, data
-    ));
+    this.subscribes[name].forEach(fn => fn(...data));
   }
 }
 

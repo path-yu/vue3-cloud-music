@@ -104,7 +104,6 @@ if (mainStore.isLogin) {
   checkLoginStatus();
 }
 </script>
-
 <template>
   <n-layout-header bordered class="flex justify-between items-center px-4 h-14 sm:px-3">
     <div class="flex">

@@ -282,7 +282,6 @@ onMounted(() => {
     </n-layout>
   </n-layout>
 </template>
-
 <style lang="less" scoped>
 .n-layout-sider {
   transition: color 0.3s var(--n-bezier), border-color 0.3s var(--n-bezier),

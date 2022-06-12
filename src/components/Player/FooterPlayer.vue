@@ -109,7 +109,6 @@ const handleTriggerClick = () => {
 };
 // 切换播放状态
 const togglePlayStatus = async () => {
-
   if (audioRef.value?.paused) {
     // 歌曲url可能过期
     audioRef.value?.play().catch(async err => {

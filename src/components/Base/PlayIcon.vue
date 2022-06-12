@@ -9,9 +9,7 @@ defineProps<{
   size?: number;
 }>();
 const themeVars = useThemeVars();
-
 </script>
-
 <template>
   <div
     :style="style"
@@ -24,7 +22,6 @@ const themeVars = useThemeVars();
     />
   </div>
 </template>
-
 <style scoped>
 .play-icon {
   @apply absolute  w-10 h-10 bg-white

@@ -13,7 +13,6 @@ export default function useLazyLoad(src:string) {
       observer?.disconnect();
     }
   }
-
   onMounted(() => {
     imageRef.value && observer?.observe(imageRef.value);
   });

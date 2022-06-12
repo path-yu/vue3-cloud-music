@@ -92,7 +92,6 @@ const handleLikedClick = (
   });
 };
 </script>
-
 <template>
   <!-- 回复评论模态框 -->
   <teleport to="body">
@@ -156,7 +155,3 @@ const handleLikedClick = (
     </div> 
   </div>
 </template>
-
-<style scoped>
-
-</style>
