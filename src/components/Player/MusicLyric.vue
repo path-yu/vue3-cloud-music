@@ -2,7 +2,7 @@
 
 import { useThemeVars } from 'naive-ui';
 import obverser from '@/utils/obverser';
-import { computed, onMounted, toRaw, type CSSProperties } from 'vue';
+import { computed, onMounted, toRaw, watch, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
 import { parseLyric, parseRangeLyric, type LineItem, type RangeLyricItem } from '@/utils/lyric';
@@ -13,6 +13,7 @@ const currentPlayLine = ref(0);
 const scrollBarRef = ref<{scrollTo:(data:{ left?: number, top?: number, behavior:string })=>void}>();
 const scrollContainerRef = ref();
 const isHover = useElementHover(scrollContainerRef);
+let currentScrollTop:number;
 const lyricData = computed(() => {
   let tlyricData: LineItem[] | undefined;
   if (mainStore.currentPlaySong?.tlyric) {
@@ -76,14 +77,20 @@ const handleSliderChange = (time:number) => {
     setScroll(currentLyric.time);
   }
 };
-
 const setScroll = (time:number) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
   if (targetELe) {
-    console.log(targetELe.offsetTop);
-    scrollBarRef.value?.scrollTo({ top: targetELe!.offsetTop - 175, behavior: 'smooth' });
+    currentScrollTop = targetELe!.offsetTop - 175;
+    scrollBarRef.value?.scrollTo({ top: currentScrollTop, behavior: 'smooth' });
   }
 };
+watch(
+  isHover, (val) => {
+    if (!val && currentScrollTop) {
+      scrollBarRef.value?.scrollTo({ top: currentScrollTop, behavior: 'smooth' });
+    }
+  }
+);
 onMounted(() => {
   obverser.on(
     'timeUpdate', handlePlayLyric
