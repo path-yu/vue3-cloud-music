@@ -113,7 +113,6 @@ onMounted(() => {
   padding-right:80px;
 }
 .lyric-item{
-  // margin-top:20px;
   p{
     line-height:35px;
     color:#646463;

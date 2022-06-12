@@ -236,19 +236,15 @@ setBackgroundStyle();
 .bottom-slide-transform-leave-active {
   transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
-
 .bottom-slide-transform-enter-active {
   transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);;
 }
-
 .bottom-slide-transform-enter-from {
   height: 0;
 }
-
 .bottom-slide-transform-enter-to {
   height: calc(100vh - 73px);
 }
-
 .bottom-slide-transform-leave-to {
   height: 0;
 }

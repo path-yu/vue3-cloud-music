@@ -13,6 +13,7 @@ import type { SelectSongListTagModalExpose } from '@/components/SongsList/Select
 import { useDialog } from 'naive-ui';
 import obverser from '@/utils/obverser';
 import { userCheckLogin } from '@/hook/useCheckLogin';
+import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
 
 
 let backTopEle:HTMLElement;
@@ -52,7 +53,7 @@ const starButtonDisabled = computed(() => {
 // 获取歌单详情
 const fetchSongListDetail = (id:string=route.params.id as string) => {
   isLoading.value = true;
-  getPlaylistDetail(id).then(res => {
+  getPlaylistDetail(id).then((res: { data: { playlist: AnyObject }; }) => {
     if (res.data.playlist.name === (res.data.playlist.creator.nickname +'喜欢的音乐')) {
       res.data.playlist.isMyLike = true;
       res.data.playlist.name = '我喜欢的音乐';
@@ -82,9 +83,12 @@ const fetchSongListComment = (id:string=route.params.id as string) => {
   })
     .finally(() => commentLoading.value = false);
 };
+const { wrapRequest } = useMemorizeRequest(getPlaylistAllDetail);
+
 const fetchMusicList = (id:string=route.params.id as string) => {
   songListAllDetailLoading.value = true;
-  getPlaylistAllDetail({ id }).then(res => {
+  wrapRequest({ id }).then((res: { data: { code: number; songs: any[]; }; }) => {
+    songListAllDetailLoading.value = false;
     if (res.data.code === 200) {
       songList.value = res.data.songs.map((
         item:any, index:number
