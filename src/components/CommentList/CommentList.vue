@@ -1,7 +1,6 @@
 <script setup lang="ts">
 import { userCheckLogin } from '@/hook/useCheckLogin';
 import { likeComment, sendComment } from '@/service';
-import { useMainStore } from '@/stores/main';
 import { ThumbsUp, ThumbsUpFilled } from '@vicons/carbon';
 import { CommentOutlined } from '@vicons/material';
 import { computed, ref } from 'vue';
@@ -16,53 +15,27 @@ const props = withDefaults(
   defineProps<CommentListProps>(), { type: 1, commentTotalNum: 0 }
 );
 const currentClickedComment = ref<any>();
-const commentBtnLoading = ref(false);
-const commentContent = ref('');
-const mainStore = useMainStore();
 const emit = defineEmits(['updateCommentList', 'updateCommentLiked']);
+
 const commentPlaceholder = computed(() => {
   return currentClickedComment.value && '回复: ' + currentClickedComment.value.user.nickname;
 });
 
-const showModal = ref(false);
+const commentModalRef = ref<{show:()=> void}>();
 
 const handleClickComment = (index:number) => {
   userCheckLogin(() => {
-    showModal.value = true;
+    commentModalRef.value?.show();
     currentClickedComment.value = props.list[index];
   })
   ;
 };
-const handleSubmitCommitClick = () => {
-  if (!mainStore.isLogin) {
-    return window.$message.error('请先登录!');
-  }
-  if (!commentContent.value) {
-    return window.$message.error('评论不能为空!');
-  }
-  let params = {
-    t: 2,
-    type: props.type,
-    id: props.resourceId,
-    content: commentContent.value,
-    commentId: currentClickedComment.value.commentId
-  };
-  commentBtnLoading.value = true;
-  return sendComment(params).then(res => {
-    if (res.data.code === 200) {
-      window.$message.success('评论成功');
-      showModal.value = false;
-      commentContent.value = '';
-      currentClickedComment.value = null;
-      res.data.comment.beReplied = [{ user: res.data.comment.beRepliedUser }];
-      emit(
-        'updateCommentList', res.data.comment
-      );
-    }
-  })
-    .finally(() => {
-      commentBtnLoading.value = false;
-    });
+
+const handleUpdateCommentList = (comment:any) => {
+  emit(
+    'updateCommentList', comment
+  );
+  currentClickedComment.value = null;
 };
 // 点赞
 const handleLikedClick = (
@@ -94,35 +67,11 @@ const handleLikedClick = (
 </script>
 <template>
   <!-- 回复评论模态框 -->
-  <teleport to="body">
-    <n-modal
-      v-model:show="showModal"
-      preset="dialog"
-      title="评论"
-      positive-text="评论"
-      transform-origin="center"
-      :show-icon="false"
-    >
-      <div class="my-4 h-32">
-        <n-input
-          v-model:value="commentContent"
-          class="h-full" :placeholder="commentPlaceholder" maxlength="140"
-          show-count
-          type="textarea"
-        />
-      </div>
-      <template #action>
-        <n-button
-          :loading="commentBtnLoading"
-          :disabled="!commentContent.length" type="primary" size="medium"
-          @click="handleSubmitCommitClick"
-        >
-          评论
-        </n-button>
-      </template>
-      <n-modal />
-    </n-modal>
-  </teleport>
+  <replied-comment-modal
+    ref="commentModalRef" :comment-placeholder="commentPlaceholder" title="回复评论"
+    :update-comment-list="handleUpdateCommentList" :type="type" :resource-id="resourceId"
+    :comment-id="currentClickedComment?.commentId"
+  />
   <p v-if="list.length" class="mt-10 text-base font-bold">
     {{ title }}
     <span v-if="commentTotalNum" class="text-sm">({{ commentTotalNum }})</span>
@@ -131,12 +80,12 @@ const handleLikedClick = (
     <n-avatar round :size="50" :src="item.user.avatarUrl" />
     <div class="flex-1 pb-5 ml-4 border-0 border-b border-gray-200 dark:border-gray-200/20 border-solid">
       <div>
-        <span class="text-sky-500"> {{ item.user.nickname }}：</span>
+        <span class="text-sky-500"> {{ item?.user.nickname }}：</span>
         <span>{{ item.content }}</span>
       </div>
       <div v-if="item.beReplied.length" class="p-2 mt-2 bg-stone-100 dark:bg-stone-100/10 rounded-md">
-        <span class="text-sky-500">@{{ item.beReplied[0].user.nickname }}：</span>
-        <span>{{ item.beReplied[0].content }}</span>
+        <span class="text-sky-500">@{{ item.beReplied[0]?.user?.nickname }}：</span>
+        <span>{{ item?.beReplied[0].content }}</span>
       </div>
       <div class="flex justify-between mt-2 text-xs opacity-60">
         <n-time type="datetime">

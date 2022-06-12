@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { type CSSProperties, ref, type Ref, watch, reactive } from 'vue';
 import analyze from 'rgbaster';
-import { BackToTop } from '@vicons/carbon';
+import { BackToTop, Edit } from '@vicons/carbon';
 import { formateSongsAuthor, getArrLast } from '@/utils';
 import { KeyboardArrowDownOutlined } from '@vicons/material';
 import color from 'color';
@@ -21,11 +21,13 @@ let backTopEle:HTMLElement;
 const mainStore = useMainStore();
 const router = useRouter();
 const { tagColor } = useThemeStyle();
+const commentModalRef= ref();
 const commentLoading = ref(false);
 const scrollContainerRef = ref<HTMLElement>(null as unknown as HTMLElement);
 const background = ref<CSSProperties>({});
 const active = ref(false);
 const musicComment = ref<AnyObject>({});
+const showBackTop = ref(false);
 const pageParams = reactive({
   pageCount: 10,
   page: 1,
@@ -49,16 +51,6 @@ defineExpose({
   active
 });
 
-watch(
-  () => mainStore.currentPlaySong, (val) => {
-    setBackgroundStyle();
-  }
-);
-watch(
-  () => mainStore.theme, () => {
-    setBackgroundStyle();
-  }
-);
 
 const setBackgroundStyle = async () => {
   if (!mainStore.currentPlaySong) return;
@@ -118,6 +110,26 @@ const updateCommentLiked = (
       : musicComment.value.comments[index].likedCount - 1;
   }
 };
+const handleUpdateShow = (value:boolean) => {
+  showBackTop.value = value;
+};
+watch(
+  () => mainStore.currentPlaySong, (val) => {
+    setBackgroundStyle();
+  }
+);
+watch(
+  () => mainStore.theme, () => {
+    setBackgroundStyle();
+  }
+);
+watch(
+  active, (val) => {
+    if (!val) {
+      showBackTop.value = false;
+    }
+  }
+);
 watch(
   () => mainStore.currentPlaySong, (val) => {
     if (val) {
@@ -214,11 +226,29 @@ setBackgroundStyle();
     </div>
   </transition>
   <n-back-top
-    :listen-to="target" :bottom="220"
-    :visibility-height="100"
+    style="z-index: 9999;"
+    :show="showBackTop"
+    :on-update:show="handleUpdateShow"
+    :listen-to="target" :bottom="220" :right="400"
   >
     <n-icon :component="BackToTop" />
   </n-back-top>
+  <!-- 发表评论-->
+  <replied-comment-modal
+    ref="commentModalRef" comment-placeholder="发表评论" :title="'歌曲：'+ mainStore.currentPlaySong.name"
+    :update-comment-list="updateCommentList" :t="1" :type="0"
+    :resource-id="mainStore.currentPlaySong.id"
+  />
+  <transition name="fade">
+    <n-button
+      v-show="!showBackTop && active" class="fixed" style="z-index:9999;bottom: 150px;right:400px"
+      round
+      @click="commentModalRef?.show()"
+    >
+      <n-icon :component="Edit" />
+      写评论
+    </n-button>
+  </transition>
 </template>
 
 <style scoped>
