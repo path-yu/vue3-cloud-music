@@ -87,7 +87,11 @@ const setScroll = (time:number) => {
 watch(
   isHover, (val) => {
     if (!val && currentScrollTop) {
-      scrollBarRef.value?.scrollTo({ top: currentScrollTop, behavior: 'smooth' });
+      setTimeout(
+        () => {
+          scrollBarRef.value?.scrollTo({ top: currentScrollTop, behavior: 'smooth' });
+        }, 100
+      );
     }
   }
 );

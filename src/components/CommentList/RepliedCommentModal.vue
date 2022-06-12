@@ -2,7 +2,6 @@
 import { ref } from 'vue';
 import { useMainStore } from '@/stores/main';
 import { sendComment } from '@/service';
-import type { AnyObject } from 'env';
 const showModal = ref(false);
 const commentBtnLoading = ref(false);
 const commentContent = ref('');
