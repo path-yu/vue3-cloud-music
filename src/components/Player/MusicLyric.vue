@@ -58,10 +58,11 @@ function handlePlayLyric(time:number) {
   if (!lyricData.value.length) return;
   // 如果当前鼠标正在悬停在歌词上，则不滚动
   if (isHover.value) return;
-  let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
+  let index = rangeLyricList.value.get(time)?.index as number;
+  let currentLyric = lyricData.value[index];
   if (currentLyric && !currentLyric.isFind) {
-    lyricData.value[currentLyric.index].isFind = true;
-    currentPlayLine.value = currentLyric.index;
+    lyricData.value[index].isFind = true;
+    currentPlayLine.value = index;
     setScroll(currentLyric.time);
   }
 }
@@ -79,6 +80,7 @@ const handleSliderChange = (time:number) => {
 const setScroll = (time:number) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
   if (targetELe) {
+    console.log(targetELe.offsetTop);
     scrollBarRef.value?.scrollTo({ top: targetELe!.offsetTop - 175, behavior: 'smooth' });
   }
 };
