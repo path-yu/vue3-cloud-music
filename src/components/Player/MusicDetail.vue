@@ -22,7 +22,7 @@ const mainStore = useMainStore();
 const router = useRouter();
 const { tagColor } = useThemeStyle();
 const commentModalRef= ref();
-const commentLoading = ref(false);
+const commentLoading = ref(true);
 const scrollContainerRef = ref<HTMLElement>(null as unknown as HTMLElement);
 const background = ref<CSSProperties>({});
 const active = ref(false);
@@ -84,11 +84,12 @@ const fetchMusicComment = (id:string) => {
     params.before = musicComment.value.comments[getArrLast(musicComment.value.comments)];
   }
   commentLoading.value = true;
+  musicComment.value = [];
   getMusicComment(params).then(res => {
     pageParams.pageCount = Math.round(res.data?.total || 1 / pageParams.pageSize) || 1;
     musicComment.value = res.data;
-  })
-    .finally(() => commentLoading.value = false);
+    commentLoading.value = false;
+  });
 };
 const updateCommentList = (value:any) => {
   musicComment.value.total += 1;
@@ -193,6 +194,7 @@ setBackgroundStyle();
       <!-- 占位 -->
       <div style="width:600px;height:300px;margin-left:500px">
         <n-spin :show="commentLoading" description="加载中">
+          <div v-show="commentLoading" class="h-80" />
           <comment-list
             :type="0"
             :comment-total-num="musicComment.total"
@@ -209,7 +211,7 @@ setBackgroundStyle();
             @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
           />
         </n-spin>
-        <p v-if="!musicComment.comments?.length && commentLoading" class="text-center opacity-50">
+        <p v-if="!musicComment.comments?.length && !commentLoading" class="text-center opacity-50">
           还没有评论, 快来抢沙发~
         </p>
         <div v-if="pageParams.pageCount > 1 && musicComment.comments" class="flex justify-end mt-6">
@@ -221,8 +223,8 @@ setBackgroundStyle();
             :page-sizes="[10, 20, 30, 40,50]"
           />
         </div>
+        <div class="h-10" />
       </div>
-      <div class="h-10" />
     </div>
   </transition>
   <n-back-top
@@ -247,6 +249,18 @@ setBackgroundStyle();
     >
       <n-icon :component="Edit" />
       写评论
+    </n-button>
+  </transition>
+  <!-- 发表我的音乐评论 -->
+  <transition name="slide">
+    <n-button
+      v-show="showBackTop && active"
+      type="primary" class="fixed w-44" style="z-index:9999;bottom: 90px;right:0;left:0;margin:auto"
+      round
+      @click="commentModalRef?.show()"
+    >
+      <n-icon :component="Edit" />
+      发表我的音乐评论
     </n-button>
   </transition>
 </template>
