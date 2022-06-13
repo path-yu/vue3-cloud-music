@@ -20,7 +20,6 @@ const params = reactive({
   type: typeList[0],
   order: orderList[0]
 });
-const listIsLoading = ref(true);
 const list = ref([]);
 const firstFetchDataSuccess = ref(false);
 
@@ -29,14 +28,13 @@ const pageParams = reactive({
   page: 1,
   pageSize: 50
 });
-const { wrapRequest } = useMemorizeRequest(getMvList);
+const { wrapRequest,loadSuccess,requestLoading:listIsLoading } = useMemorizeRequest(getMvList,'getMvList');
 const themeVars = useThemeVars();
 const fetchList = (setPageCount = true) => {
-  listIsLoading.value = true;
   let data = getParams();
   list.value = [];
+  
   wrapRequest(data).then((res: { data: { data: never[]; count: number; }; }) => {
-    listIsLoading.value = false;
     list.value = res.data.data;
 
     if (!firstFetchDataSuccess.value) {
@@ -49,6 +47,7 @@ const fetchList = (setPageCount = true) => {
         pageParams.pageCount = 50;
       }
     }
+    loadSuccess();
   });
 };
 

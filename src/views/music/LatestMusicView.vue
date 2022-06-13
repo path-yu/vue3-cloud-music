@@ -30,7 +30,6 @@ const typeList = [
     name: '韩国'
   }
 ];
-const isLoading = ref(true);
 const router = useRouter();
 const newSongList = ref<any[]>([]);
 const activeType = ref('0');
@@ -54,23 +53,12 @@ const activeStyle = (value: string):CSSProperties => {
       : '0.8rem'
   };
 };
-const { wrapRequest, isRepeat } = useMemorizeRequest(getTopSong);
+const { wrapRequest,requestLoading: isLoading,loadSuccess} = useMemorizeRequest(getTopSong,'getTopSong');
 const fetchData = () => {
-  isLoading.value = true;
   wrapRequest(activeType.value as any)
     .then(async (res: { data: { data: never[]; }; }) => {
-      if (isRepeat.value) {
-        setTimeout(
-          () => {
-            isLoading.value = false;
-            newSongList.value = newSongList.value = setNewSongList(res.data.data);
-          }, 600
-        );
-      } else {
-        isLoading.value = false;
         newSongList.value = setNewSongList(res.data.data);
-      }
-
+        loadSuccess();
     });
 };
 const setNewSongList = (data:any[]) => {
@@ -85,9 +73,7 @@ const handleTypeClick = (value:string) => {
   activeType.value = value;
   fetchData();
 };
-const handleDBClick = useDbClickPlay(
-  newSongList, 'newMusic'
-);
+const handleDBClick = useDbClickPlay();
 const handleMouseEnter = (
   e:MouseEvent, value:string
 ) => {
