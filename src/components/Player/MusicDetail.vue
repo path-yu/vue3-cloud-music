@@ -231,7 +231,7 @@ setBackgroundStyle();
     style="z-index: 9999;"
     :show="showBackTop"
     :on-update:show="handleUpdateShow"
-    :listen-to="target" :bottom="220" :right="400"
+    :listen-to="target" :bottom="90" :right="400"
   >
     <n-icon :component="BackToTop" />
   </n-back-top>
@@ -243,8 +243,9 @@ setBackgroundStyle();
   />
   <transition name="fade">
     <n-button
-      v-show="!showBackTop && active" class="fixed" style="z-index:9999;bottom: 150px;right:400px"
-      round
+      v-show="!showBackTop && active"
+      class="fixed" style="z-index:9999;bottom: 90px;right:400px"
+      round type="primary"
       @click="commentModalRef?.show()"
     >
       <n-icon :component="Edit" />
@@ -255,7 +256,8 @@ setBackgroundStyle();
   <transition name="slide">
     <n-button
       v-show="showBackTop && active"
-      type="primary" class="fixed w-44" style="z-index:9999;bottom: 90px;right:0;left:0;margin:auto"
+      type="primary"
+      class="fixed w-44" style="z-index:9999;bottom: 90px;right:0;left:0;margin:auto"
       round
       @click="commentModalRef?.show()"
     >
