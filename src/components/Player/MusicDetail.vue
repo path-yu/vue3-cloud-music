@@ -187,10 +187,11 @@ setBackgroundStyle();
       <div class="flex px-20 pt-5">
         <rotate-cd />
         <div class="ml-10 text-center">
-          <div class="relative">
-            <div class="text-3xl text-center">
-              <span> {{ mainStore.currentPlaySong.name }}</span>
-              <div class="absolute">
+          <div style="width:400px">
+            <div class="relative">
+              <div class="text-3xl text-center">
+                <span> {{ mainStore.currentPlaySong.name }}</span>
+                <div class="absolute">
                 <!-- <n-tag
                   v-if="mainStore.currentPlaySong.mv !== 0"
                   size="small" :color="tagColor"
@@ -198,14 +199,15 @@ setBackgroundStyle();
                 >
                   MV
                 </n-tag> -->
+                </div>
               </div>
             </div>
+            <p class="mt-2 text-sm opacity-50">
+              {{ mainStore.currentPlaySong.al.name }}
+              <span>-</span>
+              {{ formateSongsAuthor(mainStore.currentPlaySong.ar || []) }}
+            </p>
           </div>
-          <p class="mt-2 text-sm opacity-50">
-            {{ mainStore.currentPlaySong.al.name }}
-            <span>-</span>
-            {{ formateSongsAuthor(mainStore.currentPlaySong.ar || []) }}
-          </p>
           <div class="flex">
             <music-lyric />
             <!-- 相似歌单推荐 -->
