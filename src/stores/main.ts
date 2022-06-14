@@ -179,6 +179,18 @@ export const useMainStore = defineStore({
       this.changePlaying(true);
       return { success: true };
     },
+    // 插入播放
+    async insertPlay(value:any) {
+      // 未添加则插入
+      if (this.playList.findIndex(item => item.id === value.id) === -1) {
+        this.playList.splice(
+          this.currentPlayIndex+1, 0, value
+        );
+        const insertIndex = this.playList.findIndex((item:any) => item.id === value.id);
+        localStorage.playList = JSON.stringify(this.playList);
+        this.changePlayIndex(insertIndex);
+      }
+    },
     async setMusicData(
       data:any[], id:string, index:number, message='亲爱的,暂无版权!为你自动跳过此首歌曲'
     ):Promise<any> {
@@ -209,6 +221,7 @@ export const useMainStore = defineStore({
       } else {
         console.log('获取歌词失败');
       }
+      result.isLoading = false;
       window.$message.destroyAll();
       window.$message.success('获取成功');
       data[index] = {

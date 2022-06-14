@@ -53,12 +53,14 @@ const activeStyle = (value: string):CSSProperties => {
       : '0.8rem'
   };
 };
-const { wrapRequest,requestLoading: isLoading,loadSuccess} = useMemorizeRequest(getTopSong,'getTopSong');
+const { wrapRequest, requestLoading: isLoading, loadSuccess } = useMemorizeRequest(
+  getTopSong, 'getTopSong'
+);
 const fetchData = () => {
   wrapRequest(activeType.value as any)
     .then(async (res: { data: { data: never[]; }; }) => {
-        newSongList.value = setNewSongList(res.data.data);
-        loadSuccess();
+      newSongList.value = setNewSongList(res.data.data);
+      loadSuccess();
     });
 };
 const setNewSongList = (data:any[]) => {

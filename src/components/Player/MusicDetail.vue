@@ -40,7 +40,14 @@ const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: ex
 // 相似歌曲数据
 const { isLoading: fetchSimilarSongIsLoading, state: similarMusicList, execute: executeGetSimiSong } = useAsyncState(
   (id) => {
-    return getSimilarSong(id).then(res => res.data.songs);
+    return getSimilarSong(id).then(res => {
+      return res.data.songs.map((item:any) => {
+        item.dt = item.duration;
+        item.al = item.album;
+        item.ar = item.artists;
+        return item;
+      });
+    });
   },
   {},
   { resetOnExecute: false, immediate: false }
@@ -262,10 +269,11 @@ setBackgroundStyle();
               </h3>
               <n-divider />
               <n-spin :show="fetchSimiPlayListLoading" size="small">
-                <div v-show="fetchSimiPlayListLoading" class="w-50 h-32" />
+                <div v-show="fetchSimiPlayListLoading" class="w-80 h-32" />
                 <!-- 相似歌单推荐 -->
                 <div
                   v-for="item in similarPlaylist"
+                  v-show="!fetchSimiPlayListLoading"
                   :key="item.id"
                   class="flex items-center p-2 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
                   @click="handleSimiPlayListItem(item.id)"
@@ -293,11 +301,13 @@ setBackgroundStyle();
               </div>
               <!-- 相似歌曲 -->
               <n-spin :show="fetchSimilarSongIsLoading">
-                <div v-show="fetchSimilarSongIsLoading" class="w-50 h-40" />
+                <div v-show="fetchSimilarSongIsLoading" class="w-80 h-40" />
                 <div
                   v-for="item in similarMusicList"
+                  v-show="!fetchSimilarSongIsLoading"
                   :key="item.id"
                   class="flex items-center p-1 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
+                  @click="mainStore.insertPlay(item)"
                 >
                   <n-image
                     width="45" height="45" 
