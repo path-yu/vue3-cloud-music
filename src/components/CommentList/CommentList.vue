@@ -88,9 +88,7 @@ const handleLikedClick = (
         <span>{{ item?.beReplied[0].content }}</span>
       </div>
       <div class="flex justify-between mt-2 text-xs opacity-60">
-        <n-time type="datetime">
-          {{ item.time }}
-        </n-time>
+        <n-time :time="item.time" />
         <div class="flex items-center">
           <div class="flex items-center mr-4 cursor-pointer" @click="handleLikedClick(item,index)">
             <n-icon :component="item.liked ? ThumbsUpFilled : ThumbsUp" />
