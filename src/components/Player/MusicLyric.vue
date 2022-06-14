@@ -112,11 +112,11 @@ onMounted(() => {
 <template>
   <div ref="scrollContainerRef" class="mt-10">
     <div class="header-mask" />
-    <n-scrollbar ref="scrollBarRef" style="max-height: 350px;width:400px" trigger="none">
+    <n-scrollbar ref="scrollBarRef" style="max-height: 350px;width:550px" trigger="none">
       <div style="height:175" />
       <div
         v-for="(item,index) in lyricData" :id="'time'+item.time" :key="index"
-        class="max-w-xs lyric-item"
+        class="text-center lyric-item"
       > 
         <p :style="currentLyricStyle(index)" class="transition-color">
           {{ item.content }}
@@ -130,9 +130,6 @@ onMounted(() => {
 </template>
 
 <style scoped lang="less">
-:deep(.n-scrollbar-content){
-  padding-right:80px;
-}
 .lyric-item{
   p{
     line-height:35px;

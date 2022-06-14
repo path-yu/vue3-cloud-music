@@ -10,9 +10,8 @@ import useThemeStyle from '@/hook/useThemeStyle';
 import { useRouter } from 'vue-router';
 import type { AnyObject } from 'env';
 import { getMusicComment } from '@/service/songs';
-import { getSimilarPlaylist } from '@/service/playlist';
+import { getSimilarPlaylist, getSimilarSong } from '@/service/playlist';
 import { useAsyncState } from '@vueuse/core';
-import DiscoveryView from '../../views/home/DiscoveryView.vue';
 
 export interface MusicDetailExpose {
   show: () => void;
@@ -34,6 +33,14 @@ const musicComment = ref<AnyObject>({});
 const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: executeGetSimiPlayList } = useAsyncState(
   (id) => {
     return getSimilarPlaylist(id).then(res => res.data.playlists);
+  },
+  {},
+  { resetOnExecute: false, immediate: false }
+);
+// 相似歌曲数据
+const { isLoading: fetchSimilarSongIsLoading, state: similarMusicList, execute: executeGetSimiSong } = useAsyncState(
+  (id) => {
+    return getSimilarSong(id).then(res => res.data.songs);
   },
   {},
   { resetOnExecute: false, immediate: false }
@@ -153,6 +160,9 @@ watch(
       executeGetSimiPlayList(
         3000, val.id
       );
+      executeGetSimiSong(
+        3000, val.id
+      );
     }
   }, { immediate: true }
 );
@@ -186,8 +196,8 @@ setBackgroundStyle();
       </div>
       <div class="flex px-20 pt-5">
         <rotate-cd />
-        <div class="ml-10 text-center">
-          <div style="width:400px">
+        <div class="ml-10">
+          <div style="width:550px">
             <div class="relative">
               <div class="text-3xl text-center">
                 <span> {{ mainStore.currentPlaySong.name }}</span>
@@ -202,19 +212,58 @@ setBackgroundStyle();
                 </div>
               </div>
             </div>
-            <p class="mt-2 text-sm opacity-50">
+            <p class="mt-2 text-sm text-center opacity-50">
               {{ mainStore.currentPlaySong.al.name }}
               <span>-</span>
               {{ formateSongsAuthor(mainStore.currentPlaySong.ar || []) }}
             </p>
           </div>
           <div class="flex">
-            <music-lyric />
-            <!-- 相似歌单推荐 -->
-            <n-spin :show="fetchSimiPlayListLoading" size="small">
-              <div v-show="!fetchSimiPlayListLoading" class="w-50" />
-              <div class="pt-10 ml-10">
-                <h3>包含这首歌的歌单</h3>
+            <div>
+              <music-lyric />
+              <!-- 评论-->
+              <div style="width:550px;height:300px;" class="mt-5">
+                <n-spin :show="commentLoading" description="加载中">
+                  <div v-show="commentLoading" class="h-80" />
+                  <comment-list
+                    :type="0"
+                    :comment-total-num="musicComment.total"
+                    :resource-id="mainStore.currentPlaySong.id" title="精彩评论" :list="musicComment.hotComments || []"
+                    @update-comment-list="updateCommentList"
+                    @update-comment-liked="(data:any) => updateCommentLiked(data,true)"
+                  />
+                  <!-- 最新评论 -->
+                  <comment-list
+                    :resource-id="mainStore.currentPlaySong.id"
+                    :type="0"
+                    :comment-total-num="musicComment.total" title="最新评论" :list="musicComment.comments || []"
+                    @update-comment-list="updateCommentList"
+                    @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
+                  />
+                </n-spin>
+                <p v-if="!musicComment.comments?.length && !commentLoading" class="text-center opacity-50">
+                  还没有评论, 快来抢沙发~
+                </p>
+                <div v-if="pageParams.pageCount > 1 && musicComment.comments" class="flex justify-end mt-6">
+                  <n-pagination
+                    v-model:page="pageParams.page" 
+                    v-model:page-size="pageParams.pageSize" 
+                    :page-count="pageParams.pageCount" 
+                    show-size-picker
+                    :page-sizes="[10, 20, 30, 40,50]"
+                  />
+                </div>
+                <div class="h-20" />
+              </div>
+            </div>
+            <n-scrollbar style="max-height: 350px;" class="pt-10 ml-10">
+              <h3 class="m-0 text-left">
+                包含这首歌的歌单
+              </h3>
+              <n-divider />
+              <n-spin :show="fetchSimiPlayListLoading" size="small">
+                <div v-show="fetchSimiPlayListLoading" class="w-50 h-32" />
+                <!-- 相似歌单推荐 -->
                 <div
                   v-for="item in similarPlaylist"
                   :key="item.id"
@@ -222,57 +271,52 @@ setBackgroundStyle();
                   @click="handleSimiPlayListItem(item.id)"
                 >
                   <n-image
-                    width="60" height="60" 
+                    width="45" height="45" 
                     class="rounded-md"
                     :src="item.coverImgUrl"
                   />
-                  <div>
-                    <p class="ml-2 w-60 text-sm text-left truncate">
+                  <div class="ml-4">
+                    <p class="w-60 text-sm text-left truncate">
                       {{ item.name }}
                     </p>
-                    <p class="mt-2 ml-2 w-60 text-sm text-left truncate">
+                    <p class="mt-2 w-60 text-sm text-left truncate">
                       <span class="opacity-50">by</span> <span class="opacity-80">  {{ item.creator.nickname }}</span>
                     </p>
                   </div>
                 </div>
+              </n-spin>
+              <div class="mt-2">
+                <h3 class="m-0 text-left">
+                  喜欢这首歌的也喜欢听
+                </h3>
+                <n-divider />
               </div>
-            </n-spin>
+              <!-- 相似歌曲 -->
+              <n-spin :show="fetchSimilarSongIsLoading">
+                <div v-show="fetchSimilarSongIsLoading" class="w-50 h-40" />
+                <div
+                  v-for="item in similarMusicList"
+                  :key="item.id"
+                  class="flex items-center p-1 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
+                >
+                  <n-image
+                    width="45" height="45" 
+                    class="rounded-md"
+                    :src="item.album.picUrl"
+                  />
+                  <div class="ml-4">
+                    <p class="w-60 text-sm text-left truncate">
+                      {{ item.name }}
+                    </p>
+                    <p class="mt-2 w-60 text-sm text-left truncate opacity-50">
+                      {{ formateSongsAuthor(item.artists) }}
+                    </p>
+                  </div>
+                </div>
+              </n-spin>
+            </n-scrollbar>
           </div>
         </div>
-      </div>
-      <!-- 占位 -->
-      <div style="width:600px;height:300px;margin-left:500px">
-        <n-spin :show="commentLoading" description="加载中">
-          <div v-show="commentLoading" class="h-80" />
-          <comment-list
-            :type="0"
-            :comment-total-num="musicComment.total"
-            :resource-id="mainStore.currentPlaySong.id" title="精彩评论" :list="musicComment.hotComments || []"
-            @update-comment-list="updateCommentList"
-            @update-comment-liked="(data:any) => updateCommentLiked(data,true)"
-          />
-          <!-- 最新评论 -->
-          <comment-list
-            :resource-id="mainStore.currentPlaySong.id"
-            :type="0"
-            :comment-total-num="musicComment.total" title="最新评论" :list="musicComment.comments || []"
-            @update-comment-list="updateCommentList"
-            @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
-          />
-        </n-spin>
-        <p v-if="!musicComment.comments?.length && !commentLoading" class="text-center opacity-50">
-          还没有评论, 快来抢沙发~
-        </p>
-        <div v-if="pageParams.pageCount > 1 && musicComment.comments" class="flex justify-end mt-6">
-          <n-pagination
-            v-model:page="pageParams.page" 
-            v-model:page-size="pageParams.pageSize" 
-            :page-count="pageParams.pageCount" 
-            show-size-picker
-            :page-sizes="[10, 20, 30, 40,50]"
-          />
-        </div>
-        <div class="h-20" />
       </div>
     </div>
   </transition>
@@ -342,5 +386,8 @@ setBackgroundStyle();
 }
 .bottom-slide-transform-leave-to {
   height: 0;
+}
+:deep(.n-divider:not(.n-divider--vertical)){
+  margin: 10px 0;
 }
 </style>
