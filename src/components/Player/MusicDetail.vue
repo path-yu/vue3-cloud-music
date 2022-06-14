@@ -10,6 +10,9 @@ import useThemeStyle from '@/hook/useThemeStyle';
 import { useRouter } from 'vue-router';
 import type { AnyObject } from 'env';
 import { getMusicComment } from '@/service/songs';
+import { getSimilarPlaylist } from '@/service/playlist';
+import { useAsyncState } from '@vueuse/core';
+import DiscoveryView from '../../views/home/DiscoveryView.vue';
 
 export interface MusicDetailExpose {
   show: () => void;
@@ -27,6 +30,14 @@ const scrollContainerRef = ref<HTMLElement>(null as unknown as HTMLElement);
 const background = ref<CSSProperties>({});
 const active = ref(false);
 const musicComment = ref<AnyObject>({});
+
+const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: executeGetSimiPlayList } = useAsyncState(
+  (id) => {
+    return getSimilarPlaylist(id).then(res => res.data.playlists);
+  },
+  {},
+  { resetOnExecute: false, immediate: false }
+);
 const showBackTop = ref(false);
 const pageParams = reactive({
   pageCount: 10,
@@ -91,6 +102,10 @@ const fetchMusicComment = (id:string) => {
     commentLoading.value = false;
   });
 };
+const handleSimiPlayListItem = (id:string) => {
+  router.push(`/songList/${id}`);
+  active.value = false;
+};
 const updateCommentList = (value:any) => {
   musicComment.value.total += 1;
   musicComment.value.comments.unshift(value);
@@ -135,6 +150,9 @@ watch(
   () => mainStore.currentPlaySong, (val) => {
     if (val) {
       fetchMusicComment(val.id);
+      executeGetSimiPlayList(
+        3000, val.id
+      );
     }
   }, { immediate: true }
 );
@@ -188,7 +206,36 @@ setBackgroundStyle();
             <span>-</span>
             {{ formateSongsAuthor(mainStore.currentPlaySong.ar || []) }}
           </p>
-          <music-lyric />
+          <div class="flex">
+            <music-lyric />
+            <!-- 相似歌单推荐 -->
+            <n-spin :show="fetchSimiPlayListLoading" size="small">
+              <div v-show="!fetchSimiPlayListLoading" class="w-50" />
+              <div class="pt-10 ml-10">
+                <h3>包含这首歌的歌单</h3>
+                <div
+                  v-for="item in similarPlaylist"
+                  :key="item.id"
+                  class="flex items-center p-2 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
+                  @click="handleSimiPlayListItem(item.id)"
+                >
+                  <n-image
+                    width="60" height="60" 
+                    class="rounded-md"
+                    :src="item.coverImgUrl"
+                  />
+                  <div>
+                    <p class="ml-2 w-60 text-sm text-left truncate">
+                      {{ item.name }}
+                    </p>
+                    <p class="mt-2 ml-2 w-60 text-sm text-left truncate">
+                      <span class="opacity-50">by</span> <span class="opacity-80">  {{ item.creator.nickname }}</span>
+                    </p>
+                  </div>
+                </div>
+              </div>
+            </n-spin>
+          </div>
         </div>
       </div>
       <!-- 占位 -->

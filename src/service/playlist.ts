@@ -96,3 +96,11 @@ export function getPlaylistComment(data:{
   const query = qs.stringify(data);
   return service.get('/comment/playlist?'+query);
 }
+// 相似歌单
+export function getSimilarPlaylist(id:string) {
+  return service.get('/simi/playlist?id='+id);
+}
+// 相似歌曲
+export function getSimilarSong(id:string) {
+  return service.get('/simi/song?id='+id);
+}
