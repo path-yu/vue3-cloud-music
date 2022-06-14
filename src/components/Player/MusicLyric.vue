@@ -56,6 +56,10 @@ const currentLyricStyle = (index:number) => {
 };
 
 function handlePlayLyric(time:number) {
+  // 重置状态
+  if (time === 0) {
+    lyricData.value.forEach(item => item.isFind = false);
+  }
   if (!lyricData.value.length) return;
   // 如果当前鼠标正在悬停在歌词上，则不滚动
   if (isHover.value) return;
