@@ -223,7 +223,7 @@ setBackgroundStyle();
             :page-sizes="[10, 20, 30, 40,50]"
           />
         </div>
-        <div class="h-10" />
+        <div class="h-20" />
       </div>
     </div>
   </transition>
