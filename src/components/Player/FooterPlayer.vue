@@ -223,7 +223,9 @@ const handlePressSpace = (e:KeyboardEvent) => {
 const handleArrowClick = () => {
   musicDetailRef.value?.toggle();
 };
-
+const likeSuccess = (like:boolean) => {
+  mainStore.updatePlayListLike(like);
+};
 onMounted(() => {
   document.body.addEventListener(
     'keypress', handlePressSpace
@@ -259,7 +261,10 @@ onUnmounted(() => {
               <n-ellipsis>
                 {{ currentSong?.name }}
               </n-ellipsis>
-              <heart-icon class="ml-2" :like="true" /> 
+              <heart-icon
+                :id="mainStore.currentPlaySong.id" class="ml-2" :like="mainStore.currentPlaySong.like"
+                @like-success="likeSuccess"
+              /> 
             </p>
             <n-ellipsis>
               <p>{{ formateSongsAuthor(currentSong?.ar || []) }}</p>

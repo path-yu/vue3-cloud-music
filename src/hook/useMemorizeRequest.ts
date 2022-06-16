@@ -11,10 +11,13 @@ export const useMemorizeRequest = (
   const requestLoading = computed(() => {
     return requestLoadingMaps.value[requestKey];
   });
-  
-  const wrapRequest = (params?:any) => {
+  const getKey = (params?:any) => {
     const cloneParams = cloneDeep(params || 'key');
     const key = requestKey + JSON.stringify(cloneParams);
+    return key;
+  };
+  const wrapRequest = (params?:any) => {
+    const key = getKey(params);
     const request = () => {
       const requestData = requestFn(params);
       cacheResponseMap.set(
@@ -37,7 +40,13 @@ export const useMemorizeRequest = (
       return cacheResponseMap.get(key);
     }
   };
-  
+  // 删除指定缓存
+  const removeCache = (params?:any) => {
+    const key = getKey(params);
+    if (cacheResponseMap.has(key)) {
+      cacheResponseMap.delete(key);
+    }
+  };
   const loadSuccess = () => {
     requestLoadingMaps.value[requestKey] = false;
   };
@@ -48,6 +57,7 @@ export const useMemorizeRequest = (
   return {
     wrapRequest,
     loadSuccess,
+    removeCache,
     requestLoading
   };
 };

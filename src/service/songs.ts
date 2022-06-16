@@ -48,3 +48,9 @@ export function getMusicComment(data:{
   });
   return service.get('/comment/music?'+query);
 }
+// 喜欢音乐
+export function likeMusic(
+  id:number, like:boolean
+) {
+  return service.get(`/like?id=${id}&like=${like}`); 
+}

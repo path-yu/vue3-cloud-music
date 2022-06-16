@@ -47,7 +47,7 @@ const starButtonDisabled = computed(() => {
    && mainStore.userProfile
     && songListDetail.value?.userId === mainStore.userProfile?.profile?.userId;
 });
-const { wrapRequest: wrapFetchPlayList, requestLoading: isLoading, loadSuccess: loadPlayListSuccess } = useMemorizeRequest(
+const { wrapRequest: wrapFetchPlayList, requestLoading: isLoading, loadSuccess: loadPlayListSuccess, removeCache } = useMemorizeRequest(
   getPlaylistDetail, 'getPlaylistDetail'
 );
 
@@ -92,19 +92,7 @@ const { wrapRequest, requestLoading, loadSuccess } = useMemorizeRequest(
 const fetchMusicList = (id:string=route.params.id as string) => {
   wrapRequest({ id }).then((res: { data: { code: number; songs: any[]; }; }) => {
     if (res.data.code === 200) {
-      songList.value = res.data.songs.map((
-        item:any, index:number
-      ) => {
-        if (mainStore.likeSongs) {
-          let hasLike = mainStore.hasLikeSong(item.id);
-          item.like = hasLike;
-        } else {
-          item.like = false;
-        }
-    
-        item.key = index;
-        return item;
-      });
+      songList.value = mainStore.mapSongListAddLike(res.data.songs);
       loadSuccess();
     }
   });
@@ -128,7 +116,15 @@ watch(
     fetchSongListComment();
   }
 );
-
+watch(
+  () => mainStore.likeSongs, (
+    val, oldVal
+  ) => {
+    if (val.length !== oldVal.length) {
+      removeCache();
+    }
+  }
+);
 fetchSongListDetail();
 fetchSongListComment();
 fetchMusicList();

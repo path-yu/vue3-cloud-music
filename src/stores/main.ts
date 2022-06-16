@@ -82,6 +82,20 @@ export const useMainStore = defineStore({
     hasLikeSong(id:number) {
       return !!this.likeSongs[this.likeSongsIndexMap[id]];
     },
+    mapSongListAddLike(data:any[]) {
+      return data.map((
+        item, index
+      ) => {
+        if (this.likeSongs) {
+          const hasLike = this.hasLikeSong(item.id);
+          item.like = hasLike;
+        } else {
+          item.like = false;
+        }
+        item.key = index;
+        return item;
+      });
+    },
     // 初始化播放 列表
     async initPlayList(
       data:any[], index=0, playListId:number|string, message='亲爱的, 暂无版权'
@@ -190,6 +204,15 @@ export const useMainStore = defineStore({
         localStorage.playList = JSON.stringify(this.playList);
         this.changePlayIndex(insertIndex);
       }
+    },
+    updatePlayListLike(
+      like:boolean, index?:number
+    ) {
+      const resultIndex = index
+        ? index
+        : this.currentPlayIndex;
+      this.playList[resultIndex].like = like;
+      localStorage.playList = JSON.stringify(this.playList);
     },
     async setMusicData(
       data:any[], id:string, index:number, message='亲爱的,暂无版权!为你自动跳过此首歌曲'
