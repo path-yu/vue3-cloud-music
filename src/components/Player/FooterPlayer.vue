@@ -21,6 +21,7 @@ import type { PlayListExpose } from './PlayList.vue';
 import { useElementHover } from '@vueuse/core';
 import type { MusicDetailExpose } from './MusicDetail.vue';
 import obverser from '@/utils/obverser';
+import type { HeartIconExpose } from '../common/HeartIcon.vue';
 
 let slideValueChange = false;// 记录slider值是否手动发生了改变
 const progressWidth = 500;
@@ -30,6 +31,7 @@ const mainStore = useMainStore();
 const triggerRef = ref();
 const isHover = useElementHover(triggerRef);
 const musicDetailRef = ref<MusicDetailExpose>();
+const heardLikeRef = ref<HeartIconExpose>();
 let isLoad = false;
 // 触发交互元素
 const triggerEle = ref<HTMLDivElement>();
@@ -226,6 +228,9 @@ const handleArrowClick = () => {
 const likeSuccess = (like:boolean) => {
   mainStore.updatePlayListLike(like);
 };
+const handleLikeHeartClick = () => {
+  heardLikeRef.value?.triggerLike();
+};
 onMounted(() => {
   document.body.addEventListener(
     'keypress', handlePressSpace
@@ -276,6 +281,15 @@ onUnmounted(() => {
             size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
             @click="musicDetailRef?.close()"
           />
+          <div class="ml-4">
+            <div class="likeHeartContainer" @click="handleLikeHeartClick">
+              <heart-icon
+                :id="mainStore.currentPlaySong.id"
+                ref="heardLikeRef" :like="mainStore.currentPlaySong.like"
+                :size="25" :trigger-click="true" @like-success="likeSuccess"
+              /> 
+            </div>
+          </div>
         </div>
       </div>
     </div>
@@ -359,5 +373,13 @@ onUnmounted(() => {
 }
 .open-detail-control-wrap{
   transition: transform .6s ease;
+}
+.likeHeartContainer{
+  @apply w-10 h-10 rounded-full border 
+  border-gray-200 
+  dark:border-gray-200/30 border-solid
+  hover:bg-gray-100
+  dark:hover:bg-gray-100/20
+   flex-items-justify-center;
 }
 </style>
