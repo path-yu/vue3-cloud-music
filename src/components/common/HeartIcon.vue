@@ -4,14 +4,23 @@ import { useMainStore } from '@/stores/main';
 import { HeartOutline, Heart } from '@vicons/ionicons5';
 import { useThemeVars } from 'naive-ui';
 import { NIcon } from 'naive-ui';
+export interface HeartIconExpose{
+  triggerLike:() => any;
+}
 const themeVars = useThemeVars();
-const props = defineProps<{
+const props = withDefaults(
+  defineProps<{
   like:boolean;
   id:number;
-}>();
+  size?:number;
+  triggerClick?:boolean;
+}>(), { size: 20, triggerClick: false }
+);
 const mainStore = useMainStore();
 const emit = defineEmits(['likeSuccess']);
-const handleLikeClick = () => {
+
+
+const triggerLike = () => {
   if (!mainStore.isLogin) {
     return window.$message.error('请先登录');
   }
@@ -37,15 +46,17 @@ const handleLikeClick = () => {
     return null;
   });
 };
+defineExpose({ triggerLike });
+
 </script>
 
 <template>
   <NIcon
-    size="20"
+    :size="size"
     :color="like ? themeVars.primaryColor : themeVars.textColor2"
     class="cursor-pointer"
     :component="like ? Heart
       :HeartOutline"
-    @click="handleLikeClick"
+    @click="props.triggerClick ? null : triggerLike"
   />
 </template>
