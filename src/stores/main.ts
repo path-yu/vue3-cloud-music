@@ -282,6 +282,10 @@ export const useMainStore = defineStore({
           currentPlayIndex, this.playListCount - 1
         );
       }
+    },
+    setMySubscribeSongList(list:any[]) {
+      this.mySubscribeSongList = list;
+      localStorage.mySubscribeSongList = JSON.stringify(list);
     }
   }
 });

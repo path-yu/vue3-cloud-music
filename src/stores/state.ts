@@ -9,31 +9,51 @@ export interface StoreState{
   currentPlayIndex: number;
   playMode: playMode,
   currentPlayListId: number | string,
-  playing:boolean
+  playing:boolean,
+  mySubscribeSongList:any[]
 }
 export type playMode = 'order' | 'random' | 'singleLoop';
-
+const initState = (
+  key:string, defaultVal:any, parse=true
+) => {
+  return localStorage[key]
+    ? parse
+      ? JSON.parse(localStorage[key])
+      : localStorage[key]
+    : defaultVal;
+};
 const state:StoreState = { 
-  // 当前主题 默认light
-  theme: localStorage.theme || 'light',
-  // 回到顶部按钮的位置
-  backTopLeft: localStorage.backTopLeft || '7vw',
-  // 是否登录
-  isLogin: localStorage.isLogin && JSON.parse(localStorage.isLogin) || false,
-  // 用户详情
-  userProfile: localStorage.userProfile && JSON.parse(localStorage.userProfile) || {},
-  //我喜欢的歌曲列表
-  likeSongs: localStorage.likeSongs && JSON.parse(localStorage.likeSongs) || [],
-  // 播放列表
-  playList: localStorage.playList && JSON.parse(localStorage.playList) || [],
-  // 当前播放的歌曲下标
-  currentPlayIndex: localStorage.currentPlayIndex || 0,
-  // 播放模式
-  playMode: localStorage.playMode || 'order',
-  // 当前播放歌单列表id
-  currentPlayListId: localStorage.currentPlayListId || 0,
-  // 是否正在播放中
-  playing: false
+  theme: initState(
+    'theme', 'light', false
+  ),
+  backTopLeft: initState(
+    'backTopLeft', '7vw', false
+  ),
+  isLogin: initState(
+    'isLogin', false
+  ),
+  userProfile: initState(
+    'userProfile', {}
+  ),
+  likeSongs: initState(
+    'likeSongs', []
+  ),
+  playList: initState(
+    'playList', []
+  ),
+  currentPlayIndex: initState(
+    'currentPlayIndex', 0
+  ),
+  playMode: initState(
+    'playMode', 'order', false
+  ),
+  currentPlayListId: initState(
+    'currentPlayListId', 0
+  ),
+  playing: false,
+  mySubscribeSongList: initState(
+    'mySubscribeSongList', []
+  )
 };
 
 export default state;
