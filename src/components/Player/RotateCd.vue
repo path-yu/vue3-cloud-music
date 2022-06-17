@@ -80,8 +80,8 @@ const loopSetRotate = (timestamp:number) => {
 }
 .wrapContainer{
   position:relative;
-  width:500px;
-  height:500px;
+  width:400px;
+  height:400px;
   .playerBarContainer{
     position:absolute;
     top:20px;
@@ -124,7 +124,7 @@ const loopSetRotate = (timestamp:number) => {
   }
   >.cd{
     position:absolute;
-    top:0;
+    top:100px;
     left:0;
     right:0;
     bottom:0;
