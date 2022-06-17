@@ -201,7 +201,7 @@ setBackgroundStyle();
           <layout-header-search />
         </div>
       </div>
-      <div class="flex px-20 pt-5">
+      <div class="flex px-10 pt-5">
         <rotate-cd />
         <div class="ml-10">
           <div style="width:550px">
@@ -263,7 +263,7 @@ setBackgroundStyle();
                 <div class="h-20" />
               </div>
             </div>
-            <n-scrollbar style="max-height: 350px;" class="pt-10 ml-10">
+            <n-scrollbar style="max-height: 350px;padding-right:20px;" class="pt-10 ml-20">
               <h3 class="m-0 text-left">
                 包含这首歌的歌单
               </h3>
