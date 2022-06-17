@@ -18,7 +18,7 @@ const props = withDefaults(
 );
 const mainStore = useMainStore();
 const emit = defineEmits(['likeSuccess']);
-
+console.log(props.triggerClick);
 
 const triggerLike = () => {
   if (!mainStore.isLogin) {
@@ -46,17 +46,25 @@ const triggerLike = () => {
     return null;
   });
 };
+const handleClick = () => {
+  if (!props.triggerClick) {
+    triggerLike();
+  }
+};
 defineExpose({ triggerLike });
 
 </script>
 
 <template>
-  <NIcon
+  <n-icon
     :size="size"
     :color="like ? themeVars.primaryColor : themeVars.textColor2"
     class="cursor-pointer"
-    :component="like ? Heart
-      :HeartOutline"
-    @click="props.triggerClick ? null : triggerLike"
-  />
+    @click="handleClick"
+  >
+    <Transition name="scale" mode="out-in">
+      <Heart v-if="like" />
+      <HeartOutline v-else />
+    </Transition>
+  </n-icon>
 </template>
