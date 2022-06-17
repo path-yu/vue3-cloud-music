@@ -159,6 +159,7 @@ const fetchUserPlaylist = (userId:number) => {
       let { collectPlayList, myCreatePlayList } = classifySongsList(
         userId, res.data.playlist
       );
+      mainStore.setMySubscribeSongList(myCreatePlayList);
       changeMenuOption(
         myCreatePlayList, collectPlayList
       );

@@ -26,5 +26,8 @@ export default function useThemeStyle(otherStyle?:CSSProperties) {
   const baseColor = computed(() => {
     return themeVars.value.baseColor;
   });
-  return { tableStripedStyle, themeVars, tagColor, baseColor };
+  const primaryColor = computed(() => {
+    return themeVars.value.primaryColor;
+  });
+  return { tableStripedStyle, themeVars, tagColor, baseColor, primaryColor };
 }

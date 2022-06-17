@@ -18,8 +18,6 @@ const props = withDefaults(
 );
 const mainStore = useMainStore();
 const emit = defineEmits(['likeSuccess']);
-console.log(props.triggerClick);
-
 const triggerLike = () => {
   if (!mainStore.isLogin) {
     return window.$message.error('请先登录');

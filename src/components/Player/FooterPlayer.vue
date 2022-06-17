@@ -11,7 +11,7 @@ import {
   SkipPreviousSharp, SkipNextSharp,
   PlayArrowSharp, VolumeUpRound,
   KeyboardArrowDownOutlined,
-  VolumeOffRound, KeyboardArrowUpOutlined 
+  VolumeOffRound, KeyboardArrowUpOutlined, AddBoxOutlined
 } from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
@@ -32,6 +32,7 @@ const triggerRef = ref();
 const isHover = useElementHover(triggerRef);
 const musicDetailRef = ref<MusicDetailExpose>();
 const heardLikeRef = ref<HeartIconExpose>();
+const subscribeModalRef = ref<{show:() => void}>();
 let isLoad = false;
 // 触发交互元素
 const triggerEle = ref<HTMLDivElement>();
@@ -282,13 +283,16 @@ onUnmounted(() => {
             @click="musicDetailRef?.close()"
           />
           <div class="ml-4">
-            <div class="likeHeartContainer" @click="handleLikeHeartClick">
+            <div class="circleContainer" @click="handleLikeHeartClick">
               <heart-icon
                 :id="mainStore.currentPlaySong.id"
                 ref="heardLikeRef" :like="mainStore.currentPlaySong.like"
                 :size="25" :trigger-click="true" @like-success="likeSuccess"
               /> 
             </div>
+          </div>
+          <div class="ml-4 circleContainer">
+            <n-icon :component="AddBoxOutlined" :size="20" @click="subscribeModalRef?.show()" />
           </div>
         </div>
       </div>
@@ -357,6 +361,7 @@ onUnmounted(() => {
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
     <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
+    <subscribe-play-list-modal ref="subscribeModalRef" />
   </div>
 </template>
 
@@ -374,7 +379,7 @@ onUnmounted(() => {
 .open-detail-control-wrap{
   transition: transform .6s ease;
 }
-.likeHeartContainer{
+.circleContainer{
   @apply w-10 h-10 rounded-full border 
   border-gray-200 
   dark:border-gray-200/30 border-solid
