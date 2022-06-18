@@ -114,7 +114,7 @@ export function updatePlaylistTracks(data:{
     tracks: data.tracks,
     pid: data.pid,
     op: data.op,
-    timestamp: Date.now(),
+    timestamp: Date.now()
   });
   return service.get('/playlist/tracks?'+query);
 }

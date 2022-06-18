@@ -28,7 +28,9 @@ const pageParams = reactive({
   page: 1,
   pageSize: 50
 });
-const { wrapRequest,loadSuccess,requestLoading:listIsLoading } = useMemorizeRequest(getMvList,'getMvList');
+const { wrapRequest, loadSuccess, requestLoading: listIsLoading } = useMemorizeRequest(
+  getMvList, 'getMvList'
+);
 const themeVars = useThemeVars();
 const fetchList = (setPageCount = true) => {
   let data = getParams();

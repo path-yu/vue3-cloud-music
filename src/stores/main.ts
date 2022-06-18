@@ -109,7 +109,10 @@ export const useMainStore = defineStore({
       }
       this.playList = data;
       this.currentPlayIndex = index;
+      this.playListIdList = [+playListId];
       localStorage.currentPlayIndex = index;
+      localStorage.playListIdList = JSON.stringify(this.playListIdList);
+      console.log('33');
       localStorage.playList = JSON.stringify(this.playList);
       localStorage.currentPlayListId = playListId;
       this.currentPlayListId = playListId;
@@ -124,6 +127,13 @@ export const useMainStore = defineStore({
       localStorage.currentPlayListId = 0;
       this.currentPlayListId = 0;
       this.playMode = 'order';
+    },
+    addPlaylist(
+      list:any[], id:number|string
+    ) {
+      this.playList = [...this.playList, ...list];
+      this.playListIdList.push(+id);
+      localStorage.playList = JSON.stringify(this.playList);
     },
     // 切换播放音乐
     async changePlayIndex(

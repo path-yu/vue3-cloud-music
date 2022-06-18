@@ -10,7 +10,8 @@ export interface StoreState{
   playMode: playMode,
   currentPlayListId: number | string,
   playing:boolean,
-  mySubscribeSongList:any[]
+  mySubscribeSongList:any[],
+  playListIdList:number[],
 }
 export type playMode = 'order' | 'random' | 'singleLoop';
 const initState = (
@@ -53,6 +54,9 @@ const state:StoreState = {
   playing: false,
   mySubscribeSongList: initState(
     'mySubscribeSongList', []
+  ),
+  playListIdList: initState(
+    'playListIdList', []
   )
 };
 

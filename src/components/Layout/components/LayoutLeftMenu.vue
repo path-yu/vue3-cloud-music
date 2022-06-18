@@ -237,15 +237,17 @@ const watchUpdateCollectPlayList = () => {
 const watchUpdateMyCreatePlayList = () => {
   obverser.on(
     'updateMyCreatePlayList', (data:any) => {
-     myMenuOptions.value[0].children?.splice(1,0,{
-       label: () => <span onClick={() => handlePlayListItemClick(data)}>{data.name}</span>,
-            key: data.name,
-            icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
-            id: data.id
-     })
+      myMenuOptions.value[0].children?.splice(
+        1, 0, {
+          label: () => <span onClick={() => handlePlayListItemClick(data)}>{data.name}</span>,
+          key: data.name,
+          icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
+          id: data.id
+        }
+      );
     }
   );
-}
+};
 onMounted(() => {
   scrollContainer = document.querySelector('.rightMain>.n-layout-scroll-container');
   watchUpdateCollectPlayList();

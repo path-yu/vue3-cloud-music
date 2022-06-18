@@ -37,7 +37,7 @@ const handleCompleteClick = (tags:any[]) => {
     return window.$message.warning('请选择标签');
   }
   selectTags.value = tags.map(item => item.name);
-  selectSongListTagRef.value?.close();
+  return selectSongListTagRef.value?.close();
 };
 const handleSaveClick = () => {
   let params = {

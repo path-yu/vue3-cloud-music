@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { updatePlaylistTracks,createPlaylist } from '@/service/playlist';
+import { updatePlaylistTracks, createPlaylist } from '@/service/playlist';
 import { useMainStore } from '@/stores/main';
 import obverser from '@/utils/obverser';
 import { ArrowBackIosSharp } from '@vicons/material';
@@ -32,7 +32,7 @@ const handleItemClick = (item:any) => {
     pid: item.id
   };
   return updatePlaylistTracks(params).then((res) => {
-    if(res.data?.code === 200) {
+    if (res.data?.code === 200) {
       window.$message.success('添加成功');
     } 
   });
@@ -41,19 +41,19 @@ const handleCreateClick = () => {
   if (!mainStore.isLogin) {
     return window.$message.error('请先登录');
   }
-  let params:{name:string, privacy?:string} = {
-    name: playListTitle.value,
-  };
-  if(isPrivate.value) {
+  let params:{name:string, privacy?:string} = { name: playListTitle.value };
+  if (isPrivate.value) {
     params.privacy = '10';
   }
   return createPlaylist(params).then((res) => {
-    if(res.data?.code === 200) {
+    if (res.data?.code === 200) {
       window.$message.success('创建成功');
       showCreatePlayList.value = false;
       playListTitle.value = '';
       mainStore.mySubscribeSongList.push(res.data.playlist);
-      obverser.emit('updateMyCreatePlayList',res.data.playlist)
+      obverser.emit(
+        'updateMyCreatePlayList', res.data.playlist
+      );
     } 
   });
 };
@@ -122,7 +122,7 @@ watch(
             <n-checkbox v-model:checked="isPrivate" size="small" label="设置为隐私歌单" />
           </n-space>
           <div class="flex justify-center mt-4">
-            <n-button @click="handleCreateClick" :disabled="!playListTitle" type="primary">
+            <n-button :disabled="!playListTitle" type="primary" @click="handleCreateClick">
               创建
             </n-button>
           </div>

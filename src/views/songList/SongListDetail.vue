@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { getPlaylistAllDetail, getPlaylistComment, getPlaylistDetail, sendComment, updatePlayListSubscribe, updatePlaylistTags } from '@/service';
 import type { AnyObject } from 'env';
 import { formateNumber, getArrLast } from '@/utils';
@@ -294,6 +293,16 @@ const handleStartPlayAllClick = () => {
     );
   }
 };
+// 点击添加到全部歌单
+const handleAddToAllPlayListClick = () => {
+  if (!mainStore.playListIdList.includes(+songListId.value)) {
+    return mainStore.addPlaylist(
+      rawSongList.value, songListId.value
+    );
+  } else {
+    return window.$message.warning('已添加到播放列表');
+  }
+};
 const updateCommentList = (value:any) => {
   songListComment.value.total += 1;
   songListComment.value.comments.unshift(value);
@@ -367,7 +376,7 @@ const handleUpdateMusicListLike = (
                 <div class="ml-4 ">
                   <n-tooltip placement="bottom-start" trigger="hover">
                     <template #trigger>
-                      <n-icon :component="AddOutline" size="20" />
+                      <n-icon :component="AddOutline" size="20" @click="handleAddToAllPlayListClick" />
                     </template>
                     <span>添加全部到播放列表</span>
                   </n-tooltip>

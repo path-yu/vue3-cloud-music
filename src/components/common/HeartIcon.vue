@@ -42,7 +42,7 @@ const triggerLike = () => {
     emit(
       'likeSuccess', like
     );
-    props.likeSuccess && props.likeSuccess(like)
+    props.likeSuccess && props.likeSuccess(like);
     return null;
   });
 };
