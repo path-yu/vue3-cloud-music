@@ -35,6 +35,7 @@ const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
 const btnLoading = ref(false);
 const commentBtnLoading = ref(false);
 const subscribeBtnLoading = ref(false);
+const searchKeyword = ref('');
 const dialog = useDialog();
 const songListId = ref(route.params.id as string);
 const isMySongList = computed(() => {
@@ -387,6 +388,7 @@ const handleUpdateMusicListLike = (like:boolean,index:number) => {
           </n-tabs>
           <div class="w-60">
             <n-input
+              v-model:value="searchKeyword"
               size="small" placeholder="搜索歌单歌曲"
               round
             >

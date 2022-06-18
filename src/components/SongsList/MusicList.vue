@@ -44,7 +44,7 @@ export default defineComponent({
       {
         title: '操作',
         key: 'row',
-        width: 70,
+        width: 50,
         render (
           row, index
         ) {
@@ -67,7 +67,6 @@ export default defineComponent({
               like={row.like}
               size={20}  likeSuccess={(like:boolean) => likeSuccess(like,index)}
             /> 
-            <NIcon class="ml-2" size={20} component={DownloadOutline}/>
           </div>;
         }
       },
