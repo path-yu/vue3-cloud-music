@@ -104,3 +104,29 @@ export function getSimilarPlaylist(id:string) {
 export function getSimilarSong(id:string) {
   return service.get('/simi/song?id='+id);
 }
+//对歌单添加或删除歌曲
+export function updatePlaylistTracks(data:{
+  tracks:number;//歌曲id
+  pid:number;// 歌单id
+  op:'add'|'del';// 1:添加，2:删除
+}) {
+  const query = qs.stringify({
+    tracks: data.tracks,
+    pid: data.pid,
+    op: data.op,
+    timestamp: Date.now(),
+  });
+  return service.get('/playlist/tracks?'+query);
+}
+// 新建歌单
+export function createPlaylist(data:{
+  name:string;
+  privacy?:string;// 默认否，传'10'则设置成隐私歌单
+}) {
+  const query = qs.stringify({
+    name: data.name,
+    privacy: data.privacy,
+    timestamp: Date.now()
+  });
+  return service.get('/playlist/create?'+query);
+}

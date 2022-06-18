@@ -291,8 +291,8 @@ onUnmounted(() => {
               /> 
             </div>
           </div>
-          <div class="ml-4 circleContainer">
-            <n-icon :component="AddBoxOutlined" :size="20" @click="subscribeModalRef?.show()" />
+          <div class="ml-4 circleContainer" @click="subscribeModalRef?.show()">
+            <n-icon :component="AddBoxOutlined" :size="20" />
           </div>
         </div>
       </div>
@@ -361,7 +361,7 @@ onUnmounted(() => {
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
     <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
-    <subscribe-play-list-modal ref="subscribeModalRef" />
+    <subscribe-play-list-modal ref="subscribeModalRef" :tracks="mainStore.currentPlaySong?.id" />
   </div>
 </template>
 
