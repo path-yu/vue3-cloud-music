@@ -14,6 +14,7 @@ const props = withDefaults(
   id:number;
   size?:number;
   triggerClick?:boolean;
+  likeSuccess?:(like:boolean) => void;
 }>(), { size: 20, triggerClick: false }
 );
 const mainStore = useMainStore();
@@ -41,6 +42,7 @@ const triggerLike = () => {
     emit(
       'likeSuccess', like
     );
+    props.likeSuccess && props.likeSuccess(like)
     return null;
   });
 };

@@ -264,6 +264,9 @@ const updateCommentLiked = (
       : songListComment.value.comments[index].likedCount - 1;
   }
 };
+const handleUpdateMusicListLike = (like:boolean,index:number) => {
+  songList.value[index].like = like;
+}
 </script>
 <template>
   <div class="p-8 pb-2">
@@ -395,6 +398,7 @@ const updateCommentLiked = (
         </div>
         <div v-show="tabsValue === 'musicList'" class="mt-5">
           <music-list
+          @update-music-list-like="handleUpdateMusicListLike"
             :song-list="songList" :loading="requestLoading" :play-list-id="+songListId"
           />
         </div>

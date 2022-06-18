@@ -17,6 +17,7 @@ type RowData= {
   dt:number;
   name:string;
   mv:number;
+  id:string;
   // 免费或无版权1: VIP 歌曲4: 购买专辑8: 非会员可免费播放低音质，会员可播放高音质及下载 
   //fee 为 1 或 8 的歌曲均可单独购买 2 元单曲
   fee:number;
@@ -28,7 +29,8 @@ export default defineComponent({
     loading: { type: Boolean },
     playListId: { type: Number, required: true }
   },
-  setup(props) {
+  emits:['updateMusicListLike'],
+  setup(props,ctx) {
     const router = useRouter();
     const themeVars = useThemeVars();
     const mainStore = useMainStore();
@@ -60,11 +62,11 @@ export default defineComponent({
                     : (index + 1) }
                 </span>
             }
-            <NIcon size={20} color={row.like
-              ? themeVars.value.primaryColor
-              : themeVars.value.textColor1} class="cursor-pointer" component={ row.like
-              ? Heart
-              : HeartOutline} />
+            <heart-icon
+              id={row.id}
+              like={row.like}
+              size={20}  likeSuccess={(like:boolean) => likeSuccess(like,index)}
+            /> 
             <NIcon class="ml-2" size={20} component={DownloadOutline}/>
           </div>;
         }
@@ -126,6 +128,9 @@ export default defineComponent({
       }
       return '';
     };
+    const likeSuccess = (like:boolean,index:number) => {
+      ctx.emit('updateMusicListLike',like,index);
+    }
     const handleClick = useDbClickPlay();
     return () => {
       return <div >
