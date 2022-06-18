@@ -21,16 +21,21 @@ type RowData= {
   // 免费或无版权1: VIP 歌曲4: 购买专辑8: 非会员可免费播放低音质，会员可播放高音质及下载 
   //fee 为 1 或 8 的歌曲均可单独购买 2 元单曲
   fee:number;
+  isSearch?:boolean;
+  index?:number;
 }
 
 export default defineComponent({
   props: {
     songList: { type: Array, default: () => [] },
     loading: { type: Boolean },
-    playListId: { type: Number, required: true }
+    playListId: { type: Number, required: true },
+    rawSongList: { type: Array, default: () => [] }
   },
-  emits:['updateMusicListLike'],
-  setup(props,ctx) {
+  emits: ['updateMusicListLike'],
+  setup(
+    props, ctx
+  ) {
     const router = useRouter();
     const themeVars = useThemeVars();
     const mainStore = useMainStore();
@@ -65,7 +70,9 @@ export default defineComponent({
             <heart-icon
               id={row.id}
               like={row.like}
-              size={20}  likeSuccess={(like:boolean) => likeSuccess(like,index)}
+              size={20} likeSuccess={(like:boolean) => likeSuccess(
+                like, index
+              )}
             /> 
           </div>;
         }
@@ -127,9 +134,13 @@ export default defineComponent({
       }
       return '';
     };
-    const likeSuccess = (like:boolean,index:number) => {
-      ctx.emit('updateMusicListLike',like,index);
-    }
+    const likeSuccess = (
+      like:boolean, index:number
+    ) => {
+      ctx.emit(
+        'updateMusicListLike', like, index
+      );
+    };
     const handleClick = useDbClickPlay();
     return () => {
       return <div >
@@ -144,9 +155,12 @@ export default defineComponent({
           row-props={(
             row: any, index:number
           ) => {
+            let rawIndex = row.isSearch
+              ? row.index
+              : index;
             return {
               ondblclick: () => handleClick(
-                props.songList, props.playListId, row, index
+                props.rawSongList, props.playListId, row, rawIndex
               ) 
             };
           }}

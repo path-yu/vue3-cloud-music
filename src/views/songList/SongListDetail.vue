@@ -14,14 +14,16 @@ import { useDialog } from 'naive-ui';
 import obverser from '@/utils/obverser';
 import { userCheckLogin } from '@/hook/useCheckLogin';
 import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
-
+import { cloneDeep } from 'lodash';
 
 let backTopEle:HTMLElement;
+let songListIndexMap = new Map();
 const router = useRouter();
 const route = useRoute();
 const mainStore = useMainStore();
 const songListDetail = ref<AnyObject>();
 const songList = ref<any[]>([]);
+const rawSongList = ref<any[]>([]);
 const tabsValue = ref('musicList');
 const commentValue = ref('');
 const songListComment = ref<AnyObject>({});
@@ -36,6 +38,7 @@ const btnLoading = ref(false);
 const commentBtnLoading = ref(false);
 const subscribeBtnLoading = ref(false);
 const searchKeyword = ref('');
+const searchResult = ref<any[]>([]);
 const dialog = useDialog();
 const songListId = ref(route.params.id as string);
 const isMySongList = computed(() => {
@@ -92,13 +95,34 @@ const { wrapRequest, requestLoading, loadSuccess } = useMemorizeRequest(
 
 const fetchMusicList = (id:string=route.params.id as string) => {
   wrapRequest({ id }).then((res: { data: { code: number; songs: any[]; }; }) => {
-    if (res.data.code === 200) {
-      songList.value = mainStore.mapSongListAddLike(res.data.songs);
+    if (res?.data?.code === 200) {
+      let data = mainStore.mapSongListAddLike(res.data.songs);
+      rawSongList.value = cloneDeep(data);
+      songList.value = data;
+      rawSongList.value.forEach((
+        item: any, index: number
+      ) => {
+        songListIndexMap.set(
+          item.id, index
+        );
+      });
       loadSuccess();
     }
   });
 };
-
+const searchSongList = (keyword:string) => {
+  if (!keyword) {
+    songList.value = toRaw(rawSongList.value);
+  }
+  let result = rawSongList.value.filter((item:any) => {
+    return item.name.includes(keyword) 
+      || item.ar.some((ar:any) => ar.name.includes(keyword))
+      || item.al.name.includes(keyword);
+  }).map(item => {
+    return { ...item, isSearch: true, index: songListIndexMap.get(item.id) };
+  });
+  songList.value = result;
+};
 watch(
   () => route.params, (val) => {
     let id = val.id as string;
@@ -125,6 +149,13 @@ watch(
       removeCache();
     }
   }
+);
+watch(
+  searchKeyword, (
+    val, oldVal
+  ) => {
+    searchSongList(val);
+  } 
 );
 fetchSongListDetail();
 fetchSongListComment();
@@ -265,9 +296,16 @@ const updateCommentLiked = (
       : songListComment.value.comments[index].likedCount - 1;
   }
 };
-const handleUpdateMusicListLike = (like:boolean,index:number) => {
+const handleUpdateMusicListLike = (
+  like:boolean, index:number
+) => {
+  let target = songList.value[index];
+  // 更新元数据
+  if (target.isSearch) {
+    rawSongList.value[target.index].like = like;
+  }
   songList.value[index].like = like;
-}
+};
 </script>
 <template>
   <div class="p-8 pb-2">
@@ -389,10 +427,11 @@ const handleUpdateMusicListLike = (like:boolean,index:number) => {
           <div class="w-60">
             <n-input
               v-model:value="searchKeyword"
+              clearable
               size="small" placeholder="搜索歌单歌曲"
               round
             >
-              <template #suffix>
+              <template #prefix>
                 <n-icon class="cursor-pointer" :component="Search" />
               </template>
             </n-input>
@@ -400,8 +439,8 @@ const handleUpdateMusicListLike = (like:boolean,index:number) => {
         </div>
         <div v-show="tabsValue === 'musicList'" class="mt-5">
           <music-list
-          @update-music-list-like="handleUpdateMusicListLike"
-            :song-list="songList" :loading="requestLoading" :play-list-id="+songListId"
+            :song-list="songList" :raw-song-list="rawSongList"
+            :loading="requestLoading" :play-list-id="+songListId" @update-music-list-like="handleUpdateMusicListLike"
           />
         </div>
         <div v-show="tabsValue === 'comment'" class="mt-8">
