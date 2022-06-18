@@ -275,7 +275,25 @@ const handleCommentClick = () => {
       }); 
   });
 };
-
+// 点击播放全部
+// eslint-disable-next-line consistent-return
+const handleStartPlayAllClick = () => {
+  if (mainStore.playList.length === 0) {
+    return window.$message.error('没有可播放的歌曲');
+  }
+  if (mainStore.currentPlayListId === songListId.value) {
+    if (mainStore.playing) {
+      return window.$message.warning('正在播放中');
+    }
+    mainStore.initPlayList(
+      rawSongList.value, 0, songListId.value
+    );
+  } else {
+    mainStore.initPlayList(
+      rawSongList.value, 0, songListId.value
+    );
+  }
+};
 const updateCommentList = (value:any) => {
   songListComment.value.total += 1;
   songListComment.value.comments.unshift(value);
@@ -343,7 +361,9 @@ const handleUpdateMusicListLike = (
                 <template #icon>
                   <n-icon :component="Play" />
                 </template>
-                播放全部
+                <p @click="handleStartPlayAllClick">
+                  播放全部
+                </p>
                 <div class="ml-4 ">
                   <n-tooltip placement="bottom-start" trigger="hover">
                     <template #trigger>

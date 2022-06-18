@@ -60,7 +60,7 @@ export default defineComponent({
                   ? themeVars.value.primaryColor
                   : themeVars.value.textColor1} component={mainStore.playing
                   ? VolumeUpFilled
-                  :VolumeMuteFilled } size={20} class="pr-4"></NIcon>
+                  :VolumeMuteFilled } size={20} class="pr-3"></NIcon>
                 : <span class="pr-4 opacity-50">
                   { index < 9
                     ? '0' + (index + 1)
