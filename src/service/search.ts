@@ -7,3 +7,7 @@ export function getDefaultSearchKeyword() {
 export function getHotSearchList() {
   return service.get('/search/hot/detail');
 }
+// 搜索建议
+export function getSuggestSearchList(keyword: string) {
+  return service.get(`/search/suggest?keywords=${keyword}`);
+}

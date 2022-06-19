@@ -29,6 +29,9 @@
   .text-primary{
     @apply text-sky-500;
   }
+  .base-hover-bg{
+    @apply hover:bg-gray-100 dark:hover:bg-gray-100/20;
+  }
 }
 
 p{

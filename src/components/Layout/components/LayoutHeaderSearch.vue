@@ -1,15 +1,17 @@
 <script setup lang="ts">
-import { getDefaultSearchKeyword, getHotSearchList } from '@/service/search';
+import { getDefaultSearchKeyword, getHotSearchList, getSuggestSearchList } from '@/service/search';
 import { useMainStore } from '@/stores/main';
-import { Search } from '@vicons/ionicons5';
-import { Delete } from '@vicons/carbon';
+import { Search, List } from '@vicons/ionicons5';
+import { Delete, Music } from '@vicons/carbon';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover, useFocus } from '@vueuse/core';
 import { throttle } from 'lodash';
+import { formateSongsAuthor, isEmptyObject } from '@/utils';
 import { useThemeVars } from 'naive-ui';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { userHistory } from '../hook/useHistoryRoutePath';
+undefined;
 
 // 是否启用搜索建议
 let fetchSearchSuggestLock = true;
@@ -29,6 +31,9 @@ const { state: defaultSearchKeyWord } = useAsyncState(
 );
 const { state: hotSearch, isLoading: hotSearchLoading } = useAsyncState(
   getHotSearchList().then(res => res.data.data), {}
+);
+const { state: suggestList, isLoading: suggestLoading, execute } = useAsyncState(
+  (val) => getSuggestSearchList(val).then(res => res.data.result), {}, { resetOnExecute: false, immediate: false }
 );
 const arrowIconClass = (value: string) => {
   return value
@@ -82,8 +87,11 @@ const toSearchResult = (val?:string) => {
 const getSearchSuggest = (
   val:string, oldVal:string
 ) => {
-  if (!fetchSearchSuggestLock || !val) return;
-  console.log(val);
+  if (!fetchSearchSuggestLock && val === oldVal) return;
+  suggestList.value = {};
+  execute(
+    3000, val
+  );
 };
 const handleKeyDown = (e:KeyboardEvent) => {
   if (focused.value && e.code === 'Enter') {
@@ -95,7 +103,7 @@ const handleDeleteHistory = (index:number) => {
 };
 watch(
   keyword, throttle(
-    getSearchSuggest, 500
+    getSearchSuggest, 300
   )
 );
 onMounted(() => {
@@ -137,16 +145,22 @@ onUnmounted(() => {
       leave-to-class="transform opacity-0 scale-95"
     >
       <div 
-        v-show="focused" 
-        :style="{background:themeVars.modalColor,zIndex:1000}"
-        class="absolute top-10 w-96 rounded-sm shadow-lg  dark:shadow-black/60 origin-top-left"
+        v-show="focused"
+        :style="{background:themeVars.modalColor,zIndex:1000,width:keyword.length > 0 ? '420px ': '384px'}"
+        class="absolute top-10  rounded-sm shadow-lg  dark:shadow-black/60 transition-width origin-top-left"
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
-          <div v-if="mainStore.searchHistory.length" class="py-4 pl-4">
+          <div v-if="mainStore.searchHistory.length && keyword.length === 0" class="py-4 pl-4">
             <div class="flex items-center opacity-70">
               <span class="pr-2">搜索历史</span>
-              <n-icon :component="Delete" />
+            
+              <n-popconfirm :on-positive-click="() => mainStore.clearSearchHistory()" positive-text="确定">
+                <template #trigger>
+                  <n-icon class="cursor-pointer" :component="Delete" />
+                </template>
+                确定删除历史记录?
+              </n-popconfirm>
             </div>
             <div class="mt-2">
               <n-space>
@@ -161,7 +175,7 @@ onUnmounted(() => {
             </div>
           </div>
           <!-- 热搜榜 -->
-          <div>
+          <div v-if="keyword.length === 0">
             <p class="pl-4 mt-4 opacity-70">
               热搜榜
             </p>
@@ -169,8 +183,8 @@ onUnmounted(() => {
               <div v-show="hotSearchLoading" class="h-60" />
               <div 
                 v-for="(item,index) in hotSearch" 
-                :key="item.searchWord" 
-                class="flex items-center p-5 hover:bg-gray-100 dark:hover:bg-gray-100/20 cursor-pointer"
+                :key="item.searchWord" class="flex items-center p-5 hover:bg-gray-100 dark:hover:bg-gray-100/20 cursor-pointer"
+                @click="toSearchResult(item.searchWord)"
               >
                 <span
                   class="text-base"
@@ -182,6 +196,31 @@ onUnmounted(() => {
                   <span :style="{fontWeight:index >= 0 && index <= 2 ?'bold' :'initial'}"> {{ item.searchWord }}</span>
                   <span class="pl-2 text-sm opacity-40">{{ item.score }}</span>
                 </div>
+              </div>
+            </n-spin>
+          </div>
+          <!-- 搜索建议 -->
+          <div v-if="keyword.length > 0" class="py-4">
+            <n-spin :show="suggestLoading" size="small" description="搜索中...">
+              <div v-show="suggestLoading" class="h-80" />
+              <div>
+                <p v-show="!suggestLoading && suggestList.songs" class="flex items-center pl-4 text-base opacity-50">
+                  <n-icon :component="Music" />
+                  <span class="ml-2">单曲</span>
+                </p>
+                <div v-for="item in suggestList.songs" :key="item.id" class="py-2 pl-10 cursor-pointer base-hover-bg">
+                  {{ item.name }} 
+                  <span v-if="item.alias" class="opacity-50">{{ item.alias[0] }}</span>
+                  <span>-  {{ formateSongsAuthor(item.artists) }}</span>
+                </div>
+                <p v-show="!suggestLoading && (suggestList.albums || suggestList.playlists)" class="flex items-center pl-4 text-base opacity-50">
+                  <n-icon :component="List" />
+                  <span class="ml-2">歌单</span>
+                </p>
+                <div v-for="item in (suggestList.albums || suggestList.playlists)" :key="item.id" class="py-2 pl-10 cursor-pointer base-hover-bg">
+                  {{ item.name }} 
+                </div>
+                <base-empty v-show="keyword.length > 0 && isEmptyObject(suggestList) && !suggestLoading" description="没有搜索到数据" />
               </div>
             </n-spin>
           </div>

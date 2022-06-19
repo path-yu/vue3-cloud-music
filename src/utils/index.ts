@@ -196,3 +196,7 @@ export function getPrevIndex(
 export function isEven(num:number) {
   return num % 2 === 0;
 }
+// 对象是否为空
+export function isEmptyObject(obj:any) {
+  return Object.keys(obj).length === 0;
+}
