@@ -1,23 +1,34 @@
 <script setup lang="ts">
-import { getDefaultSearchKeyword } from '@/service/search';
+import { getDefaultSearchKeyword, getHotSearchList } from '@/service/search';
+import { useMainStore } from '@/stores/main';
 import { Search } from '@vicons/ionicons5';
+import { Delete } from '@vicons/carbon';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover, useFocus } from '@vueuse/core';
+import { throttle } from 'lodash';
 import { useThemeVars } from 'naive-ui';
-import { ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { userHistory } from '../hook/useHistoryRoutePath';
 
+// 是否启用搜索建议
+let fetchSearchSuggestLock = true;
 const backIconRef = ref();
 const forwardIconRef = ref();
 const keyword = ref('');
 const backHover = useElementHover(backIconRef);
 const forwardHover = useElementHover(forwardIconRef);
+const { backPath, forwardPath } = userHistory();
+const router = useRouter();
 const target = ref();
 const focused = ref(false);
-const { backPath, forwardPath } = userHistory();
 const themeVars = useThemeVars();
+const mainStore = useMainStore();
 const { state: defaultSearchKeyWord } = useAsyncState(
   getDefaultSearchKeyword().then(res => res.data.data), {}
+);
+const { state: hotSearch, isLoading: hotSearchLoading } = useAsyncState(
+  getHotSearchList().then(res => res.data.data), {}
 );
 const arrowIconClass = (value: string) => {
   return value
@@ -54,6 +65,49 @@ watch(
     }
   }
 );
+const toSearchResult = (val?:string) => {
+  fetchSearchSuggestLock = false;
+  if (!keyword.value && defaultSearchKeyWord.value?.realkeyword && !val) {
+    keyword.value = defaultSearchKeyWord.value.realkeyword;
+  }
+  if (val) {
+    keyword.value = val;
+  }
+  mainStore.addSearchHistory(keyword.value);
+  router.push({
+    path: '/searchResult',
+    query: { keyword: keyword.value }
+  }).then(() => fetchSearchSuggestLock = true);
+};
+const getSearchSuggest = (
+  val:string, oldVal:string
+) => {
+  if (!fetchSearchSuggestLock || !val) return;
+  console.log(val);
+};
+const handleKeyDown = (e:KeyboardEvent) => {
+  if (focused.value && e.code === 'Enter') {
+    toSearchResult();
+  }
+};
+const handleDeleteHistory = (index:number) => {
+  mainStore.removeSearchHistory(index);
+};
+watch(
+  keyword, throttle(
+    getSearchSuggest, 500
+  )
+);
+onMounted(() => {
+  document.body.addEventListener(
+    'keydown', handleKeyDown
+  );
+});
+onUnmounted(() => {
+  document.body.removeEventListener(
+    'keydown', handleKeyDown
+  );
+});
 </script>
 <template>
   <div class="flex items-center ml-8">
@@ -68,10 +122,10 @@ watch(
     <n-input
       ref="target" v-model:value="keyword" size="small"
       class="ml-5" round :placeholder="defaultSearchKeyWord.showKeyword"
-      @focus="focused = true" @blur="focused = false"
+      clearable @focus="focused = true" @blur="focused = false"
     >
       <template #prefix>
-        <n-icon class="cursor-pointer" :component="Search" />
+        <n-icon class="cursor-pointer" :component="Search" @click="() => toSearchResult()" />
       </template>
     </n-input>
     <transition
@@ -83,12 +137,53 @@ watch(
       leave-to-class="transform opacity-0 scale-95"
     >
       <div 
-        v-show="focused" :style="{background:themeVars.modalColor,zIndex:1000}"
-        class="absolute top-10 w-96 rounded-sm ring-1 ring-black/10 shadow-lg  dark:shadow-black/60 origin-top-left"
+        v-show="focused" 
+        :style="{background:themeVars.modalColor,zIndex:1000}"
+        class="absolute top-10 w-96 rounded-sm shadow-lg  dark:shadow-black/60 origin-top-left"
       >
-        <n-scrollbar style="max-height:450px">
-          <div v-for="item in 30">
-            222
+        <n-scrollbar style="max-height:500px">
+          <!-- 搜索历史 -->
+          <div v-if="mainStore.searchHistory.length" class="py-4 pl-4">
+            <div class="flex items-center opacity-70">
+              <span class="pr-2">搜索历史</span>
+              <n-icon :component="Delete" />
+            </div>
+            <div class="mt-2">
+              <n-space>
+                <n-tag
+                  v-for="(item,index) in mainStore.searchHistory" :key="item"
+                  closable size="small"
+                  round @close="() => handleDeleteHistory(index)"
+                >
+                  {{ item }}
+                </n-tag>
+              </n-space>
+            </div>
+          </div>
+          <!-- 热搜榜 -->
+          <div>
+            <p class="pl-4 mt-4 opacity-70">
+              热搜榜
+            </p>
+            <n-spin :show="hotSearchLoading">
+              <div v-show="hotSearchLoading" class="h-60" />
+              <div 
+                v-for="(item,index) in hotSearch" 
+                :key="item.searchWord" 
+                class="flex items-center p-5 hover:bg-gray-100 dark:hover:bg-gray-100/20 cursor-pointer"
+              >
+                <span
+                  class="text-base"
+                  :style="{color:index >= 0 && index <= 2 ? themeVars.primaryColor : themeVars.textColor1}"
+                >
+                  {{ index+1 }}
+                </span>
+                <div class="ml-4">
+                  <span :style="{fontWeight:index >= 0 && index <= 2 ?'bold' :'initial'}"> {{ item.searchWord }}</span>
+                  <span class="pl-2 text-sm opacity-40">{{ item.score }}</span>
+                </div>
+              </div>
+            </n-spin>
           </div>
         </n-scrollbar>
       </div>

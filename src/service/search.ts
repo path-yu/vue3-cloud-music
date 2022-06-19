@@ -3,3 +3,7 @@ import service from './request';
 export function getDefaultSearchKeyword() {
   return service.get('/search/default');
 }
+// 热搜列表
+export function getHotSearchList() {
+  return service.get('/search/hot/detail');
+}

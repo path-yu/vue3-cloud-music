@@ -296,6 +296,23 @@ export const useMainStore = defineStore({
     setMySubscribeSongList(list:any[]) {
       this.mySubscribeSongList = list;
       localStorage.mySubscribeSongList = JSON.stringify(list);
+    },
+    addSearchHistory(value:string) {
+      if (this.searchHistory.includes(value)) {
+        return;
+      }
+      this.searchHistory.push(value);
+      localStorage.searchHistory = JSON.stringify(this.searchHistory);
+    },
+    removeSearchHistory(index:number) {
+      this.searchHistory.splice(
+        index, 1
+      );
+      localStorage.searchHistory = JSON.stringify(this.searchHistory);
+    },
+    clearSearchHistory() {
+      this.searchHistory = [];
+      localStorage.searchHistory = JSON.stringify([]);
     }
   }
 });

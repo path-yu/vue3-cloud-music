@@ -53,6 +53,11 @@ const router = createRouter({
       name: 'userInfoEdit',
       component: () => import('@/views/user/UserInfoEdit.vue'),
       meta: { auth: true }
+    },
+    {
+      path: '/searchResult',
+      name: 'searchResult',
+      component: () => import('@/views/search/SearchResult.vue')
     }
   ]
 });
