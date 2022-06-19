@@ -85,7 +85,7 @@ const loopSetRotate = (timestamp:number) => {
   .playerBarContainer{
     position:absolute;
     top:20px;
-    right:150px;
+    right:120px;
     width:100px;
     height:150px;
     z-index:999;
