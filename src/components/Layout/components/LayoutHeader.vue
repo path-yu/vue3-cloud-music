@@ -54,7 +54,7 @@ const getUserProfile = () => {
 // 获取用户详情数据
 const getUserDetailInfo = (uid:string) => {
   getUserDetail(uid).then((res) => {
-    if (res.data.code === 200) {
+    if (res?.data?.code === 200) {
       mainStore.userProfile = res.data;
       localStorage.userProfile = JSON.stringify(res.data);
       userDetail.value = res.data;
@@ -63,7 +63,7 @@ const getUserDetailInfo = (uid:string) => {
 };
 const checkLoginStatus = () => {
   getLoginStatus().then(res => {
-    if (res.data.data.code === 200) {
+    if (res.data?.data?.code === 200) {
       if (!res.data.data.account) {
         window.$message.warning('登录状态过期,请重新登录');
         mainStore.userProfile = {};

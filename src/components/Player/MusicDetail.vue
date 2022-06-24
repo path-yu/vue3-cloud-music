@@ -105,7 +105,7 @@ const fetchMusicComment = (id:string) => {
     limit: pageParams.pageSize,
     offset: ((pageParams.page) - 1) * pageParams.pageSize
   };
-  if (musicComment.value.total > 5000) {
+  if (musicComment.value?.total > 5000) {
     params.before = musicComment.value.comments[getArrLast(musicComment.value.comments)];
   }
   commentLoading.value = true;

@@ -4,28 +4,29 @@ import { useMainStore } from '@/stores/main';
 import { Search, List } from '@vicons/ionicons5';
 import { Delete, Music } from '@vicons/carbon';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
-import { useAsyncState, useElementHover, useFocus } from '@vueuse/core';
+import { useAsyncState, useElementHover } from '@vueuse/core';
 import { throttle } from 'lodash';
 import { formateSongsAuthor, isEmptyObject } from '@/utils';
 import { useThemeVars } from 'naive-ui';
 import { onMounted, onUnmounted, ref, watch } from 'vue';
 import { useRouter } from 'vue-router';
 import { userHistory } from '../hook/useHistoryRoutePath';
-undefined;
 
 // 是否启用搜索建议
 let fetchSearchSuggestLock = true;
 const backIconRef = ref();
 const forwardIconRef = ref();
 const keyword = ref('');
+const target = ref();
+const showPopover = ref(false);
+const inputRef = ref();
+const searchWrapContainerRef = ref();
+const themeVars = useThemeVars();
+const mainStore = useMainStore();
 const backHover = useElementHover(backIconRef);
 const forwardHover = useElementHover(forwardIconRef);
 const { backPath, forwardPath } = userHistory();
 const router = useRouter();
-const target = ref();
-const focused = ref(false);
-const themeVars = useThemeVars();
-const mainStore = useMainStore();
 const { state: defaultSearchKeyWord } = useAsyncState(
   getDefaultSearchKeyword().then(res => res.data.data), {}
 );
@@ -94,26 +95,39 @@ const getSearchSuggest = (
   );
 };
 const handleKeyDown = (e:KeyboardEvent) => {
-  if (focused.value && e.code === 'Enter') {
+  if (showPopover.value && e.code === 'Enter') {
     toSearchResult();
   }
 };
 const handleDeleteHistory = (index:number) => {
   mainStore.removeSearchHistory(index);
 };
+const handleBodyClick = (ev:MouseEvent) => {
+  if (!ev.composedPath().includes(inputRef.value) && !ev.composedPath().includes(searchWrapContainerRef.value)) {
+    showPopover.value = false;
+  } 
+};
 watch(
   keyword, throttle(
     getSearchSuggest, 300
   )
 );
+
 onMounted(() => {
   document.body.addEventListener(
     'keydown', handleKeyDown
   );
+  document.body.addEventListener(
+    'click', handleBodyClick
+  );
+
 });
 onUnmounted(() => {
   document.body.removeEventListener(
     'keydown', handleKeyDown
+  );
+  document.body.removeEventListener(
+    'click', handleBodyClick
   );
 });
 </script>
@@ -127,15 +141,17 @@ onUnmounted(() => {
     </div>
   </div>
   <div class="relative w-50">
-    <n-input
-      ref="target" v-model:value="keyword" size="small"
-      class="ml-5" round :placeholder="defaultSearchKeyWord.showKeyword"
-      clearable @focus="focused = true" @blur="focused = false"
-    >
-      <template #prefix>
-        <n-icon class="cursor-pointer" :component="Search" @click="() => toSearchResult()" />
-      </template>
-    </n-input>
+    <div ref="inputRef" class="wrapInput">
+      <n-input
+        ref="target" v-model:value="keyword" size="small"
+        class="ml-5 headerSearchInput" round :placeholder="defaultSearchKeyWord.showKeyword"
+        clearable @focus="showPopover = true"
+      >
+        <template #prefix>
+          <n-icon class="cursor-pointer" :component="Search" @click="() => toSearchResult()" />
+        </template>
+      </n-input>
+    </div>
     <transition
       enter-active-class="transition ease-out duration-300" 
       enter-from-class="transform opacity-0 scale-95" 
@@ -145,9 +161,10 @@ onUnmounted(() => {
       leave-to-class="transform opacity-0 scale-95"
     >
       <div 
-        v-show="focused"
+        v-show="showPopover"
+        ref="searchWrapContainerRef"
         :style="{background:themeVars.modalColor,zIndex:1000,width:keyword.length > 0 ? '420px ': '384px'}"
-        class="absolute top-10  rounded-sm shadow-lg  dark:shadow-black/60 transition-width origin-top-left"
+        class="absolute top-10  rounded-sm shadow-lg dark:shadow-black/60 transition-width origin-top-left searchWrapContainer"
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
