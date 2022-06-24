@@ -13,7 +13,6 @@ import { useRouter } from 'vue-router';
 import { userHistory } from '../hook/useHistoryRoutePath';
 
 // 是否启用搜索建议
-let fetchSearchSuggestLock = true;
 const backIconRef = ref();
 const forwardIconRef = ref();
 const keyword = ref('');
@@ -21,6 +20,8 @@ const target = ref();
 const showPopover = ref(false);
 const inputRef = ref();
 const searchWrapContainerRef = ref();
+const showSuggest = ref(false);
+
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const backHover = useElementHover(backIconRef);
@@ -72,7 +73,7 @@ watch(
   }
 );
 const toSearchResult = (val?:string) => {
-  fetchSearchSuggestLock = false;
+  showSuggest.value = false;
   if (!keyword.value && defaultSearchKeyWord.value?.realkeyword && !val) {
     keyword.value = defaultSearchKeyWord.value.realkeyword;
   }
@@ -80,16 +81,19 @@ const toSearchResult = (val?:string) => {
     keyword.value = val;
   }
   mainStore.addSearchHistory(keyword.value);
+  showPopover.value = false;
   router.push({
     path: '/searchResult',
     query: { keyword: keyword.value }
-  }).then(() => fetchSearchSuggestLock = true);
+  });
 };
 const getSearchSuggest = (
   val:string, oldVal:string
 ) => {
-  if (!fetchSearchSuggestLock && val === oldVal) return;
+  if (!showSuggest.value && val === oldVal) return;
   suggestList.value = {};
+  showSuggest.value = val.length > 0;
+
   execute(
     3000, val
   );
@@ -99,13 +103,11 @@ const handleKeyDown = (e:KeyboardEvent) => {
     toSearchResult();
   }
 };
-const handleDeleteHistory = (index:number) => {
-  mainStore.removeSearchHistory(index);
-};
+
 const handleBodyClick = (ev:MouseEvent) => {
   if (!ev.composedPath().includes(inputRef.value) && !ev.composedPath().includes(searchWrapContainerRef.value)) {
     showPopover.value = false;
-  } 
+  }
 };
 watch(
   keyword, throttle(
@@ -125,9 +127,6 @@ onMounted(() => {
 onUnmounted(() => {
   document.body.removeEventListener(
     'keydown', handleKeyDown
-  );
-  document.body.removeEventListener(
-    'click', handleBodyClick
   );
 });
 </script>
@@ -168,10 +167,9 @@ onUnmounted(() => {
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
-          <div v-if="mainStore.searchHistory.length && keyword.length === 0" class="py-4 pl-4">
+          <div v-if="mainStore.searchHistory.length && showPopover && !showSuggest" class="py-4 pl-4">
             <div class="flex items-center opacity-70">
               <span class="pr-2">搜索历史</span>
-            
               <n-popconfirm :on-positive-click="() => mainStore.clearSearchHistory()" positive-text="确定">
                 <template #trigger>
                   <n-icon class="cursor-pointer" :component="Delete" />
@@ -182,9 +180,12 @@ onUnmounted(() => {
             <div class="mt-2">
               <n-space>
                 <n-tag
-                  v-for="(item,index) in mainStore.searchHistory" :key="item"
+                  v-for="(item,index) in mainStore.searchHistory"
+                  :key="item"
                   closable size="small"
-                  round @close="() => handleDeleteHistory(index)"
+                  round
+                  @click="toSearchResult(item)"
+                  @close="mainStore.removeSearchHistory(index)"
                 >
                   {{ item }}
                 </n-tag>
@@ -192,7 +193,7 @@ onUnmounted(() => {
             </div>
           </div>
           <!-- 热搜榜 -->
-          <div v-if="keyword.length === 0">
+          <div v-show="showPopover && !showSuggest">
             <p class="pl-4 mt-4 opacity-70">
               热搜榜
             </p>
@@ -217,7 +218,7 @@ onUnmounted(() => {
             </n-spin>
           </div>
           <!-- 搜索建议 -->
-          <div v-if="keyword.length > 0" class="py-4">
+          <div v-if="keyword.length > 0 && showSuggest && showPopover" class="py-4">
             <n-spin :show="suggestLoading" size="small" description="搜索中...">
               <div v-show="suggestLoading" class="h-80" />
               <div>
