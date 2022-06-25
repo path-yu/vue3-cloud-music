@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { getDefaultSearchKeyword, getHotSearchList, getSuggestSearchList } from '@/service/search';
+import { getDefaultSearchKeyword, getHotSearchList, getSuggestSearchList, getAlbumDetail } from '@/service';
 import { useMainStore } from '@/stores/main';
 import { Search, List } from '@vicons/ionicons5';
 import { Delete, Music } from '@vicons/carbon';
@@ -11,6 +11,7 @@ import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch, type CSSProperties } from 'vue';
 import { useRouter } from 'vue-router';
 import { userHistory } from '../hook/useHistoryRoutePath';
+import { mapSongs } from '@/utils/arr-map';
 
 const backIconRef = ref();
 const forwardIconRef = ref();
@@ -34,7 +35,10 @@ const { state: hotSearch, isLoading: hotSearchLoading } = useAsyncState(
   getHotSearchList().then(res => res.data.data), {}
 );
 const { state: suggestList, isLoading: suggestLoading, execute } = useAsyncState(
-  (val) => getSuggestSearchList(val).then(res => res.data.result), {}, { resetOnExecute: false, immediate: false }
+  (val) => getSuggestSearchList(val).then(async res => {
+    res.data.result.songs = mapSongs(res.data.result.songs);
+    return res.data.result;
+  }), {}, { resetOnExecute: false, immediate: false }
 );
 const arrowIconClass = (value: string) => {
   return value
@@ -105,12 +109,30 @@ const handleKeyDown = (e:KeyboardEvent) => {
     toSearchResult();
   }
 };
-
 const handleBodyClick = (ev:MouseEvent) => {
   if (!ev.composedPath().includes(inputRef.value) && !ev.composedPath().includes(searchWrapContainerRef.value)) {
     showPopover.value = false;
     spread.value = false;
   }
+};
+const handleSearchSongClick = async(song:any) => {
+  if (!song.al.picUrl) {
+    const detail = await getAlbumDetail(song.al.id);
+    song.al.picUrl = detail.data.album.picUrl;
+  }
+  song.like = mainStore.hasLikeSong(song.id);
+  if (mainStore.playList.length) {
+    mainStore.insertPlay(song);
+  } else {
+    mainStore.initPlayList(
+      [song], 0, 'searchResult'
+    );
+  }
+  showPopover.value = false;
+};
+const handleSearchPlayListClick = (id:string) => {
+  router.push(`/songList/${id}`);
+  showPopover.value = false;
 };
 watch(
   keyword, throttle(
@@ -240,7 +262,12 @@ onUnmounted(() => {
                   <n-icon :component="Music" />
                   <span class="ml-2">单曲</span>
                 </p>
-                <div v-for="item in suggestList.songs" :key="item.id" class="py-2 pl-10 cursor-pointer base-hover-bg">
+                <div
+                  v-for="item in suggestList.songs" 
+                  :key="item.id"
+                  class="py-2 pl-10 cursor-pointer base-hover-bg"
+                  @click="handleSearchSongClick(item)"
+                >
                   {{ item.name }} 
                   <span v-if="item.alias" class="opacity-50">{{ item.alias[0] }}</span>
                   <span>-  {{ formateSongsAuthor(item.artists) }}</span>
@@ -250,10 +277,10 @@ onUnmounted(() => {
                   <span class="ml-2">歌单</span>
                 </p>
                 <div
-                  v-for="item in (suggestList.albums || suggestList.playlists)" 
+                  v-for="item in suggestList.playlists" 
                   :key="item.id"
                   class="py-2 pl-10 cursor-pointer base-hover-bg"
-                  @click="router.push(`/songList/${item.id}`)"
+                  @click="handleSearchPlayListClick(item.id)"
                 >
                   {{ item.name }} 
                 </div>

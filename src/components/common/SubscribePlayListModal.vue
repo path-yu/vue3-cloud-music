@@ -10,7 +10,7 @@ const showCreatePlayList = ref(false);
 const isPrivate = ref(false);
 const playListTitle = ref('');
 const props = defineProps<{
-  tracks:number;
+  tracks?:number;
 }>();
 const modalStyle = computed(() => {
   return {

@@ -58,7 +58,7 @@ const { wrapRequest: wrapFetchPlayList, requestLoading: isLoading, loadSuccess: 
 const fetchSongListDetail = (id:string=route.params.id as string) => {
   wrapFetchPlayList(id).then((res: { data: { playlist: AnyObject }; }) => {
     let creator = res.data.playlist.creator;
-    if (res.data.playlist.name === (creator.nickname +'喜欢的音乐') && creator.userId === mainStore.userProfile?.profile.userId) {
+    if (res.data.playlist.name === (creator?.nickname +'喜欢的音乐') && creator.userId === mainStore.userProfile?.profile.userId) {
       res.data.playlist.isMyLike = true;
       res.data.playlist.name = '我喜欢的音乐';
     } else {

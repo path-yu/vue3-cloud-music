@@ -361,7 +361,7 @@ onUnmounted(() => {
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
     <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
-    <subscribe-play-list-modal ref="subscribeModalRef" :tracks="mainStore.currentPlaySong?.id" />
+    <subscribe-play-list-modal v-if="mainStore.currentPlaySong?.id" ref="subscribeModalRef" :tracks="mainStore.currentPlaySong?.id" />
   </div>
 </template>
 

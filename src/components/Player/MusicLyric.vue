@@ -19,7 +19,7 @@ const lyricData = computed(() => {
   if (mainStore.currentPlaySong?.tlyric) {
     tlyricData = parseLyric(mainStore.currentPlaySong?.tlyric);
   }
-  if (!mainStore.currentPlaySong.lyric) {
+  if (!mainStore.currentPlaySong?.lyric) {
     return [];
   } else {
     let lyric = parseLyric(mainStore.currentPlaySong?.lyric);

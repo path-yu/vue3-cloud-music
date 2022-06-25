@@ -112,7 +112,6 @@ export const useMainStore = defineStore({
       this.playListIdList = [+playListId];
       localStorage.currentPlayIndex = index;
       localStorage.playListIdList = JSON.stringify(this.playListIdList);
-      console.log('33');
       localStorage.playList = JSON.stringify(this.playList);
       localStorage.currentPlayListId = playListId;
       this.currentPlayListId = playListId;
@@ -205,14 +204,18 @@ export const useMainStore = defineStore({
     },
     // 插入播放
     async insertPlay(value:any) {
+      const index = this.playList.findIndex(item => item.id === value.id);
       // 未添加则插入
-      if (this.playList.findIndex(item => item.id === value.id) === -1) {
+      if (index === -1) {
         this.playList.splice(
           this.currentPlayIndex+1, 0, value
         );
+        console.log(11);
         const insertIndex = this.playList.findIndex((item:any) => item.id === value.id);
         localStorage.playList = JSON.stringify(this.playList);
         this.changePlayIndex(insertIndex);
+      } else {
+        this.changePlayIndex(index);
       }
     },
     updatePlayListLike(

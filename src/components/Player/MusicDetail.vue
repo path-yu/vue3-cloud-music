@@ -12,6 +12,7 @@ import type { AnyObject } from 'env';
 import { getMusicComment } from '@/service/songs';
 import { getSimilarPlaylist, getSimilarSong } from '@/service/playlist';
 import { useAsyncState } from '@vueuse/core';
+import { mapSongs } from '@/utils/arr-map';
 
 export interface MusicDetailExpose {
   show: () => void;
@@ -41,12 +42,7 @@ const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: ex
 const { isLoading: fetchSimilarSongIsLoading, state: similarMusicList, execute: executeGetSimiSong } = useAsyncState(
   (id) => {
     return getSimilarSong(id).then(res => {
-      return res.data.songs.map((item:any) => {
-        item.dt = item.duration;
-        item.al = item.album;
-        item.ar = item.artists;
-        return item;
-      });
+      return mapSongs(res.data.songs);
     });
   },
   {},
@@ -79,6 +75,10 @@ defineExpose({
 
 const setBackgroundStyle = async () => {
   if (!mainStore.currentPlaySong) return;
+  let baseColor = mainStore.theme === 'dark'
+    ? '#121212'
+    : 'white';
+  background.value = { background: `${baseColor}` };
   let primary;
   if (!mainStore.currentPlaySong.primaryColor) {
     const result = await analyze(mainStore.currentPlaySong.al.picUrl);
@@ -87,9 +87,7 @@ const setBackgroundStyle = async () => {
   } else {
     primary = mainStore.currentPlaySong.primaryColor;
   }
-  let baseColor = mainStore.theme === 'dark'
-    ? '#121212'
-    : 'white';
+ 
   let bgColor = color(baseColor).mix(
     color(primary), 0.2
   )
