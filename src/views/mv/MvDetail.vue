@@ -278,14 +278,14 @@ onUnmounted(() => {
             <comment-list
               :resource-id="+mvid" title="精彩评论" :list="mvComment.hotComments || []"
               @update-comment-list="updateCommentList"
-              @update-comment-liked="(data) => updateCommentLiked(data,true)"
+              @update-comment-liked="(data:any) => updateCommentLiked(data,true)"
             />
             <!-- 最新评论 -->
             <comment-list
               :resource-id="+mvid"
               :comment-total-num="mvComment.total" title="最新评论" :list="mvComment.comments || []"
               @update-comment-list="updateCommentList"
-              @update-comment-liked="(data) => updateCommentLiked(data,false)"
+              @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
             />
           </div>
           <!-- 分页 -->
