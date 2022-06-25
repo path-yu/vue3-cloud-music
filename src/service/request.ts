@@ -11,7 +11,7 @@ instance.interceptors.request.use(
   (config) => {
     return config;
   }, err => {
-    return err;
+    return Promise.reject(err);
   }
 );
 
@@ -21,7 +21,7 @@ instance.interceptors.response.use(
     return data;
   }, err => {
     window.$message.error('network error');
-    return err;
+    return Promise.reject(err);
   }
 );
 

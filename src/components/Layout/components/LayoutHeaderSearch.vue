@@ -249,7 +249,12 @@ onUnmounted(() => {
                   <n-icon :component="List" />
                   <span class="ml-2">歌单</span>
                 </p>
-                <div v-for="item in (suggestList.albums || suggestList.playlists)" :key="item.id" class="py-2 pl-10 cursor-pointer base-hover-bg">
+                <div
+                  v-for="item in (suggestList.albums || suggestList.playlists)" 
+                  :key="item.id"
+                  class="py-2 pl-10 cursor-pointer base-hover-bg"
+                  @click="router.push(`/songList/${item.id}`)"
+                >
                   {{ item.name }} 
                 </div>
                 <base-empty v-show="keyword.length > 0 && isEmptyObject(suggestList) && !suggestLoading" description="没有搜索到数据" />
