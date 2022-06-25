@@ -20,8 +20,6 @@ const target = ref();
 const showPopover = ref(false);
 const inputRef = ref();
 const searchWrapContainerRef = ref();
-const showSuggest = ref(false);
-
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const backHover = useElementHover(backIconRef);
@@ -73,7 +71,6 @@ watch(
   }
 );
 const toSearchResult = (val?:string) => {
-  showSuggest.value = false;
   if (!keyword.value && defaultSearchKeyWord.value?.realkeyword && !val) {
     keyword.value = defaultSearchKeyWord.value.realkeyword;
   }
@@ -90,10 +87,8 @@ const toSearchResult = (val?:string) => {
 const getSearchSuggest = (
   val:string, oldVal:string
 ) => {
-  if (!showSuggest.value && val === oldVal) return;
+  if (val === oldVal) return;
   suggestList.value = {};
-  showSuggest.value = val.length > 0;
-
   execute(
     3000, val
   );
@@ -167,7 +162,7 @@ onUnmounted(() => {
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
-          <div v-if="mainStore.searchHistory.length && showPopover && !showSuggest" class="py-4 pl-4">
+          <div v-if="mainStore.searchHistory.length && showPopover && !keyword.length" class="py-4 pl-4">
             <div class="flex items-center opacity-70">
               <span class="pr-2">搜索历史</span>
               <n-popconfirm :on-positive-click="() => mainStore.clearSearchHistory()" positive-text="确定">
@@ -193,7 +188,7 @@ onUnmounted(() => {
             </div>
           </div>
           <!-- 热搜榜 -->
-          <div v-show="showPopover && !showSuggest">
+          <div v-show="showPopover && !keyword.length ">
             <p class="pl-4 mt-4 opacity-70">
               热搜榜
             </p>
@@ -218,7 +213,7 @@ onUnmounted(() => {
             </n-spin>
           </div>
           <!-- 搜索建议 -->
-          <div v-if="keyword.length > 0 && showSuggest && showPopover" class="py-4">
+          <div v-if="keyword.length > 0 && showPopover" class="py-4">
             <n-spin :show="suggestLoading" size="small" description="搜索中...">
               <div v-show="suggestLoading" class="h-80" />
               <div>
