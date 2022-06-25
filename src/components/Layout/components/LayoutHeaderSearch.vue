@@ -8,11 +8,10 @@ import { useAsyncState, useElementHover } from '@vueuse/core';
 import { throttle } from 'lodash';
 import { formateSongsAuthor, isEmptyObject } from '@/utils';
 import { useThemeVars } from 'naive-ui';
-import { onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch, type CSSProperties } from 'vue';
 import { useRouter } from 'vue-router';
 import { userHistory } from '../hook/useHistoryRoutePath';
 
-// 是否启用搜索建议
 const backIconRef = ref();
 const forwardIconRef = ref();
 const keyword = ref('');
@@ -20,6 +19,8 @@ const target = ref();
 const showPopover = ref(false);
 const inputRef = ref();
 const searchWrapContainerRef = ref();
+const spread = ref(false);
+const defaultHeight = ref('100%');
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const backHover = useElementHover(backIconRef);
@@ -40,6 +41,12 @@ const arrowIconClass = (value: string) => {
     ? 'opacity-100 cursor-pointer'
     : 'opacity-50';
 };
+const historyListStyle = computed<CSSProperties>(() => {
+  if (spread.value) {
+    return { height: defaultHeight.value, overflow: 'visible' };
+  }
+  return { height: '54px', overflow: 'hidden' };
+});
 const handleArrowClick = (type: 'back' | 'forward') => {
   if (type === 'back' && backPath) {
     history.back();
@@ -102,6 +109,7 @@ const handleKeyDown = (e:KeyboardEvent) => {
 const handleBodyClick = (ev:MouseEvent) => {
   if (!ev.composedPath().includes(inputRef.value) && !ev.composedPath().includes(searchWrapContainerRef.value)) {
     showPopover.value = false;
+    spread.value = false;
   }
 };
 watch(
@@ -109,7 +117,14 @@ watch(
     getSearchSuggest, 300
   )
 );
-
+watch(
+  showPopover, async (val) => {
+    if (val && defaultHeight.value === '100%') {
+      await nextTick();
+      defaultHeight.value = document.querySelector('#historyList')?.clientHeight + 'px';
+    }
+  }
+);
 onMounted(() => {
   document.body.addEventListener(
     'keydown', handleKeyDown
@@ -117,7 +132,6 @@ onMounted(() => {
   document.body.addEventListener(
     'click', handleBodyClick
   );
-
 });
 onUnmounted(() => {
   document.body.removeEventListener(
@@ -162,18 +176,23 @@ onUnmounted(() => {
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
-          <div v-if="mainStore.searchHistory.length && showPopover && !keyword.length" class="py-4 pl-4">
-            <div class="flex items-center opacity-70">
-              <span class="pr-2">搜索历史</span>
-              <n-popconfirm :on-positive-click="() => mainStore.clearSearchHistory()" positive-text="确定">
-                <template #trigger>
-                  <n-icon class="cursor-pointer" :component="Delete" />
-                </template>
-                确定删除历史记录?
-              </n-popconfirm>
+          <div v-if="mainStore.searchHistory.length && showPopover && !keyword.length" class="p-4 pb-0">
+            <div class="flex justify-between items-center opacity-70">
+              <div>
+                <span class="pr-2">搜索历史</span>
+                <n-popconfirm :on-positive-click="() => mainStore.clearSearchHistory()" positive-text="确定">
+                  <template #trigger>
+                    <n-icon class="cursor-pointer" :component="Delete" />
+                  </template>
+                  确定删除历史记录?
+                </n-popconfirm>
+              </div>
+              <n-button text @click="spread = !spread">
+                {{ spread ? '收起' :'查看全部' }}
+              </n-button>
             </div>
-            <div class="mt-2">
-              <n-space>
+            <div class="mt-2 transition-height" :style="historyListStyle">
+              <n-space id="historyList">
                 <n-tag
                   v-for="(item,index) in mainStore.searchHistory"
                   :key="item"
