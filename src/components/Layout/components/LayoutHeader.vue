@@ -89,6 +89,10 @@ const handlePositiveClick = () => {
     }
   });
 };
+const handleInfoEditClick = () => {
+  showUserPopover.value = false;
+  router.push('/userInfoEdit');
+};
 const handleSignInClick = () => {
   signBtnLoading.value = true;
   signIn().then(() => {
@@ -161,7 +165,7 @@ if (mainStore.isLogin) {
               </div>
               <div class="mt-3 hover:bg-neutral-200/20 border-0 border-b border-gray-200  dark:border-gray-200/20 border-solid">
                 <!-- 个人信息设置 -->
-                <div class="flex justify-between items-center py-2 px-4 cursor-pointer" @click="router.push('/userInfoEdit')">
+                <div class="flex justify-between items-center py-2 px-4 cursor-pointer" @click="handleInfoEditClick">
                   <div class="flex items-center text-base">
                     <n-icon :size="20" :component="UserProfile" />
                     <span class="ml-2">个人信息设置</span>
