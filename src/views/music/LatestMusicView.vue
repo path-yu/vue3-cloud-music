@@ -33,7 +33,7 @@ const typeList = [
 const router = useRouter();
 const newSongList = ref<any[]>([]);
 const activeType = ref('0');
-const { tableStripedStyle, themeVars } = useThemeStyle();
+const { stripedClass, themeVars } = useThemeStyle();
 const tagColor = computed(() => {
   return {
     textColor: themeVars.value.primaryColor,
@@ -132,8 +132,8 @@ fetchData();
       >
         <ul v-show="!isLoading" class="songList">
           <li
-            v-for="(item,index) in newSongList" :key="item.id" :style="tableStripedStyle(index)"
-            class="flex items-center py-2 px-4 transition-colors"
+            v-for="(item,index) in newSongList" :key="item.id" 
+            :class="'flex items-center py-2 px-4 transition-colors ' + stripedClass(index)"
             @dblclick="() => handleDBClick(newSongList,'newSongList',item,index)"
           > 
             <div class="flex items-center" style="{ width: '120px' }">

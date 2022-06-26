@@ -342,15 +342,15 @@ const handleUpdateMusicListLike = (
         <load-img
           ref="imageRef"
           :has-hover-scale="false"
-          loading-height="200px"
+          class-name="w-50 h-50"
           :src="songListDetail.coverImgUrl "
         />
-        <div class="flex-1 ml-8">
+        <div class="flex-1 ml-8 ">
           <div class="flex items-center">
             <n-tag type="primary">
               歌单
             </n-tag>
-            <p class="ml-4 text-2xl font-bold">
+            <p class="ml-4 text-2xl font-bold ">
               {{ songListDetail.name }}
             </p>
             <div class="ml-2" style="line-height:0" @click="toSongListEdit">

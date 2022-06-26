@@ -145,7 +145,6 @@ export default defineComponent({
     return () => {
       return <div >
         <n-data-table
-          striped
           columns={columns}
           data={props.songList}
           max-height={650}
@@ -160,7 +159,9 @@ export default defineComponent({
               : index;
             return {
               ondblclick: () => handleClick(
-                props.rawSongList, props.playListId, row, rawIndex
+                props.rawSongList.length
+                  ? props.rawSongList
+                  : props.songList, props.playListId, row, rawIndex
               ) 
             };
           }}

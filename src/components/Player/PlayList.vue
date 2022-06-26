@@ -14,7 +14,7 @@ const active = ref(false);
 const mainStore = useMainStore();
 const router = useRouter();
 let isLoad = false;
-const { tableStripedStyle, themeVars, tagColor } = useThemeStyle();
+const { stripedClass, themeVars, tagColor } = useThemeStyle();
 
 defineExpose({
   show() {
@@ -84,8 +84,7 @@ const handleGoHemeClick = () => {
             :data-index="index"
           >
             <div
-              :style="tableStripedStyle(index)"
-              class="flex justify-between text-sm item"
+              :class="'flex justify-between text-sm item ' + stripedClass(index)"
               @dblclick="handleDoubleClick(index)"
             >
               <div class="flex overflow-hidden flex-1 items-center pr-2">
