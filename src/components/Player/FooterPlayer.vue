@@ -169,7 +169,11 @@ const handlePlay = () => {
 const handleUpdateSliderValue = (value:number) => {
   percentage.value = value;
   slideValueChange = true;
-  
+};
+//播放错误尝试重新播放
+const handlePlayError = () => {
+  audioRef.value?.play();
+  mainStore.changePlaying(true);
 };
 // 处理鼠标在进度条上抬起事件
 const handleSliderMouseUp = () => {
@@ -356,7 +360,7 @@ onUnmounted(() => {
     <audio
       ref="audioRef" :src="currentSong?.url"
       @timeupdate="handleTimeupdate" @ended="playNextMusic" 
-      @play="handlePlay"
+      @play="handlePlay" @error="handlePlayError"
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
