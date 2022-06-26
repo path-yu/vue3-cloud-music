@@ -25,7 +25,7 @@ export function useDbClickPlay() {
         songList, index, playListId, message
       );
     } else {
-      if (mainStore.currentPlayListId === playListId) {
+      if (mainStore.currentPlayListId === playListId && playListId !== 1001) {
         await mainStore.changePlayIndex(
           index, message
         );
