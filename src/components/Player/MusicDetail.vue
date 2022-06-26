@@ -222,6 +222,9 @@ setBackgroundStyle();
                 </div>
               </div>
             </div>
+            <p v-if="mainStore.currentPlaySong.alia" class="mt-2 text-sm text-center opacity-50">
+              {{ mainStore.currentPlaySong.alia[0] }}
+            </p>
             <p class="mt-2 text-sm text-center opacity-50">
               {{ mainStore.currentPlaySong.al.name }}
               <span>-</span>
