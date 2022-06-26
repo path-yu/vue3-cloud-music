@@ -1,11 +1,10 @@
 <script setup lang="ts">
-import { search, type SearchParams } from '@/service';
+import { search } from '@/service';
 import { PlayCircleOutlined } from '@vicons/antd';
 import { useMainStore } from '@/stores/main';
 import { useAsyncState } from '@vueuse/core';
-import { useThemeVars } from 'naive-ui';
 import { formateNumber } from '@/utils';
-import { watch, computed, type Ref, reactive, ref, type CSSProperties } from 'vue';
+import { watch, reactive, ref, type CSSProperties } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import useThemeStyle from '@/hook/useThemeStyle';
 
@@ -51,14 +50,21 @@ const activeTabStyle:(index:number) => CSSProperties = (index:number) => {
   } 
   return {};
 };
-
+const handleUpdateMusicListLike = (
+  like:boolean, index:number
+) => {
+  songsSearchResult.value.songs[index].like = like;
+};
 watch(
-  [() => route.query, () => playListPageParams.page, () => playListPageParams.pageSize], () => {
-    let songParams:SearchParams = {
-      limit: 30,
+  [
+    () => route.query, () => playListPageParams.page, () => playListPageParams.pageSize, 
+    () => songListPageParams.page, () => songListPageParams.pageSize
+  ], () => {
+    let songParams = {
+      limit: songListPageParams.pageSize,
       keywords: route.query.keyword as string,
       type: '1',
-      offset: 0
+      offset: ((songListPageParams.page) - 1) * songListPageParams.pageSize
     };
     let playListParams = {
       keywords: route.query.keyword as string,
@@ -100,11 +106,11 @@ watch(
 </script>
 
 <template>
-  <div>
+  <div class="w-full">
     <h2 class="pl-8">
       搜索 {{ route.query.keyword }}
     </h2>
-    <div class="flex px-4">
+    <div class="flex px-8">
       <div :style="activeTabStyle(0)" class="px-4  pb-2 opacity-80 hover:opacity-100 transition-opacity cursor-pointer" @click="currentTabIndex = 0">
         单曲
       </div>
@@ -112,56 +118,76 @@ watch(
         歌单
       </div>
     </div>
-    <div v-show="currentTabIndex === 0">
-      <n-spin :show="songListIsLoading" description="搜索中">
-        <div v-show="songListIsLoading" class="h-80" />
-        歌曲
-      </n-spin>
-    </div>
-    <div v-show="currentTabIndex === 1">
-      <n-spin :show="playListIsLoading" description="搜索中">
-        <div v-show="playListIsLoading" class="h-80" />
-        <p v-if="playListSearchResult.playlistCount" class="pl-8 mt-4 mb-2 opacity-50">
-          共找到{{ playListSearchResult.playlistCount }}个歌单
-        </p>
-        <div
-          v-for="(item,index) in playListSearchResult.playlists"
-          :key="item.id" :class="'flex items-center py-4 px-8 cursor-pointer ' + stripedClass(index)" 
-          @click="router.push(`/songList/${item.id}`)"
-        >
-          <load-img
-            loading-height="64px"
-            class-name="w-16 h-16 rounded-md"
-            :src="item.coverImgUrl"
-          />
-          <n-ellipsis :tooltip="false" class="pl-2 w-80">
-            {{ item.name }}
-          </n-ellipsis>
-          <p class="w-20 opacity-50">
-            {{ item.trackCount }}首
-          </p>
-          <p class="w-80">
-            <span class="opacity-50">by </span> 
-            <span class="opacity-80">{{ item.creator.nickname }}首</span>
-          </p>
-          <p class="flex items-center w-80 opacity-50">
-            <n-icon :component="PlayCircleOutlined" />
-            <span class="pl-2"> {{ formateNumber(item.playCount) }}</span>
+    <transition name="fade">
+      <div v-show="currentTabIndex === 0" class="m-8 mt-4">
+        <div class="flex item-center">
+          <p v-if="songsSearchResult.songCount" class="my-2 opacity-50">
+            共找到{{ songsSearchResult.songCount }}首单曲
           </p>
         </div>
-        
+        <music-list
+          :song-list="songsSearchResult.songs" 
+          :loading="songListIsLoading" :play-list-id="0" 
+          @update-music-list-like="handleUpdateMusicListLike"
+        />
         <!-- 分页 -->
-        <div v-if="playListPageParams.pageCount > 1" class="flex justify-center my-6">
+        <div v-if="songListPageParams.pageCount > 1" class="flex justify-center my-6">
           <n-pagination
-            v-model:page="playListPageParams.page" 
-            v-model:page-size="playListPageParams.pageSize" 
-            :page-count="playListPageParams.pageCount" 
+            v-model:page="songListPageParams.page" 
+            v-model:page-size="songListPageParams.pageSize" 
+            :page-count="songListPageParams.pageCount" 
             show-size-picker
             :page-sizes="[10, 20, 30, 40,50]"
           />
         </div>
-      </n-spin>
-    </div>
+      </div>
+    </transition>
+    <transition name="fade">
+      <div v-show="currentTabIndex === 1" style="margin-right:-5px">
+        <n-spin :show="playListIsLoading" description="搜索中">
+          <div v-show="playListIsLoading" class="h-80" />
+          <p v-if="playListSearchResult.playlistCount" class="pl-8 mt-4 mb-2 opacity-50">
+            共找到{{ playListSearchResult.playlistCount }}个歌单
+          </p>
+          <div
+            v-for="(item,index) in playListSearchResult.playlists"
+            :key="item.id" :class="'flex items-center py-4 px-8 cursor-pointer ' + stripedClass(index)" 
+            @click="router.push(`/songList/${item.id}`)"
+          >
+            <load-img
+              loading-height="64px"
+              class-name="w-16 h-16 rounded-md"
+              :src="item.coverImgUrl"
+            />
+            <n-ellipsis :tooltip="false" class="pl-2 w-80">
+              {{ item.name }}
+            </n-ellipsis>
+            <p class="w-20 opacity-50">
+              {{ item.trackCount }}首
+            </p>
+            <p class="w-80">
+              <span class="opacity-50">by </span> 
+              <span class="opacity-80">{{ item.creator.nickname }}首</span>
+            </p>
+            <p class="flex items-center w-80 opacity-50">
+              <n-icon :component="PlayCircleOutlined" />
+              <span class="pl-2"> {{ formateNumber(item.playCount) }}</span>
+            </p>
+          </div>
+        
+          <!-- 分页 -->
+          <div v-if="playListPageParams.pageCount > 1" class="flex justify-center my-6">
+            <n-pagination
+              v-model:page="playListPageParams.page" 
+              v-model:page-size="playListPageParams.pageSize" 
+              :page-count="playListPageParams.pageCount" 
+              show-size-picker
+              :page-sizes="[10, 20, 30, 40,50]"
+            />
+          </div>
+        </n-spin>
+      </div>
+    </transition>
   </div>
 </template>
 

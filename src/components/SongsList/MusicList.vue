@@ -177,4 +177,16 @@ export default defineComponent({
 :deep(.n-data-table-th:first-child){
   text-align: center;
 }
+:deep(.n-data-table-thead){
+  background-color:transparent !important;
+}
+:deep(.n-data-table-thead>.n-data-table-tr){
+  background-color:transparent !important;
+}
+:deep(.n-data-table .n-data-table-th){
+   background-color:transparent !important;
+}
+:deep(.n-data-table.n-data-table--bordered .n-data-table-wrapper){
+  border:none;
+}
 </style>

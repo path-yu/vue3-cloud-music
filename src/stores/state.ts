@@ -51,7 +51,7 @@ const state:StoreState = {
     'playMode', 'order', false
   ),
   currentPlayListId: initState(
-    'currentPlayListId', 0
+    'currentPlayListId', 0, false
   ),
   playing: false,
   mySubscribeSongList: initState(
