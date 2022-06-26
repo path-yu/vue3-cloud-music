@@ -53,9 +53,15 @@ export default defineComponent({
         render (
           row, index
         ) {
+          let songList = (props.rawSongList.length
+            ? props.rawSongList
+            : props.songList) as any[];
           return <div class="flex items-center">
             {
-              +mainStore.currentPlayIndex === index && mainStore.playList.length && +mainStore.currentPlayListId === +props.playListId
+              +mainStore.currentPlayIndex === index
+               && mainStore.playList.length 
+               && +mainStore.currentPlayListId === +props.playListId
+               && mainStore.currentPlaySong.id === songList[index].id
                 ? <NIcon color={mainStore.playing
                   ? themeVars.value.primaryColor
                   : themeVars.value.textColor1} component={mainStore.playing
@@ -99,7 +105,7 @@ export default defineComponent({
         width: '140',
         render(row) {
           return <p class="text-sm truncate">
-            { row.al.name }
+            { formateSongsAuthor(row.ar) }
           </p>;
         }
       },
@@ -109,7 +115,9 @@ export default defineComponent({
         width: '120',
         render(row) {
           return <p class="text-sm truncate">
-            { formateSongsAuthor(row.ar) }
+            { row.al.name
+              ? row.al.name
+              : <span class="opacity-50">未知专辑</span> }
           </p>;
         }
       },
