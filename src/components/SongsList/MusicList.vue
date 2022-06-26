@@ -55,7 +55,7 @@ export default defineComponent({
         ) {
           return <div class="flex items-center">
             {
-              +mainStore.currentPlayIndex === index && mainStore.playList.length && mainStore.currentPlayListId === props.playListId
+              +mainStore.currentPlayIndex === index && mainStore.playList.length && +mainStore.currentPlayListId === +props.playListId
                 ? <NIcon color={mainStore.playing
                   ? themeVars.value.primaryColor
                   : themeVars.value.textColor1} component={mainStore.playing
@@ -145,6 +145,7 @@ export default defineComponent({
     return () => {
       return <div >
         <n-data-table
+          striped
           columns={columns}
           data={props.songList}
           max-height={650}
@@ -175,8 +176,5 @@ export default defineComponent({
 <style scoped>
 :deep(.n-data-table-th:first-child){
   text-align: center;
-}
-:deep(.current-play>.n-data-table-td){
- background-color: transparent;
 }
 </style>
