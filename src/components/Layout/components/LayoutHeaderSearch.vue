@@ -12,10 +12,10 @@ import { computed, nextTick, onMounted, onUnmounted, ref, watch, type CSSPropert
 import { useRouter } from 'vue-router';
 import { userHistory } from '../hook/useHistoryRoutePath';
 import { mapSongs } from '@/utils/arr-map';
+import obverser from '@/utils/obverser';
 
 const backIconRef = ref();
 const forwardIconRef = ref();
-const keyword = ref('');
 const target = ref();
 const showPopover = ref(false);
 const inputRef = ref();
@@ -82,18 +82,20 @@ watch(
   }
 );
 const toSearchResult = (val?:string) => {
-  if (!keyword.value && defaultSearchKeyWord.value?.realkeyword && !val) {
-    keyword.value = defaultSearchKeyWord.value.realkeyword;
+  if (!mainStore.searchKeyword && defaultSearchKeyWord.value?.realkeyword && !val) {
+    mainStore.searchKeyword = defaultSearchKeyWord.value.realkeyword;
   }
   if (val) {
-    keyword.value = val;
+    mainStore.searchKeyword = val;
   }
-  mainStore.addSearchHistory(keyword.value);
+  mainStore.addSearchHistory(mainStore.searchKeyword);
   showPopover.value = false;
+  obverser.emit('closeMusicDetail');
   router.push({
     path: '/searchResult',
-    query: { keyword: keyword.value }
+    query: { keyword: mainStore.searchKeyword }
   });
+  
 };
 const getSearchSuggest = (
   val:string, oldVal:string
@@ -101,7 +103,7 @@ const getSearchSuggest = (
   if (val === oldVal) return;
   suggestList.value = {};
   execute(
-    3000, val
+    0, val
   );
 };
 const handleKeyDown = (e:KeyboardEvent) => {
@@ -135,7 +137,7 @@ const handleSearchPlayListClick = (id:string) => {
   showPopover.value = false;
 };
 watch(
-  keyword, throttle(
+  () => mainStore.searchKeyword, throttle(
     getSearchSuggest, 300
   )
 );
@@ -155,6 +157,7 @@ onMounted(() => {
     'click', handleBodyClick
   );
 });
+
 onUnmounted(() => {
   document.body.removeEventListener(
     'keydown', handleKeyDown
@@ -173,7 +176,7 @@ onUnmounted(() => {
   <div class="relative w-50">
     <div ref="inputRef" class="wrapInput">
       <n-input
-        ref="target" v-model:value="keyword" size="small"
+        ref="target" v-model:value="mainStore.searchKeyword" size="small"
         class="ml-5 headerSearchInput" round :placeholder="defaultSearchKeyWord.showKeyword"
         clearable @focus="showPopover = true"
       >
@@ -193,12 +196,12 @@ onUnmounted(() => {
       <div 
         v-show="showPopover"
         ref="searchWrapContainerRef"
-        :style="{background:themeVars.modalColor,zIndex:1000,width:keyword.length > 0 ? '420px ': '384px'}"
+        :style="{background:themeVars.modalColor,zIndex:1000,width:mainStore.searchKeyword.length > 0 ? '420px ': '384px'}"
         class="absolute top-10  rounded-sm shadow-lg dark:shadow-black/60 transition-width origin-top-left searchWrapContainer"
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
-          <div v-if="mainStore.searchHistory.length && showPopover && !keyword.length" class="p-4 pb-0">
+          <div v-if="mainStore.searchHistory.length && showPopover && !mainStore.searchKeyword.length" class="p-4 pb-0">
             <div class="flex justify-between items-center opacity-70">
               <div>
                 <span class="pr-2">搜索历史</span>
@@ -229,7 +232,7 @@ onUnmounted(() => {
             </div>
           </div>
           <!-- 热搜榜 -->
-          <div v-show="showPopover && !keyword.length ">
+          <div v-show="showPopover && !mainStore.searchKeyword.length ">
             <p class="pl-4 mt-4 opacity-70">
               热搜榜
             </p>
@@ -254,7 +257,7 @@ onUnmounted(() => {
             </n-spin>
           </div>
           <!-- 搜索建议 -->
-          <div v-if="keyword.length > 0 && showPopover" class="py-4">
+          <div v-if="mainStore.searchKeyword.length > 0 && showPopover" class="py-4">
             <n-spin :show="suggestLoading" size="small" description="搜索中...">
               <div v-show="suggestLoading" class="h-80" />
               <div>
@@ -284,7 +287,7 @@ onUnmounted(() => {
                 >
                   {{ item.name }} 
                 </div>
-                <base-empty v-show="keyword.length > 0 && isEmptyObject(suggestList) && !suggestLoading" description="没有搜索到数据" />
+                <base-empty v-show="mainStore.searchKeyword.length > 0 && isEmptyObject(suggestList) && !suggestLoading" description="没有搜索到数据" />
               </div>
             </n-spin>
           </div>

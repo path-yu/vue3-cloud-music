@@ -13,6 +13,7 @@ import { getMusicComment } from '@/service/songs';
 import { getSimilarPlaylist, getSimilarSong } from '@/service/playlist';
 import { useAsyncState } from '@vueuse/core';
 import { mapSongs } from '@/utils/arr-map';
+import obverser from '@/utils/obverser';
 
 export interface MusicDetailExpose {
   show: () => void;
@@ -163,10 +164,10 @@ watch(
     if (val) {
       fetchMusicComment(val.id);
       executeGetSimiPlayList(
-        3000, val.id
+        0, val.id
       );
       executeGetSimiSong(
-        3000, val.id
+        0, val.id
       );
     }
   }, { immediate: true }
@@ -180,7 +181,11 @@ watch(
     }
   }
 );
-
+obverser.on(
+  'closeMusicDetail', () => {
+    active.value = false;
+  }
+);
 setBackgroundStyle();
 </script>
 

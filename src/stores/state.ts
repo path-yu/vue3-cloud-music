@@ -13,6 +13,7 @@ export interface StoreState{
   mySubscribeSongList:any[],
   playListIdList:number[],
   searchHistory:string[];
+  searchKeyword:string;
 }
 export type playMode = 'order' | 'random' | 'singleLoop';
 const initState = (
@@ -61,7 +62,8 @@ const state:StoreState = {
   ),
   searchHistory: initState(
     'searchHistory', []
-  )
+  ),
+  searchKeyword: ''
 };
 
 export default state;

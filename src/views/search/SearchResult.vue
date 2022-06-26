@@ -54,7 +54,6 @@ const activeTabStyle:(index:number) => CSSProperties = (index:number) => {
 
 watch(
   [() => route.query, () => playListPageParams.page, () => playListPageParams.pageSize], () => {
-   
     let songParams:SearchParams = {
       limit: 30,
       keywords: route.query.keyword as string,
@@ -127,7 +126,8 @@ watch(
         </p>
         <div
           v-for="(item,index) in playListSearchResult.playlists"
-          :key="item.id" :class="'flex items-center py-4 px-8 cursor-pointer ' + stripedClass(index)" @click="router.push(`/songList/${item.id}`)"
+          :key="item.id" :class="'flex items-center py-4 px-8 cursor-pointer ' + stripedClass(index)" 
+          @click="router.push(`/songList/${item.id}`)"
         >
           <load-img
             loading-height="64px"
@@ -137,16 +137,16 @@ watch(
           <n-ellipsis :tooltip="false" class="pl-2 w-80">
             {{ item.name }}
           </n-ellipsis>
-          <p class="w-16 opacity-50">
+          <p class="w-20 opacity-50">
             {{ item.trackCount }}首
           </p>
           <p class="w-80">
             <span class="opacity-50">by </span> 
             <span class="opacity-80">{{ item.creator.nickname }}首</span>
           </p>
-          <p class="w-80 opacity-50">
+          <p class="flex items-center w-80 opacity-50">
             <n-icon :component="PlayCircleOutlined" />
-            {{ formateNumber(item.playCount) }}
+            <span class="pl-2"> {{ formateNumber(item.playCount) }}</span>
           </p>
         </div>
         
