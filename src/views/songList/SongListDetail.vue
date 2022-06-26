@@ -37,7 +37,6 @@ const btnLoading = ref(false);
 const commentBtnLoading = ref(false);
 const subscribeBtnLoading = ref(false);
 const searchKeyword = ref('');
-const searchResult = ref<any[]>([]);
 const dialog = useDialog();
 const songListId = ref(route.params.id as string);
 const isMySongList = computed(() => {
@@ -275,35 +274,6 @@ const handleCommentClick = () => {
       }); 
   });
 };
-// 点击播放全部
-// eslint-disable-next-line consistent-return
-const handleStartPlayAllClick = () => {
-  if (mainStore.playList.length === 0) {
-    return window.$message.error('没有可播放的歌曲');
-  }
-  if (mainStore.currentPlayListId === songListId.value) {
-    if (mainStore.playing) {
-      return window.$message.warning('正在播放中');
-    }
-    mainStore.initPlayList(
-      rawSongList.value, 0, songListId.value
-    );
-  } else {
-    mainStore.initPlayList(
-      rawSongList.value, 0, songListId.value
-    );
-  }
-};
-// 点击添加到全部歌单
-const handleAddToAllPlayListClick = () => {
-  if (!mainStore.playListIdList.includes(+songListId.value)) {
-    return mainStore.addPlaylist(
-      rawSongList.value, songListId.value
-    );
-  } else {
-    return window.$message.warning('已添加到播放列表');
-  }
-};
 const updateCommentList = (value:any) => {
   songListComment.value.total += 1;
   songListComment.value.comments.unshift(value);
@@ -367,22 +337,7 @@ const handleUpdateMusicListLike = (
           </div>
           <div class="mt-3">
             <n-space>
-              <n-button size="medium" type="primary" round>
-                <template #icon>
-                  <n-icon :component="Play" />
-                </template>
-                <p @click="handleStartPlayAllClick">
-                  播放全部
-                </p>
-                <div class="ml-4 ">
-                  <n-tooltip placement="bottom-start" trigger="hover">
-                    <template #trigger>
-                      <n-icon :component="AddOutline" size="20" @click="handleAddToAllPlayListClick" />
-                    </template>
-                    <span>添加全部到播放列表</span>
-                  </n-tooltip>
-                </div>
-              </n-button>
+              <play-all-button :song-list="rawSongList" :song-list-id="+songListId" />
               <n-button
                 size="medium" round
                 :disabled="starButtonDisabled" :loading="subscribeBtnLoading"

@@ -111,23 +111,32 @@ watch(
       搜索 {{ route.query.keyword }}
     </h2>
     <div class="flex px-8">
-      <div :style="activeTabStyle(0)" class="px-4  pb-2 opacity-80 hover:opacity-100 transition-opacity cursor-pointer" @click="currentTabIndex = 0">
+      <div
+        :style="activeTabStyle(0)" 
+        class="px-4  pb-2 opacity-80 hover:opacity-100 transition-opacity cursor-pointer"
+        @click="currentTabIndex = 0"
+      >
         单曲
       </div>
-      <div :style="activeTabStyle(1)" class="px-4 pb-2 ml-4 hover:opacity-100 transition-opacity cursor-pointer" @click="currentTabIndex = 1">
+      <div
+        :style="activeTabStyle(1)"
+        class="px-4 pb-2 ml-4 hover:opacity-100 transition-opacity cursor-pointer" 
+        @click="currentTabIndex = 1"
+      >
         歌单
       </div>
     </div>
     <transition name="fade">
       <div v-show="currentTabIndex === 0" class="m-8 mt-4">
         <div class="flex item-center">
-          <p v-if="songsSearchResult.songCount" class="my-2 opacity-50">
+          <play-all-button :song-list="songsSearchResult?.songs" :song-list-id="1001" />
+          <p v-if="songsSearchResult.songCount" class="my-2 ml-4 opacity-50">
             共找到{{ songsSearchResult.songCount }}首单曲
           </p>
         </div>
         <music-list
           :song-list="songsSearchResult.songs" 
-          :loading="songListIsLoading" :play-list-id="0" 
+          :loading="songListIsLoading" :play-list-id="1001" 
           @update-music-list-like="handleUpdateMusicListLike"
         />
         <!-- 分页 -->
