@@ -120,9 +120,11 @@ export const useMainStore = defineStore({
     },
     resetPlayList() {
       this.playList = [];
+      this.playListIdList = [];
       this.currentPlayIndex = 0;
       localStorage.currentPlayIndex = 0;
       localStorage.playList = JSON.stringify(this.playList);
+      localStorage.playListIdList = JSON.stringify(this.playList);
       localStorage.currentPlayListId = 0;
       this.currentPlayListId = 0;
       this.playMode = 'order';
@@ -234,11 +236,17 @@ export const useMainStore = defineStore({
       window.$message.loading(
         '获取歌曲数据中...', { duration: 0 }
       );
-      // 检查歌曲是否可用
-      const checkRes = await checkMusic(id) as any;
-      if (!checkRes.musicSuccess && !checkRes?.data?.success) {
+      try {
+        // 检查歌曲是否可用
+        const checkRes = await checkMusic(id) as any;
+        if (!checkRes.musicSuccess && !checkRes?.data?.success) {
+          window.$message.destroyAll();
+          window.$message.info(message);
+          return { success: false };
+        }
+      } catch (error) {
         window.$message.destroyAll();
-        window.$message.info(message);
+        window.$message.info('亲爱的,暂无版权');
         return { success: false };
       }
       // 获取音乐url
