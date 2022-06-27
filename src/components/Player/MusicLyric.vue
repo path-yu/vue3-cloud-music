@@ -106,6 +106,11 @@ onMounted(() => {
   obverser.on(
     'slideValueChange', handleSliderChange
   );
+  obverser.on(
+    'ended', () => {
+      scrollBarRef.value?.scrollTo({ top: 0, behavior: 'smooth' });
+    }
+  );
 });
 </script>
 

@@ -140,7 +140,7 @@ const togglePlayStatus = async () => {
   }
 };
 
-const playNextMusic = () => {
+const handleEnded = () => {
   // 如果为单曲循环模式,则重新播放
   if (mainStore.playMode === 'singleLoop') {
     audioRef.value!.currentTime = 0;
@@ -148,6 +148,7 @@ const playNextMusic = () => {
   } else {
     mainStore.toggleNext();
   }
+  obverser.emit('ended');
 };
 // 播放进度变化
 const handleTimeupdate = (event:Event) => {
@@ -376,7 +377,7 @@ onUnmounted(() => {
     </div>
     <audio
       ref="audioRef" :src="currentSong?.url"
-      @timeupdate="handleTimeupdate" @ended="playNextMusic" 
+      @timeupdate="handleTimeupdate" @ended="handleEnded" 
       @play="handlePlay" @error="handlePlayError" @waiting="handleWaiting"
       @playing="handlePlaying" @loadeddata="handleLoadeddata"
     />
