@@ -10,6 +10,7 @@ import useThemeStyle from '@/hook/useThemeStyle';
 import { useDbClickPlay } from '@/hook/useDbClickPlay';
 import { mapSongs } from '@/utils/arr-map';
 import { useMainStore } from '@/stores/main';
+import { useNanoid } from '@/hook/useNanoid';
 const typeList = [
   {
     value: '0',
@@ -37,6 +38,7 @@ const mainStore = useMainStore();
 const newSongList = ref<any[]>([]);
 const activeType = ref('0');
 const { stripedClass, themeVars } = useThemeStyle();
+const { currentId, set } = useNanoid();
 const tagColor = computed(() => {
   return {
     textColor: themeVars.value.primaryColor,
@@ -60,6 +62,7 @@ const { wrapRequest, requestLoading: isLoading, loadSuccess } = useMemorizeReque
   getTopSong, 'getTopSong'
 );
 const fetchData = () => {
+  set(activeType.value);
   wrapRequest(activeType.value as any)
     .then(async (res: { data: { data: never[]; }; }) => {
       newSongList.value = mainStore.mapSongListAddLike(mapSongs(res.data.data));
@@ -89,94 +92,92 @@ fetchData();
 </script>
 
 <template>
-  <div>
-    <div class="p-4">
-      <span
-        v-for="item in typeList"
-        :key="item.value" class="px-2 rounded-md opacity-50 transition duration-150 ease-in-out cursor-pointer"
-        :style="activeStyle(item.value)"
-        @mouseenter="handleMouseEnter($event,item.value)"
-        @mouseleave="handleMouseLeave($event,item.value)"
-        @click="handleTypeClick(item.value)"
-      >{{ item.name }}</span>
-    </div>
-    <!-- 新歌速递列表 -->
-    <div class="mt-4">
-      <div v-show="isLoading">
-        <div v-for="item in 15" :key="item" class="flex justify-between items-center p-2">
-          <div class="flex items-center">
-            <n-skeleton width="15px" class="mt-2" type="text" />
-            <n-skeleton
-              class="mt-2 ml-2" height="64px" width="64px"
-              :sharp="false"
-            />
-          </div>
+  <div class="p-4">
+    <span
+      v-for="item in typeList"
+      :key="item.value" class="px-2 rounded-md opacity-50 transition duration-150 ease-in-out cursor-pointer"
+      :style="activeStyle(item.value)"
+      @mouseenter="handleMouseEnter($event,item.value)"
+      @mouseleave="handleMouseLeave($event,item.value)"
+      @click="handleTypeClick(item.value)"
+    >{{ item.name }}</span>
+  </div>
+  <!-- 新歌速递列表 -->
+  <div class="mt-4">
+    <div v-show="isLoading">
+      <div v-for="item in 15" :key="item" class="flex justify-between items-center p-2">
+        <div class="flex items-center">
+          <n-skeleton width="15px" class="mt-2" type="text" />
           <n-skeleton
-            width="30%" height="30px" class="m-4"
-            type="text" :repeat="3"
-          />
-          <n-skeleton
-            width="5%" height="30px" class="m-2"
-            type="text"
+            class="mt-2 ml-2" height="64px" width="64px"
+            :sharp="false"
           />
         </div>
+        <n-skeleton
+          width="30%" height="30px" class="m-4"
+          type="text" :repeat="3"
+        />
+        <n-skeleton
+          width="5%" height="30px" class="m-2"
+          type="text"
+        />
       </div>
-      <transition
-        name="fade"
-        appear
-        mode="out-in"
-      >
-        <ul v-show="!isLoading" class="songList">
-          <li
-            v-for="(item,index) in newSongList" :key="item.id" 
-            :class="'flex items-center py-2 px-4 transition-colors ' + stripedClass(index)"
-            @dblclick="() => handleDBClick(newSongList,'newSongList',item,index)"
-          > 
-            <div class="flex items-center" style="{ width: '120px' }">
-              <p class="w-5 text-sm opacity-80">
-                {{ index < 9
-                  ? '0' + (index + 1)
-                  : (index + 1) }}
-              </p>
-              <div style="-webkit-transform: translateZ(0);" class="relative ml-4 w-16 h-16 rounded-md">
-                <load-img
-                  loading-height="64px"
-                  class-name="w-16 h-16 rounded-md"
-                  :src="item.album.picUrl"
-                  :show-message="false"
-                  :double-click-preview="false"
-                />
-                <play-icon
-                  :size="15"
-                  class="cursor-pointer position-center"
-                  :style="{opacity: '1', width: '25px', height: '25px' }"
-                />
-              </div>
-            </div>
-            <p class="ml-6 w-xs text-sm truncate flex-30">
-              {{ item.name }}
-              <n-tag
-                v-if="item.mvid !== 0" size="small" :color="tagColor"
-                @click=" router.push(`/mv/${item.mvid}`)"
-              >
-                MV
-              </n-tag>
-            </p>
-            <p class="ml-2 w-xs text-sm opacity-80 flex-30">
-              <n-ellipsis>{{ formateSongsAuthor(item.artists) }}</n-ellipsis>
-            </p>
-            <p class="flex-1 ml-2 w-xs text-sm truncate opacity-80 flex-30">
-              {{ item.album.name }}
-            </p>
-            <n-time
-              class="pl-4 mx-2 text-sm text-left opacity-80"
-              :time="item.bMusic?.playTime"
-              format="mm:ss"
-            />
-          </li>
-        </ul>
-      </transition>
     </div>
+    <transition
+      name="fade"
+      appear
+      mode="out-in"
+    >
+      <ul v-show="!isLoading" class="songList">
+        <li
+          v-for="(item,index) in newSongList" :key="item.id" 
+          :class="'flex items-center py-2 px-4 transition-colors ' + stripedClass(index)"
+          @dblclick="() => handleDBClick(newSongList,currentId,item,index)"
+        > 
+          <div class="flex items-center" style="{ width: '120px' }">
+            <p class="w-5 text-sm opacity-80">
+              {{ index < 9
+                ? '0' + (index + 1)
+                : (index + 1) }}
+            </p>
+            <div style="-webkit-transform: translateZ(0);" class="relative ml-4 w-16 h-16 rounded-md">
+              <load-img
+                loading-height="64px"
+                class-name="w-16 h-16 rounded-md"
+                :src="item.album.picUrl"
+                :show-message="false"
+                :double-click-preview="false"
+              />
+              <play-icon
+                :size="15"
+                class="cursor-pointer position-center"
+                :style="{opacity: '1', width: '25px', height: '25px' }"
+              />
+            </div>
+          </div>
+          <p class="ml-6 w-xs text-sm truncate flex-30">
+            {{ item.name }}
+            <n-tag
+              v-if="item.mvid !== 0" size="small" :color="tagColor"
+              @click=" router.push(`/mv/${item.mvid}`)"
+            >
+              MV
+            </n-tag>
+          </p>
+          <p class="ml-2 w-xs text-sm opacity-80 flex-30">
+            <n-ellipsis>{{ formateSongsAuthor(item.artists) }}</n-ellipsis>
+          </p>
+          <p class="flex-1 ml-2 w-xs text-sm truncate opacity-80 flex-30">
+            {{ item.album.name }}
+          </p>
+          <n-time
+            class="pl-4 mx-2 text-sm text-left opacity-80"
+            :time="item.bMusic?.playTime"
+            format="mm:ss"
+          />
+        </li>
+      </ul>
+    </transition>
   </div>
 </template>
 

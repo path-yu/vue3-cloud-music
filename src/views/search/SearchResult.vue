@@ -7,6 +7,7 @@ import { formateNumber } from '@/utils';
 import { watch, reactive, ref, type CSSProperties } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import useThemeStyle from '@/hook/useThemeStyle';
+import { useNanoid } from '@/hook/useNanoid';
 
 let immediateCall = false;
 let backTopEle:HTMLElement;
@@ -24,6 +25,7 @@ const currentTabIndex = ref(0);
 const router = useRouter();
 const route = useRoute();
 const mainStore = useMainStore();
+const { set, currentId } = useNanoid();
 const { themeVars, stripedClass } = useThemeStyle();
 const { state: songsSearchResult, isLoading: songListIsLoading, execute: getSearchSongList } = useAsyncState(
   (val) => search(val).then(async res => {
@@ -79,11 +81,13 @@ watch(
       getSearchPlayList(
         0, playListParams
       );
+      set(JSON.stringify(songParams));
     } else {
       if (currentTabIndex.value === 0) {
         getSearchSongList(
           0, songParams
         );
+        set(JSON.stringify(songParams));
       } else {
         getSearchPlayList(
           0, playListParams
@@ -129,14 +133,14 @@ watch(
     <transition name="fade">
       <div v-show="currentTabIndex === 0" class="m-8 mt-4">
         <div class="flex item-center">
-          <play-all-button :song-list="songsSearchResult?.songs" :song-list-id="1001" />
+          <play-all-button v-show="songsSearchResult?.songs?.length" :song-list="songsSearchResult?.songs" :song-list-id="currentId" />
           <p v-if="songsSearchResult.songCount" class="my-2 ml-4 opacity-50">
             共找到{{ songsSearchResult.songCount }}首单曲
           </p>
         </div>
         <music-list
           :song-list="songsSearchResult.songs" 
-          :loading="songListIsLoading" :play-list-id="1001" 
+          :loading="songListIsLoading" :play-list-id="currentId" 
           @update-music-list-like="handleUpdateMusicListLike"
         />
         <!-- 分页 -->
@@ -183,7 +187,6 @@ watch(
               <span class="pl-2"> {{ formateNumber(item.playCount) }}</span>
             </p>
           </div>
-        
           <!-- 分页 -->
           <div v-if="playListPageParams.pageCount > 1" class="flex justify-center my-6">
             <n-pagination

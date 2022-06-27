@@ -9,10 +9,10 @@ export interface StoreState{
   currentPlayIndex: number;
   playMode: playMode,
   playWaiting:boolean;
-  currentPlayListId: number | string,
+  currentPlayListId: string,
   playing:boolean,
   mySubscribeSongList:any[],
-  playListIdList:number[],
+  playListIdList:string[],
   searchHistory:string[];
   searchKeyword:string;
 }
@@ -52,7 +52,7 @@ const state:StoreState = {
     'playMode', 'order', false
   ),
   currentPlayListId: initState(
-    'currentPlayListId', 0, false
+    'currentPlayListId', '', false
   ),
   playing: false,
   mySubscribeSongList: initState(

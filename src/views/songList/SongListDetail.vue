@@ -337,7 +337,7 @@ const handleUpdateMusicListLike = (
           </div>
           <div class="mt-3">
             <n-space>
-              <play-all-button :song-list="rawSongList" :song-list-id="+songListId" />
+              <play-all-button :song-list="rawSongList" :song-list-id="songListId" />
               <n-button
                 size="medium" round
                 :disabled="starButtonDisabled" :loading="subscribeBtnLoading"
@@ -425,7 +425,7 @@ const handleUpdateMusicListLike = (
         <div v-show="tabsValue === 'musicList'" class="mt-5">
           <music-list
             :song-list="songList" :raw-song-list="rawSongList"
-            :loading="requestLoading" :play-list-id="+songListId" @update-music-list-like="handleUpdateMusicListLike"
+            :loading="requestLoading" :play-list-id="songListId" @update-music-list-like="handleUpdateMusicListLike"
           />
         </div>
         <div v-show="tabsValue === 'comment'" class="mt-8">

@@ -5,7 +5,7 @@ const mainStore = useMainStore();
 const props = withDefaults(
   defineProps<{
   songList?:any[]|undefined;
-  songListId:number;
+  songListId:string;
 }>(), { songList: () => [] }
 );
 // 点击播放全部
@@ -13,13 +13,15 @@ const handleStartPlayAllClick = () => {
   if (mainStore.playList.length === 0) {
     return window.$message.error('没有可播放的歌曲');
   }
-  if (mainStore.currentPlayListId === props.songListId && props.songListId !== 1001) {
+  console.log(
+    mainStore.currentPlayListId, props.songListId
+  );
+  if (mainStore.currentPlayListId === props.songListId) {
     if (mainStore.playing) {
       return window.$message.warning('正在播放中');
+    } else {
+      mainStore.changePlayIndex(0);
     }
-    mainStore.initPlayList(
-      props.songList, 0, props.songListId
-    );
   } else {
     mainStore.initPlayList(
       props.songList, 0, props.songListId
@@ -30,7 +32,7 @@ const handleStartPlayAllClick = () => {
 // 点击添加到全部歌单
 const handleAddToAllPlayListClick = () => {
   // 搜索单曲歌单id
-  if (!mainStore.playListIdList.includes(+props.songListId) || props.songListId === 1001) {
+  if (!mainStore.playListIdList.includes(props.songListId)) {
     return mainStore.addPlaylist(
       props.songList, props.songListId
     );

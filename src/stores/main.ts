@@ -98,7 +98,7 @@ export const useMainStore = defineStore({
     },
     // 初始化播放 列表
     async initPlayList(
-      data:any[], index=0, playListId:number|string, message='亲爱的, 暂无版权'
+      data:any[], index=0, playListId:string, message='亲爱的, 暂无版权'
     ) {
       // 如果没有获取url, 则获取歌曲url
       if (!data[index].url) {
@@ -109,7 +109,7 @@ export const useMainStore = defineStore({
       }
       this.playList = data;
       this.currentPlayIndex = index;
-      this.playListIdList = [+playListId];
+      this.playListIdList = [playListId];
       localStorage.currentPlayIndex = index;
       localStorage.playListIdList = JSON.stringify(this.playListIdList);
       localStorage.playList = JSON.stringify(this.playList);
@@ -125,15 +125,15 @@ export const useMainStore = defineStore({
       localStorage.currentPlayIndex = 0;
       localStorage.playList = JSON.stringify(this.playList);
       localStorage.playListIdList = JSON.stringify(this.playList);
-      localStorage.currentPlayListId = 0;
-      this.currentPlayListId = 0;
+      localStorage.currentPlayListId = '';
+      this.currentPlayListId = '';
       this.playMode = 'order';
     },
     addPlaylist(
-      list:any[], id:number|string
+      list:any[], id:string
     ) {
       this.playList = [...this.playList, ...list];
-      this.playListIdList.push(+id);
+      this.playListIdList.push(id);
       localStorage.playList = JSON.stringify(this.playList);
     },
     // 切换播放音乐

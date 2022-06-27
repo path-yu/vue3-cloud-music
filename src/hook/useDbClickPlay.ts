@@ -5,7 +5,7 @@ import useValidateVipSong from './useValidateVipSong';
 export function useDbClickPlay() {
   let isLoad = false;
   return async (
-    list:any[]| Ref<any[]>, playListId:number|string, item:any, index:number
+    list:any[]| Ref<any[]>, playListId:string, item:any, index:number
   ) => {
     const value = useValidateVipSong(item);
     if (value) return;
@@ -25,7 +25,7 @@ export function useDbClickPlay() {
         songList, index, playListId, message
       );
     } else {
-      if (mainStore.currentPlayListId === playListId && playListId !== 1001) {
+      if (mainStore.currentPlayListId === playListId) {
         await mainStore.changePlayIndex(
           index, message
         );

@@ -29,7 +29,7 @@ export default defineComponent({
   props: {
     songList: { type: Array, default: () => [] },
     loading: { type: Boolean },
-    playListId: { type: Number, required: true },
+    playListId: { type: String, required: true },
     rawSongList: { type: Array, default: () => [] }
   },
   emits: ['updateMusicListLike'],
@@ -58,10 +58,7 @@ export default defineComponent({
             : props.songList) as any[];
           return <div class="flex items-center">
             {
-              +mainStore.currentPlayIndex === index
-               && mainStore.playList.length 
-               && +mainStore.currentPlayListId === +props.playListId
-               && mainStore.currentPlaySong.id === songList[index].id
+              mainStore.currentPlaySong.id === songList[index].id
                 ? <NIcon color={mainStore.playing
                   ? themeVars.value.primaryColor
                   : themeVars.value.textColor1} component={mainStore.playing

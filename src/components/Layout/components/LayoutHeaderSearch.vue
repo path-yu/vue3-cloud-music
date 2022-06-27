@@ -13,6 +13,7 @@ import { useRouter } from 'vue-router';
 import { userHistory } from '../hook/useHistoryRoutePath';
 import { mapSongs } from '@/utils/arr-map';
 import obverser from '@/utils/obverser';
+import { nanoid } from 'nanoid';
 
 const backIconRef = ref();
 const forwardIconRef = ref();
@@ -127,7 +128,7 @@ const handleSearchSongClick = async(song:any) => {
     mainStore.insertPlay(song);
   } else {
     mainStore.initPlayList(
-      [song], 0, 'searchResult'
+      [song], 0, nanoid()
     );
   }
   showPopover.value = false;
