@@ -8,6 +8,8 @@ import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
 import { useRouter } from 'vue-router';
 import useThemeStyle from '@/hook/useThemeStyle';
 import { useDbClickPlay } from '@/hook/useDbClickPlay';
+import { mapSongs } from '@/utils/arr-map';
+import { useMainStore } from '@/stores/main';
 const typeList = [
   {
     value: '0',
@@ -31,6 +33,7 @@ const typeList = [
   }
 ];
 const router = useRouter();
+const mainStore = useMainStore();
 const newSongList = ref<any[]>([]);
 const activeType = ref('0');
 const { stripedClass, themeVars } = useThemeStyle();
@@ -59,18 +62,11 @@ const { wrapRequest, requestLoading: isLoading, loadSuccess } = useMemorizeReque
 const fetchData = () => {
   wrapRequest(activeType.value as any)
     .then(async (res: { data: { data: never[]; }; }) => {
-      newSongList.value = setNewSongList(res.data.data);
+      newSongList.value = mainStore.mapSongListAddLike(mapSongs(res.data.data));
       loadSuccess();
     });
 };
-const setNewSongList = (data:any[]) => {
-  return data.map((item:any) => {
-    item.dt = item.duration;
-    item.al = item.album;
-    item.ar = item.artists;
-    return item;
-  });
-};
+
 const handleTypeClick = (value:string) => {
   activeType.value = value;
   fetchData();
