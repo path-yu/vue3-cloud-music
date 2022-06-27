@@ -8,6 +8,7 @@ export interface StoreState{
   userProfile: AnyObject;
   currentPlayIndex: number;
   playMode: playMode,
+  playWaiting:boolean;
   currentPlayListId: number | string,
   playing:boolean,
   mySubscribeSongList:any[],
@@ -63,7 +64,8 @@ const state:StoreState = {
   searchHistory: initState(
     'searchHistory', []
   ),
-  searchKeyword: ''
+  searchKeyword: '',
+  playWaiting: false
 };
 
 export default state;

@@ -20,8 +20,8 @@ const computedCircleStyle = (index:number) => {
   };
 };
 watch(
-  () => mainStore.playing, (val) => {
-    if (val) {
+  [() => mainStore.playing, () => mainStore.playWaiting], ([playing, playWaiting]) => {
+    if (playing && !playWaiting) {
       cancelAnimationFrameId = window.requestAnimationFrame(loopSetRotate);
     } else {
       window.cancelAnimationFrame(cancelAnimationFrameId);

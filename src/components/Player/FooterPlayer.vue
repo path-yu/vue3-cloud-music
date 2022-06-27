@@ -166,6 +166,14 @@ const handlePlay = () => {
     slideValueChange = false;
   }
 };
+//处理数据还未加载完成时,播放暂停
+const handleWaiting = () => {
+  mainStore.playWaiting = true;
+};
+// 因为缺少数据而暂停或延迟的状态结束，播放准备开始
+const handlePlaying = () => {
+  mainStore.playWaiting = false;
+};
 const handleUpdateSliderValue = (value:number) => {
   percentage.value = value;
   slideValueChange = true;
@@ -360,7 +368,8 @@ onUnmounted(() => {
     <audio
       ref="audioRef" :src="currentSong?.url"
       @timeupdate="handleTimeupdate" @ended="playNextMusic" 
-      @play="handlePlay" @error="handlePlayError"
+      @play="handlePlay" @error="handlePlayError" @waiting="handleWaiting"
+      @playing="handlePlaying"
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
