@@ -111,7 +111,7 @@ const handleTriggerClick = () => {
     if (!audioRef.value?.paused) {
       audioRef.value!.load();
     }
-    if (currentSong.value?.url) {
+    if (currentSong.value?.url && audioRef.value?.paused) {
       audioRef.value?.play();
     }
   });

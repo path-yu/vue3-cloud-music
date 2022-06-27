@@ -10,6 +10,10 @@ import { formateSongsAuthor } from '@/utils';
 import { useAsyncState, useElementHover } from '@vueuse/core';
 import { computed, ref } from 'vue';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
+import { useDbClickPlay } from '@/hook/useDbClickPlay';
+import { nanoid } from 'nanoid';
+import { mapSongs } from '@/utils/arr-map';
+import { useMainStore } from '@/stores/main';
 const hoverRef = ref();
 const currentIndex = ref(0);
 const {
@@ -28,18 +32,22 @@ const {
   state: newSongList,
   isLoading: newSongListIsLoading 
 } = useAsyncState(
-  getNewSong().then(res => res.data.result), []
+  getNewSong().then(res => {
+    return mainStore.mapSongListAddLike(mapSongs(res.data.result));
+  }), []
 );
 const { state: MVList, isLoading: MVIsLoading }
   = useAsyncState(
     getRecommendMv().then(res => res.data.result), []
   );
+const onlyId = nanoid();
 const isHovered = useElementHover(hoverRef);
+const mainStore = useMainStore();
 const showArrowClass = computed(() => isHovered.value
   ? 'opacity-50'
   : 'opacity-0');
 useMemoryScrollTop('.rightMain>.n-layout-scroll-container');
-
+const handleDBClick = useDbClickPlay();
 const handleArrowClick = (type: 'next' | 'prev') => {
   let index = currentIndex.value;
 
@@ -173,11 +181,12 @@ const handleArrowClick = (type: 'next' | 'prev') => {
       responsive="screen"
     >
       <n-grid-item
-        v-for="item in newSongList"
+        v-for="(item,index) in newSongList"
         :key="item.id"
         class="hover:bg-zinc-300/40
          dark:hover:bg-gray-700/30 rounded-md 
          transition-colors cursor-pointer"
+        @dblclick="handleDBClick(newSongList,onlyId,item,index)"
       >
         <div class="flex justify-between h-16">
           <div class="relative">
