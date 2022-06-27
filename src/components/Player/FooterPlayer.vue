@@ -42,8 +42,6 @@ const audioRef = ref<HTMLAudioElement>();
 const percentage = ref(0);
 // 当前播放时间
 const currentPlayTime = ref('00:00');
-//是否为暂停状态
-const paused = ref(true); 
 // 音量大小
 const volume = ref(+localStorage.volume || 100);
 // 播放列表组件ref
@@ -82,6 +80,16 @@ watch(
     }
   }
 );
+watch(
+  () => mainStore.playing, (val) => {
+    if (val) {
+      audioRef.value?.play();
+    } else {
+      audioRef.value?.pause();
+
+    }
+  }
+);
 // 点击切换上一首
 const handlePrevClick = async () => {
   if (isLoad) return;
@@ -103,11 +111,9 @@ const handleTriggerClick = () => {
     if (!audioRef.value?.paused) {
       audioRef.value!.load();
     }
-    audioRef.value?.pause();
     if (currentSong.value?.url) {
       audioRef.value?.play();
     }
-    paused.value = false;
   });
 };
 // 切换播放状态
@@ -122,17 +128,14 @@ const togglePlayStatus = async () => {
       );
       localStorage.playList = JSON.stringify(mainStore.playList);
       isLoad = false;
-      paused.value = false;
       audioRef.value?.play();
       mainStore.changePlaying(true);
     })
       .then(() => {
         mainStore.changePlaying(true);
       });
-    paused.value = false;
   } else {
     audioRef.value?.pause();
-    paused.value = true;
     mainStore.changePlaying(false);
   }
 };
@@ -157,6 +160,12 @@ const handleTimeupdate = (event:Event) => {
   obverser.emit(
     'timeUpdate', Math.round(target.currentTime)
   );
+};
+// 媒体的第一帧加载完成
+const handleLoadeddata = () => {
+  if (mainStore.playing) {
+    audioRef.value?.play();
+  }
 };
 // 播放开始
 const handlePlay = () => {
@@ -190,7 +199,7 @@ const handleSliderMouseUp = () => {
   audioRef.value!.currentTime = currentTime / 1000;
   if (audioRef.value?.paused) {
     audioRef.value.play();
-    paused.value = false;
+    mainStore.changePlaying(true);
   }
   slideValueChange = false;
   obverser.emit(
@@ -321,7 +330,7 @@ onUnmounted(() => {
           @click="handlePrevClick"
         />
         <div class="flex justify-center items-center w-8 h-8  bg-neutral-200/60 hover:bg-neutral-200 dark:bg-slate-100/20 dark:hover:bg-slate-100/40 rounded-full" @click="togglePlayStatus">
-          <n-icon :size="paused ? 20 : 14" :component="paused ? PlayArrowSharp :StopIcon" />
+          <n-icon :size="mainStore.playing ? 14 : 20" :component="mainStore.playing ? StopIcon :PlayArrowSharp" />
         </div>
         <n-icon
           class="next custom-icon" :size="22" :component="SkipNextSharp"
@@ -369,7 +378,7 @@ onUnmounted(() => {
       ref="audioRef" :src="currentSong?.url"
       @timeupdate="handleTimeupdate" @ended="playNextMusic" 
       @play="handlePlay" @error="handlePlayError" @waiting="handleWaiting"
-      @playing="handlePlaying"
+      @playing="handlePlaying" @loadeddata="handleLoadeddata"
     />
     <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
