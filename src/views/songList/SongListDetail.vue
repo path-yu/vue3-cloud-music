@@ -312,10 +312,10 @@ const handleUpdateMusicListLike = (
         <load-img
           ref="imageRef"
           :has-hover-scale="false"
-          class-name="w-50 h-50"
+          class-name="w-52 h-52"
           :src="songListDetail.coverImgUrl "
         />
-        <div class="flex-1 ml-8 ">
+        <div class="flex-1 ml-8">
           <div class="flex items-center">
             <n-tag type="primary">
               歌单
