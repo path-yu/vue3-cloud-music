@@ -190,8 +190,7 @@ const handleUpdateSliderValue = (value:number) => {
 };
 //播放错误尝试重新播放
 const handlePlayError = () => {
-  audioRef.value?.play();
-  mainStore.changePlaying(true);
+  togglePlayStatus();
 };
 // 处理鼠标在进度条上抬起事件
 const handleSliderMouseUp = () => {
