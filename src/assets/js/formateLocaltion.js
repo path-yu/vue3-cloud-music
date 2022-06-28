@@ -1,7 +1,6 @@
 const { log } = require('console');
 const fs = require('fs');
 const path = require('path');
-console.log(fs.readFile);
 fs.readFile(
   path.resolve(
     __dirname, './location.json'

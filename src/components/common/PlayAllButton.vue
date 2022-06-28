@@ -13,9 +13,6 @@ const handleStartPlayAllClick = () => {
   if (mainStore.playList.length === 0) {
     return window.$message.error('没有可播放的歌曲');
   }
-  console.log(
-    mainStore.currentPlayListId, props.songListId
-  );
   if (mainStore.currentPlayListId === props.songListId) {
     if (mainStore.playing) {
       return window.$message.warning('正在播放中');

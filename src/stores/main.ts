@@ -212,7 +212,6 @@ export const useMainStore = defineStore({
         this.playList.splice(
           this.currentPlayIndex+1, 0, value
         );
-        console.log(11);
         const insertIndex = this.playList.findIndex((item:any) => item.id === value.id);
         localStorage.playList = JSON.stringify(this.playList);
         this.changePlayIndex(insertIndex);
