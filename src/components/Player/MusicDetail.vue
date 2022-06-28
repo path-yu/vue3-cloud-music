@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type CSSProperties, ref, type Ref, watch, reactive } from 'vue';
+import { type CSSProperties, ref, type Ref, watch, reactive, nextTick } from 'vue';
 import analyze from 'rgbaster';
 import { BackToTop, Edit } from '@vicons/carbon';
 import { formateSongsAuthor, getArrLast } from '@/utils';
@@ -14,6 +14,7 @@ import { getSimilarPlaylist, getSimilarSong } from '@/service/playlist';
 import { useAsyncState } from '@vueuse/core';
 import { mapSongs } from '@/utils/arr-map';
 import obverser from '@/utils/obverser';
+import { getPixelColor } from '@/utils/getPixelColor';
 
 export interface MusicDetailExpose {
   show: () => void;
@@ -22,6 +23,7 @@ export interface MusicDetailExpose {
   active: Ref<boolean>;
 }
 let backTopEle:HTMLElement;
+let lyricFooterMaskELement:HTMLElement;
 const mainStore = useMainStore();
 const router = useRouter();
 const { tagColor } = useThemeStyle();
@@ -31,7 +33,7 @@ const scrollContainerRef = ref<HTMLElement>(null as unknown as HTMLElement);
 const background = ref<CSSProperties>({});
 const active = ref(false);
 const musicComment = ref<AnyObject>({});
-
+const myCanvas = ref<HTMLCanvasElement>();
 const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: executeGetSimiPlayList } = useAsyncState(
   (id) => {
     return getSimilarPlaylist(id).then(res => res.data.playlists);
@@ -93,6 +95,25 @@ const setBackgroundStyle = async () => {
     color(primary), 0.2
   )
     .hex();
+  await nextTick();
+  let ctx = myCanvas.value!.getContext('2d') as CanvasRenderingContext2D;
+  let width = (window.innerWidth * 0.85);
+  let height = window.innerHeight - 73;
+  myCanvas.value!.width = width;
+  myCanvas.value!.height = height;
+  let gradient = ctx!.createLinearGradient(
+    width / 2, 0, width / 2, height
+  );
+  gradient.addColorStop(
+    0, bgColor
+  );
+  gradient.addColorStop(
+    1, baseColor
+  );
+  ctx.fillStyle = gradient;
+  ctx.fillRect(
+    0, 0, width, height
+  );
   background.value = { background: `linear-gradient(to bottom,${bgColor}, ${baseColor}` };
 };
 // 获取歌单评论
@@ -119,6 +140,22 @@ const handleSimiPlayListItem = (id:string) => {
   router.push(`/songList/${id}`);
   active.value = false;
 };
+
+const handleScroll = () => {
+  updateFooterMaskColor();
+};
+const updateFooterMaskColor = async () => {
+  await nextTick();
+  if (!lyricFooterMaskELement) {
+    lyricFooterMaskELement = document.querySelector('.footer-mask') as HTMLElement;
+  }
+  let { top } = lyricFooterMaskELement.getBoundingClientRect();
+  obverser.emit(
+    'updateFooterMaskColor', getPixelColor(
+       myCanvas.value!.getContext('2d')!, 0, top+50
+    )
+  );
+};
 const updateCommentList = (value:any) => {
   musicComment.value.total += 1;
   musicComment.value.comments.unshift(value);
@@ -142,6 +179,10 @@ const updateCommentLiked = (
 const handleUpdateShow = (value:boolean) => {
   showBackTop.value = value;
 };
+const handleContextMenu = (ev:MouseEvent) => {
+  ev.preventDefault();
+  return false;
+};
 watch(
   () => mainStore.currentPlaySong, (val) => {
     setBackgroundStyle();
@@ -153,9 +194,14 @@ watch(
   }
 );
 watch(
-  active, (val) => {
+  active, async (val) => {
     if (!val) {
       showBackTop.value = false;
+    }
+    if (val) {
+      setTimeout(
+        updateFooterMaskColor, 600
+      );
     }
   }
 );
@@ -192,8 +238,8 @@ setBackgroundStyle();
 <template>
   <transition name="bottom-slide-transform">
     <div
-      v-show="active" ref="scrollContainerRef" class="fixed inset-x-0 m-auto music-detail"
-      :style="background"
+      v-show="active"
+      ref="scrollContainerRef" class="fixed inset-x-0 m-auto music-detail" @scroll="handleScroll"
     > 
       <div class="flex items-center p-4">
         <n-icon
@@ -336,6 +382,13 @@ setBackgroundStyle();
       </div>
     </div>
   </transition>
+  <transition name="bottom-slide-transform">
+    <canvas
+      v-show="active" ref="myCanvas" class="background"
+      @contextmenu="handleContextMenu"
+    />
+  </transition>
+ 
   <n-back-top
     style="z-index: 9999;"
     :show="showBackTop"
@@ -383,6 +436,16 @@ setBackgroundStyle();
   height: calc(100vh - 73px);
   overflow: scroll;
   z-index: 999;
+}
+.background{
+  position: fixed;
+  width: 85vw;
+  height: calc(100vh - 73px);
+  bottom: 73px;
+  left:0;
+  right:0;
+  margin:auto;
+  z-index: 998;
 }
 :deep(.n-back-top-placeholder){
   z-index:8888 !important;
