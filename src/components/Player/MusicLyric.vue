@@ -1,5 +1,4 @@
 <script setup lang="ts">
-
 import { useThemeVars } from 'naive-ui';
 import obverser from '@/utils/obverser';
 import { computed, onMounted, toRaw, watch, type CSSProperties } from 'vue';
@@ -12,6 +11,7 @@ const themeVars = useThemeVars();
 const currentPlayLine = ref(0);
 const scrollBarRef = ref<{scrollTo:(data:{ left?: number, top?: number, behavior:string })=>void}>();
 const scrollContainerRef = ref();
+const footerMaskBackground = ref<CSSProperties>({});
 const isHover = useElementHover(scrollContainerRef);
 let currentScrollTop:number;
 const lyricData = computed(() => {
@@ -111,12 +111,19 @@ onMounted(() => {
       scrollBarRef.value?.scrollTo({ top: 0, behavior: 'smooth' });
     }
   );
+  obverser.on(
+    'updateFooterMaskColor', ({ rgb }) => {
+      console.log(
+        33, rgb
+      );
+      footerMaskBackground.value = { background: `linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, ${rgb} 80%)` };
+    }
+  );
 });
 </script>
 
 <template>
-  <div ref="scrollContainerRef" class="mt-10">
-    <div class="header-mask" />
+  <div ref="scrollContainerRef" class="relative mt-10 scrollContainer" style="background:transparent">
     <n-scrollbar ref="scrollBarRef" style="height: 350px;width:550px" trigger="none">
       <div style="height:175px" />
       <div
@@ -130,7 +137,9 @@ onMounted(() => {
           {{ item.translateContent }}
         </p>
       </div>
+      <div style="height:175px" />
     </n-scrollbar>
+    <div class="footer-mask" :style="footerMaskBackground" />
   </div>
 </template>
 
@@ -140,5 +149,11 @@ onMounted(() => {
     line-height:35px;
     color:#646463;
   }
+}
+.footer-mask{
+  position: absolute;
+  width:550px;
+  height:50px;
+  bottom: 0px;
 }
 </style>
