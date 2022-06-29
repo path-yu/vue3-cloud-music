@@ -119,27 +119,29 @@ const handleTriggerClick = () => {
 // 切换播放状态
 const togglePlayStatus = async () => {
   if (audioRef.value?.paused) {
-    // 歌曲url可能过期
-    audioRef.value?.play().catch(async err => {
-      if (isLoad) return;
-      isLoad = true;
-      await mainStore.setMusicData(
-        mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
-      );
-      localStorage.playList = JSON.stringify(mainStore.playList);
-      isLoad = false;
-      audioRef.value?.play();
-      mainStore.changePlaying(true);
-    })
-      .then(() => {
-        mainStore.changePlaying(true);
-      });
+    tryPlay();
   } else {
     audioRef.value?.pause();
     mainStore.changePlaying(false);
   }
 };
-
+const tryPlay = () => {
+  // 歌曲url可能过期
+  audioRef.value?.play().catch(async err => {
+    if (isLoad) return;
+    isLoad = true;
+    await mainStore.setMusicData(
+      mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
+    );
+    localStorage.playList = JSON.stringify(mainStore.playList);
+    isLoad = false;
+    audioRef.value?.play();
+    mainStore.changePlaying(true);
+  })
+    .then(() => {
+      mainStore.changePlaying(true);
+    });
+};
 const handleEnded = () => {
   // 如果为单曲循环模式,则重新播放
   if (mainStore.playMode === 'singleLoop') {
@@ -190,7 +192,9 @@ const handleUpdateSliderValue = (value:number) => {
 };
 //播放错误尝试重新播放
 const handlePlayError = () => {
-  togglePlayStatus();
+  if (mainStore.playing && !mainStore.playWaiting) {
+    tryPlay();
+  }
 };
 // 处理鼠标在进度条上抬起事件
 const handleSliderMouseUp = () => {
