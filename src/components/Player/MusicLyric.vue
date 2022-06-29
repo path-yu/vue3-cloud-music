@@ -100,6 +100,12 @@ watch(
     }
   }
 );
+obverser.on(
+  'updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
+    footerMaskBackground.value = footerMaskStyle;
+    topMaskBackground.value = topMaskStyle;
+  }
+);
 onMounted(() => {
   obverser.on(
     'timeUpdate', handlePlayLyric
@@ -110,12 +116,6 @@ onMounted(() => {
   obverser.on(
     'ended', () => {
       scrollBarRef.value?.scrollTo({ top: 0, behavior: 'smooth' });
-    }
-  );
-  obverser.on(
-    'updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
-      footerMaskBackground.value = footerMaskStyle;
-      topMaskBackground.value = topMaskStyle;
     }
   );
 });

@@ -1,7 +1,7 @@
 import { useMainStore } from '@/stores/main';
 import { getPixelColor } from '@/utils/getPixelColor';
 import obverser from '@/utils/obverser';
-import { nextTick, watch } from 'vue';
+import { nextTick, watch, type CSSProperties } from 'vue';
 
 export function useBlurLineGradient() {
   let lyricFooterMaskELement:HTMLElement;
@@ -25,7 +25,7 @@ export function useBlurLineGradient() {
       context, 0, FooterEleTop+eleHeight
     );
     const { rgb: topRgb } = getPixelColor(
-      context, 0, topEleTop+20
+      context, 0, topEleTop+25
     );
     console.log(topEleTop);
     if (FooterEleTop && topEleTop) {

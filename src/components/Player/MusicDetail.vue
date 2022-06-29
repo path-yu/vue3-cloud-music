@@ -192,17 +192,19 @@ watch(
   }
 );
 watch(
-  () => mainStore.currentPlaySong, (val) => {
-    if (val) {
-      fetchMusicComment(val.id);
-      executeGetSimiPlayList(
-        0, val.id
-      );
-      executeGetSimiSong(
-        0, val.id
-      );
+  () => mainStore.currentPlaySong, (
+    val, oldVal
+  ) => {
+    if (val && oldVal && val.id !== oldVal.id) {
+      initBackground();
     }
-    initBackground();
+    fetchMusicComment(val.id);
+    executeGetSimiPlayList(
+      0, val.id
+    );
+    executeGetSimiSong(
+      0, val.id
+    );
     fillBackground();
   }, { immediate: true }
 );
