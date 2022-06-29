@@ -12,6 +12,7 @@ const currentPlayLine = ref(0);
 const scrollBarRef = ref<{scrollTo:(data:{ left?: number, top?: number, behavior:string })=>void}>();
 const scrollContainerRef = ref();
 const footerMaskBackground = ref<CSSProperties>({});
+const topMaskBackground = ref<CSSProperties>({});
 const isHover = useElementHover(scrollContainerRef);
 let currentScrollTop:number;
 const lyricData = computed(() => {
@@ -112,18 +113,16 @@ onMounted(() => {
     }
   );
   obverser.on(
-    'updateFooterMaskColor', ({ rgb }) => {
-      console.log(
-        33, rgb
-      );
-      footerMaskBackground.value = { background: `linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, ${rgb} 80%)` };
+    'updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
+      footerMaskBackground.value = footerMaskStyle;
+      topMaskBackground.value = topMaskStyle;
     }
   );
 });
 </script>
 
 <template>
-  <div ref="scrollContainerRef" class="relative mt-10 scrollContainer" style="background:transparent">
+  <div ref="scrollContainerRef" class="relative mt-10 scrollContainer">
     <n-scrollbar ref="scrollBarRef" style="height: 350px;width:550px" trigger="none">
       <div style="height:175px" />
       <div
@@ -139,6 +138,7 @@ onMounted(() => {
       </div>
       <div style="height:175px" />
     </n-scrollbar>
+    <div class="top-mask" :style="topMaskBackground" />
     <div class="footer-mask" :style="footerMaskBackground" />
   </div>
 </template>
@@ -152,8 +152,14 @@ onMounted(() => {
 }
 .footer-mask{
   position: absolute;
-  width:550px;
+  width:500px;
   height:50px;
   bottom: 0px;
+}
+.top-mask{
+  position: absolute;
+  width:500px;
+  height:50px;
+  bottom: 300px;
 }
 </style>

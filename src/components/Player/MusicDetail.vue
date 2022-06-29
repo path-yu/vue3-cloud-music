@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { type CSSProperties, ref, type Ref, watch, reactive, nextTick } from 'vue';
+import { ref, type Ref, watch, reactive, nextTick } from 'vue';
 import analyze from 'rgbaster';
 import { BackToTop, Edit } from '@vicons/carbon';
 import { formateSongsAuthor, getArrLast } from '@/utils';
@@ -14,7 +14,7 @@ import { getSimilarPlaylist, getSimilarSong } from '@/service/playlist';
 import { useAsyncState } from '@vueuse/core';
 import { mapSongs } from '@/utils/arr-map';
 import obverser from '@/utils/obverser';
-import { getPixelColor } from '@/utils/getPixelColor';
+import { useBlurLineGradient } from './hook/useBlurLineGradient';
 
 export interface MusicDetailExpose {
   show: () => void;
@@ -23,22 +23,21 @@ export interface MusicDetailExpose {
   active: Ref<boolean>;
 }
 let backTopEle:HTMLElement;
-let lyricFooterMaskELement:HTMLElement;
+
 const mainStore = useMainStore();
 const router = useRouter();
 const { tagColor } = useThemeStyle();
+const { updateFooterMaskColor, initBackground } = useBlurLineGradient();
 const commentModalRef= ref();
 const commentLoading = ref(true);
 const scrollContainerRef = ref<HTMLElement>(null as unknown as HTMLElement);
-const background = ref<CSSProperties>({});
 const active = ref(false);
 const musicComment = ref<AnyObject>({});
 const myCanvas = ref<HTMLCanvasElement>();
 const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: executeGetSimiPlayList } = useAsyncState(
   (id) => {
     return getSimilarPlaylist(id).then(res => res.data.playlists);
-  },
-  {},
+  }, {},
   { resetOnExecute: false, immediate: false }
 );
 // 相似歌曲数据
@@ -47,8 +46,7 @@ const { isLoading: fetchSimilarSongIsLoading, state: similarMusicList, execute: 
     return getSimilarSong(id).then(res => {
       return mapSongs(res.data.songs);
     });
-  },
-  {},
+  }, {},
   { resetOnExecute: false, immediate: false }
 );
 const showBackTop = ref(false);
@@ -76,12 +74,19 @@ defineExpose({
 });
 
 
-const setBackgroundStyle = async () => {
+const fillBackground = async () => {
+  await nextTick();
+  let ctx = myCanvas.value!.getContext('2d') as CanvasRenderingContext2D;
+  let width = (window.innerWidth * 0.85);
+  let height = window.innerHeight - 73;
   if (!mainStore.currentPlaySong) return;
   let baseColor = mainStore.theme === 'dark'
     ? '#121212'
     : 'white';
-  background.value = { background: `${baseColor}` };
+  ctx.fillStyle = baseColor;
+  ctx.fillRect(
+    0, 0, width, height
+  );
   let primary;
   if (!mainStore.currentPlaySong.primaryColor) {
     const result = await analyze(mainStore.currentPlaySong.al.picUrl);
@@ -95,15 +100,13 @@ const setBackgroundStyle = async () => {
     color(primary), 0.2
   )
     .hex();
-  await nextTick();
-  let ctx = myCanvas.value!.getContext('2d') as CanvasRenderingContext2D;
-  let width = (window.innerWidth * 0.85);
-  let height = window.innerHeight - 73;
+ 
   myCanvas.value!.width = width;
   myCanvas.value!.height = height;
   let gradient = ctx!.createLinearGradient(
     width / 2, 0, width / 2, height
   );
+  console.log(bgColor);
   gradient.addColorStop(
     0, bgColor
   );
@@ -114,7 +117,7 @@ const setBackgroundStyle = async () => {
   ctx.fillRect(
     0, 0, width, height
   );
-  background.value = { background: `linear-gradient(to bottom,${bgColor}, ${baseColor}` };
+  updateFooterMaskColor(ctx);
 };
 // 获取歌单评论
 const fetchMusicComment = (id:string) => {
@@ -142,20 +145,9 @@ const handleSimiPlayListItem = (id:string) => {
 };
 
 const handleScroll = () => {
-  updateFooterMaskColor();
+  updateFooterMaskColor(myCanvas.value!.getContext('2d')!);
 };
-const updateFooterMaskColor = async () => {
-  await nextTick();
-  if (!lyricFooterMaskELement) {
-    lyricFooterMaskELement = document.querySelector('.footer-mask') as HTMLElement;
-  }
-  let { top } = lyricFooterMaskELement.getBoundingClientRect();
-  obverser.emit(
-    'updateFooterMaskColor', getPixelColor(
-       myCanvas.value!.getContext('2d')!, 0, top+50
-    )
-  );
-};
+
 const updateCommentList = (value:any) => {
   musicComment.value.total += 1;
   musicComment.value.comments.unshift(value);
@@ -183,25 +175,19 @@ const handleContextMenu = (ev:MouseEvent) => {
   ev.preventDefault();
   return false;
 };
-watch(
-  () => mainStore.currentPlaySong, (val) => {
-    setBackgroundStyle();
-  }
-);
+const handleTransitionAfterEnter = () => {
+  updateFooterMaskColor(myCanvas.value!.getContext('2d')!);
+};
+
 watch(
   () => mainStore.theme, () => {
-    setBackgroundStyle();
+    fillBackground();
   }
 );
 watch(
   active, async (val) => {
     if (!val) {
       showBackTop.value = false;
-    }
-    if (val) {
-      setTimeout(
-        updateFooterMaskColor, 600
-      );
     }
   }
 );
@@ -216,6 +202,8 @@ watch(
         0, val.id
       );
     }
+    initBackground();
+    fillBackground();
   }, { immediate: true }
 );
 watch(
@@ -232,11 +220,10 @@ obverser.on(
     active.value = false;
   }
 );
-setBackgroundStyle();
 </script>
 
 <template>
-  <transition name="bottom-slide-transform">
+  <transition name="bottom-slide-transform" @after-enter="handleTransitionAfterEnter">
     <div
       v-show="active"
       ref="scrollContainerRef" class="fixed inset-x-0 m-auto music-detail" @scroll="handleScroll"
@@ -455,7 +442,7 @@ setBackgroundStyle();
   transition: height .2s cubic-bezier(0.4, 0, 0.2, 1);
 }
 .bottom-slide-transform-enter-active {
-  transition: height 0.6s cubic-bezier(0.4, 0, 0.2, 1);;
+  transition: height .6s cubic-bezier(0.4, 0, 0.2, 1);;
 }
 .bottom-slide-transform-enter-from {
   height: 0;
