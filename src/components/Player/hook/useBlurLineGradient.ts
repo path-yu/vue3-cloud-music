@@ -27,7 +27,6 @@ export function useBlurLineGradient() {
     const { rgb: topRgb } = getPixelColor(
       context, 0, topEleTop+25
     );
-    console.log(topEleTop);
     if (FooterEleTop && topEleTop) {
       footerMaskStyle = { background: `linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, ${footerRgb} 80%)` };
       topMaskStyle = { background: `linear-gradient(${topRgb} , rgba(255, 255, 255, 0)` };

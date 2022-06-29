@@ -106,7 +106,6 @@ const fillBackground = async () => {
   let gradient = ctx!.createLinearGradient(
     width / 2, 0, width / 2, height
   );
-  console.log(bgColor);
   gradient.addColorStop(
     0, bgColor
   );
