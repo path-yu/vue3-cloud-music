@@ -69,7 +69,7 @@ const activeStyle = computed(() => {
   return { transform: transformStyle };
 });
 watch(
-  () => mainStore.currentPlayIndex, (val) => {
+  () => mainStore.currentPlaySong, (val) => {
     triggerEle.value?.click();
   }
 );

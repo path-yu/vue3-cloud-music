@@ -100,6 +100,11 @@ watch(
     }
   }
 );
+watch(
+  () => mainStore.currentPlaySong, () => {
+    scrollBarRef.value?.scrollTo({ top: 0, behavior: 'smooth' });
+  }
+);
 obverser.on(
   'updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
     footerMaskBackground.value = footerMaskStyle;
