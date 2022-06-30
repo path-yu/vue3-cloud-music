@@ -34,8 +34,6 @@ const musicDetailRef = ref<MusicDetailExpose>();
 const heardLikeRef = ref<HeartIconExpose>();
 const subscribeModalRef = ref<{show:() => void}>();
 let isLoad = false;
-// 触发交互元素
-const triggerEle = ref<HTMLDivElement>();
 // audio元素
 const audioRef = ref<HTMLAudioElement>();
 // 进度条百分比
@@ -70,7 +68,7 @@ const activeStyle = computed(() => {
 });
 watch(
   () => mainStore.currentPlaySong, (val) => {
-    triggerEle.value?.click();
+    tryPlay();
   }
 );
 watch(
@@ -105,17 +103,6 @@ const handleNextClick = async () => {
   isLoad = false;
 };
 
-const handleTriggerClick = () => {
-  setTimeout(async () => {
-    await nextTick();
-    if (!audioRef.value?.paused) {
-      audioRef.value!.load();
-    }
-    if (currentSong.value?.url && audioRef.value?.paused) {
-      audioRef.value?.play();
-    }
-  });
-};
 // 切换播放状态
 const togglePlayStatus = async () => {
   if (audioRef.value?.paused) {
@@ -126,21 +113,32 @@ const togglePlayStatus = async () => {
   }
 };
 const tryPlay = () => {
-  // 歌曲url可能过期
-  audioRef.value?.play().catch(async err => {
-    if (isLoad) return;
-    isLoad = true;
-    await mainStore.setMusicData(
-      mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
-    );
-    localStorage.playList = JSON.stringify(mainStore.playList);
-    isLoad = false;
-    audioRef.value?.play();
+  // 音频是否可以播放
+  if (audioRef.value!.readyState >= 2) {
+    // 歌曲url可能过期
+    audioRef.value?.play().catch(async err => {
+      if (isLoad) return;
+      isLoad = true;
+      await mainStore.setMusicData(
+        mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
+      );
+      localStorage.playList = JSON.stringify(mainStore.playList);
+      isLoad = false;
+      if (currentSong.value?.url && audioRef.value?.paused) {
+        audioRef.value?.load();
+        audioRef.value?.play();
+        mainStore.changePlaying(true);
+      } else {
+        window.$message.error('没有音乐资源');
+      }
+    })
+      .then(() => {
+        mainStore.changePlaying(true);
+      });
+  } else {
     mainStore.changePlaying(true);
-  })
-    .then(() => {
-      mainStore.changePlaying(true);
-    });
+  }
+  
 };
 const handleEnded = () => {
   // 如果为单曲循环模式,则重新播放
@@ -202,8 +200,7 @@ const handleSliderMouseUp = () => {
   currentPlayTime.value = dayjs(currentTime).format('mm:ss');
   audioRef.value!.currentTime = currentTime / 1000;
   if (audioRef.value?.paused) {
-    audioRef.value.play();
-    mainStore.changePlaying(true);
+    tryPlay();
   }
   slideValueChange = false;
   obverser.emit(
@@ -384,7 +381,6 @@ onUnmounted(() => {
       @play="handlePlay" @error="handlePlayError" @waiting="handleWaiting"
       @playing="handlePlaying" @loadeddata="handleLoadeddata"
     />
-    <div ref="triggerEle" @click="handleTriggerClick" />
     <play-list ref="playListRef" />
     <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
     <subscribe-play-list-modal v-if="mainStore.currentPlaySong?.id" ref="subscribeModalRef" :tracks="mainStore.currentPlaySong?.id" />

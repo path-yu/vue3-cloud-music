@@ -198,7 +198,7 @@ onUnmounted(() => {
         v-show="showPopover"
         ref="searchWrapContainerRef"
         :style="{background:themeVars.modalColor,zIndex:1000,width:mainStore.searchKeyword.length > 0 ? '420px ': '384px'}"
-        class="absolute top-10  rounded-sm shadow-lg dark:shadow-black/60 transition-width origin-top-left searchWrapContainer"
+        class="absolute top-10  pb-5 rounded-sm shadow-lg dark:shadow-black/60 transition-width origin-top-left searchWrapContainer"
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
@@ -233,7 +233,7 @@ onUnmounted(() => {
             </div>
           </div>
           <!-- 热搜榜 -->
-          <div v-show="showPopover && !mainStore.searchKeyword.length ">
+          <div v-show="showPopover && !mainStore.searchKeyword.length && hotSearch.length ">
             <p class="pl-4 mt-4 opacity-70">
               热搜榜
             </p>
