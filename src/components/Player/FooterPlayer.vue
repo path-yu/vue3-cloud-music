@@ -37,7 +37,7 @@ let isLoad = false;
 // audio元素
 const audioRef = ref<HTMLAudioElement>();
 // 进度条百分比
-const percentage = ref(20);
+const percentage = ref(0);
 // 当前播放时间
 const currentPlayTime = ref('00:00');
 // 音量大小
@@ -345,11 +345,11 @@ onUnmounted(() => {
       <div class="flex items-center mt-1">
         <span v-if="isShow" class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
         <div class="flex flex-1 items-center" :style="{width:progressWidth+'px'}">
-          <!-- <n-slider
+          <n-slider
             :on-update:value="handleUpdateSliderValue" :value="percentage" :tooltip="false"
             @mouseup="handleSliderMouseUp"
-          /> -->
-          <slider-bar v-model="percentage" />
+          />
+          <!-- <slider-bar v-model="percentage" /> -->
         </div>
         <span v-if="isShow" class="ml-2 text-xs opacity-50">
           <n-time format="mm:ss" :time="currentSong?.dt" />
