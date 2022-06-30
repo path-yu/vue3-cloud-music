@@ -37,7 +37,7 @@ const myCanvas = ref<HTMLCanvasElement>();
 const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: executeGetSimiPlayList } = useAsyncState(
   (id) => {
     return getSimilarPlaylist(id).then(res => res.data.playlists);
-  }, {},
+  }, [],
   { resetOnExecute: false, immediate: false }
 );
 // 相似歌曲数据
@@ -46,7 +46,7 @@ const { isLoading: fetchSimilarSongIsLoading, state: similarMusicList, execute: 
     return getSimilarSong(id).then(res => {
       return mapSongs(res.data.songs);
     });
-  }, {},
+  }, [],
   { resetOnExecute: false, immediate: false }
 );
 const showBackTop = ref(false);
@@ -304,10 +304,10 @@ obverser.on(
               </div>
             </div>
             <n-scrollbar style="max-height: 350px;padding-right:20px;" class="pt-10 ml-20">
-              <h3 class="m-0 text-left">
+              <h3 v-if="similarPlaylist.length" class="m-0 text-left">
                 包含这首歌的歌单
               </h3>
-              <n-divider />
+              <n-divider v-if="similarPlaylist.length" />
               <n-spin :show="fetchSimiPlayListLoading" size="small">
                 <div v-show="fetchSimiPlayListLoading" class="w-80 h-32" />
                 <!-- 相似歌单推荐 -->
@@ -334,10 +334,10 @@ obverser.on(
                 </div>
               </n-spin>
               <div class="mt-2">
-                <h3 class="m-0 text-left">
+                <h3 v-if="similarMusicList.length" class="m-0 text-left">
                   喜欢这首歌的也喜欢听
                 </h3>
-                <n-divider />
+                <n-divider v-if="similarMusicList.length" />
               </div>
               <!-- 相似歌曲 -->
               <n-spin :show="fetchSimilarSongIsLoading">
@@ -422,7 +422,7 @@ obverser.on(
   bottom: 73px;
   width: 85vw;
   height: calc(100vh - 73px);
-  overflow: scroll;
+  overflow-y: scroll;
   z-index: 999;
 }
 .background{
