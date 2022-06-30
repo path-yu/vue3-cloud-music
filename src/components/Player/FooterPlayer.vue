@@ -81,7 +81,7 @@ watch(
 watch(
   () => mainStore.playing, (val) => {
     if (val) {
-      audioRef.value?.play();
+      tryPlay();
     } else {
       audioRef.value?.pause();
 
@@ -113,31 +113,28 @@ const togglePlayStatus = async () => {
   }
 };
 const tryPlay = () => {
+  console.log(audioRef.value!.readyState);
   // 音频是否可以播放
-  if (audioRef.value!.readyState >= 2) {
-    // 歌曲url可能过期
-    audioRef.value?.play().catch(async err => {
-      if (isLoad) return;
-      isLoad = true;
-      await mainStore.setMusicData(
-        mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
-      );
-      localStorage.playList = JSON.stringify(mainStore.playList);
-      isLoad = false;
-      if (currentSong.value?.url && audioRef.value?.paused) {
-        audioRef.value?.load();
-        audioRef.value?.play();
-        mainStore.changePlaying(true);
-      } else {
-        window.$message.error('没有音乐资源');
-      }
-    })
-      .then(() => {
-        mainStore.changePlaying(true);
-      });
-  } else {
-    mainStore.changePlaying(true);
-  }
+  // 歌曲url可能过期
+  audioRef.value?.play().catch(async err => {
+    if (isLoad) return;
+    isLoad = true;
+    await mainStore.setMusicData(
+      mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
+    );
+    localStorage.playList = JSON.stringify(mainStore.playList);
+    isLoad = false;
+    if (currentSong.value?.url && audioRef.value?.paused) {
+      audioRef.value?.load();
+      audioRef.value?.play();
+      mainStore.changePlaying(true);
+    } else {
+      window.$message.error('没有音乐资源');
+    }
+  })
+    .then(() => {
+      mainStore.changePlaying(true);
+    });
   
 };
 const handleEnded = () => {

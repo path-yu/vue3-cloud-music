@@ -128,7 +128,7 @@ onMounted(() => {
 
 <template>
   <div ref="scrollContainerRef" class="relative mt-10 scrollContainer">
-    <n-scrollbar ref="scrollBarRef" style="height: 350px;width:550px" trigger="none">
+    <n-scrollbar ref="scrollBarRef" style="height: 350px;width:550px">
       <div style="height:175px" />
       <div
         v-for="(item,index) in lyricData" :id="'time'+item.time" :key="index"
