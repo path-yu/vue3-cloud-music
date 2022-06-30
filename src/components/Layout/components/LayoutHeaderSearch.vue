@@ -59,6 +59,7 @@ const handleArrowClick = (type: 'back' | 'forward') => {
   if (type === 'forward' && forwardPath) {
     history.forward();
   }
+  obverser.emit('closeMusicDetail');
 };
 watch(
   [backHover, forwardHover], (value: boolean[]) => {
