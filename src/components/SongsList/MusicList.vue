@@ -58,7 +58,7 @@ export default defineComponent({
             : props.songList) as any[];
           return <div class="flex items-center">
             {
-              mainStore.currentPlaySong.id === songList[index].id
+              mainStore.currentPlaySong?.id === songList[index].id
                 ? <NIcon color={mainStore.playing
                   ? themeVars.value.primaryColor
                   : themeVars.value.textColor1} component={mainStore.playing
