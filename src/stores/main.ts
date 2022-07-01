@@ -207,6 +207,7 @@ export const useMainStore = defineStore({
     // 插入播放
     async insertPlay(value:any) {
       const index = this.playList.findIndex(item => item.id === value.id);
+      value.like = this.hasLikeSong(value.id);
       // 未添加则插入
       if (index === -1) {
         this.playList.splice(

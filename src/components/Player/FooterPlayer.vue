@@ -22,6 +22,7 @@ import { useElementHover } from '@vueuse/core';
 import type { MusicDetailExpose } from './MusicDetail.vue';
 import obverser from '@/utils/obverser';
 import type { HeartIconExpose } from '../common/HeartIcon.vue';
+import { useAudioLoadProgress } from './hook/useAudioLoadProgress';
 
 let slideValueChange = false;// 记录slider值是否手动发生了改变
 const progressWidth = 500;
@@ -30,12 +31,16 @@ const mainStore = useMainStore();
 // 触发显示打开歌曲详情交互元素
 const triggerRef = ref();
 const isHover = useElementHover(triggerRef);
+
 const musicDetailRef = ref<MusicDetailExpose>();
 const heardLikeRef = ref<HeartIconExpose>();
 const subscribeModalRef = ref<{show:() => void}>();
 let isLoad = false;
 // audio元素
 const audioRef = ref<HTMLAudioElement>();
+const { updateBuffer, progressValue } = useAudioLoadProgress(
+  audioRef, mainStore.currentPlaySong.dt / 1000
+);
 // 进度条百分比
 const percentage = ref(0);
 // 当前播放时间
@@ -113,8 +118,6 @@ const togglePlayStatus = async () => {
   }
 };
 const tryPlay = () => {
-  console.log(audioRef.value!.readyState);
-  // 音频是否可以播放
   // 歌曲url可能过期
   audioRef.value?.play().catch(async err => {
     if (isLoad) return;
@@ -164,13 +167,13 @@ const handleLoadeddata = () => {
   if (mainStore.playing) {
     audioRef.value?.play();
   }
+  updateBuffer();
 };
 // 播放开始
 const handlePlay = () => {
   if (percentage.value === 100) {
     currentPlayTime.value = '00:00';
     percentage.value = 0;
-    slideValueChange = false;
   }
 };
 //处理数据还未加载完成时,播放暂停
@@ -181,31 +184,28 @@ const handleWaiting = () => {
 const handlePlaying = () => {
   mainStore.playWaiting = false;
 };
-const handleUpdateSliderValue = (value:number) => {
-  percentage.value = value;
-  slideValueChange = true;
-};
+
 //播放错误尝试重新播放
 const handlePlayError = () => {
   if (mainStore.playing && !mainStore.playWaiting) {
     tryPlay();
   }
 };
-// 处理鼠标在进度条上抬起事件
-const handleSliderMouseUp = () => {
+// 处理鼠标在进度条上抬起或者按下操作
+const handleSliderDone = () => {
   let currentTime = (currentSong.value?.dt * percentage.value) / 100;
   currentPlayTime.value = dayjs(currentTime).format('mm:ss');
   audioRef.value!.currentTime = currentTime / 1000;
+  slideValueChange = false;
   if (audioRef.value?.paused) {
     tryPlay();
   }
-  slideValueChange = false;
   obverser.emit(
     'slideValueChange', Math.round(currentTime / 1000)
   );
 };
-const handleLoadMetaData = (event) => {
-  console.log(event);
+const handleSliderChange = () => {
+  slideValueChange = true;
 };
 // 音量滑动选择器监听回调
 const handleVolumeChange = (value:number) => {
@@ -345,11 +345,12 @@ onUnmounted(() => {
       <div class="flex items-center mt-1">
         <span v-if="isShow" class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
         <div class="flex flex-1 items-center" :style="{width:progressWidth+'px'}">
-          <n-slider
-            :on-update:value="handleUpdateSliderValue" :value="percentage" :tooltip="false"
-            @mouseup="handleSliderMouseUp"
+          <slider-bar
+            v-model="percentage"
+            :load-value="progressValue"
+            @on-done="handleSliderDone"
+            @change="handleSliderChange"
           />
-          <!-- <slider-bar v-model="percentage" /> -->
         </div>
         <span v-if="isShow" class="ml-2 text-xs opacity-50">
           <n-time format="mm:ss" :time="currentSong?.dt" />
@@ -379,16 +380,16 @@ onUnmounted(() => {
     </div>
     <audio
       ref="audioRef" :src="currentSong?.url"
-      @timeupdate="handleTimeupdate" @ended="handleEnded" 
-      @play="handlePlay" @error="handlePlayError" @waiting="handleWaiting"
-      @playing="handlePlaying" @loadeddata="handleLoadeddata" @progress="handleLoadMetaData"
+      preload="metadata" @timeupdate="handleTimeupdate" 
+      @ended="handleEnded" @play="handlePlay" @error="handlePlayError"
+      @waiting="handleWaiting" @playing="handlePlaying"
+      @progress="updateBuffer" @loadeddata="handleLoadeddata"
     />
     <play-list ref="playListRef" />
     <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
     <subscribe-play-list-modal v-if="mainStore.currentPlaySong?.id" ref="subscribeModalRef" :tracks="mainStore.currentPlaySong?.id" />
   </div>
 </template>
-
 <style scoped>
 .footer-player{
   height: calc(100vh - 800px - 57px);

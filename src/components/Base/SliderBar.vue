@@ -18,14 +18,12 @@ const moveDiff = { x: 0, y: 0 };// 移动距离
 const themeVars = useThemeVars();
 const target = ref();
 const isHover = useElementHover(target);
-const emit = defineEmits(['update:modelValue']);
-const progressWidth = computed(() => {
-  return props.width * (props.modelValue / 100);
-});
+const emit = defineEmits(['update:modelValue', 'change', 'onDone']);
+
 const calcPercentage = (value:number) => {
   return Math.round((value / props.width) * 100);
 };
-const handleSliderClick = (e:MouseEvent) => {
+const handleSliderMouseDown = (e:MouseEvent) => {
   let target = e.target as HTMLElement;
   if (target.classList.contains('dot') && isTargetClick) return;
   if (isTargetClick.value) return;
@@ -34,6 +32,13 @@ const handleSliderClick = (e:MouseEvent) => {
   emit(
     'update:modelValue', percentage
   );
+  startWidth = getProgressWidth(percentage);
+  emit(
+    'change', percentage
+  );
+  emit(
+    'onDone', percentage
+  );
 };
 // 在小圆点下按下鼠标
 const handleDotMouseDown = (e:MouseEvent) => {
@@ -41,7 +46,7 @@ const handleDotMouseDown = (e:MouseEvent) => {
   mousePosition.x = e.clientX;
   moveDiff.x = 0;
 };
-// 移动鼠标
+  // 移动鼠标
 const handleMouseMove = (e:MouseEvent) => {
   if (!isTargetClick.value) return;
   moveDiff.x += e.clientX - mousePosition.x;
@@ -60,29 +65,52 @@ const handleMouseMove = (e:MouseEvent) => {
   } else {
     value = calcPercentage(startWidth + moveDiff.x);
   }
-  if (value >= 0 && value <= 100) {
+  if (value >= 0 && value <= 100 && value !== props.modelValue) {
     emit(
       'update:modelValue', value
     );
+    emit(
+      'change', value
+    );
   }
- 
   mousePosition.x = e.clientX;
 };
+ 
 // 鼠标抬起
 const handleMouseUp = (e:MouseEvent) => {
   if (!isTargetClick.value) return;
-  setTimeout(() => {
-    isTargetClick.value = false;
-  });
-  startWidth = getProgressWidth();
+  isTargetClick.value = false;
+  startWidth = getProgressWidth(props.modelValue);
+  emit(
+    'onDone', props.modelValue
+  );
 };
-const getProgressWidth = () => props.width * (props.modelValue / 100);
+// 鼠标离开浏览器窗口
+const handleMouseOut = (evt:any) => {
+  if (!evt) {
+    evt = window.event;
+  }
+  let to = evt!.relatedTarget || evt!.toElement;
+  if (!to || to.nodeName === 'HTML') {
+    if (isTargetClick.value) {
+      isTargetClick.value = false;
+      emit(
+        'onDone', props.modelValue
+      );
+    }
+    
+  }
+};
+const getProgressWidth = (percentage:number) => props.width * (percentage / 100);
 onMounted(() => {
   document.body.addEventListener(
-    'mousemove', handleMouseMove, false
+    'mousemove', handleMouseMove
   );
   document.body.addEventListener(
-    'mouseup', handleMouseUp, false
+    'mouseup', handleMouseUp
+  );
+  document.body.addEventListener(
+    'mouseout', handleMouseOut
   );
 });
 onUnmounted(() => {
@@ -92,21 +120,21 @@ onUnmounted(() => {
   document.body.removeEventListener(
     'mouseup', handleMouseUp
   );
+ 
 });
 
 </script>
 
 <template>
   <div
-    ref="target" class="group py-1 no-select" @click="handleSliderClick"
+    ref="target" class="group py-1 no-select" @mousedown="handleSliderMouseDown"
   >
     <div
-
       :style="{width:width+'px',height:height+'px',transform:`scaleY(${isTargetClick || isHover ? '1.5' : '1'})`}"
       class="relative bg-gray-200 dark:bg-gray-200/50 rounded-md transition-transform"
     >
       <!-- 加载进度条 -->
-      <div class="absolute top-0 h-full bg-gray-300 dark:bg-gray-300/50 rounded-md transition-transform" :style="{width:'20%'}" />
+      <div class="absolute top-0 h-full bg-gray-300 dark:bg-gray-300/50 rounded-md transition-transform" :style="{width:loadValue+'%'}" />
       <!-- 播放进度条 -->
       <div class="absolute top-0 h-full rounded-md transition-transform" :style="{background:themeVars.primaryColor, width:modelValue+'%'}" />
       <!-- 小圆点 -->
