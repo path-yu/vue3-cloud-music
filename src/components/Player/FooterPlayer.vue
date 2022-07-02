@@ -174,6 +174,7 @@ const handlePlay = () => {
   if (percentage.value === 100) {
     currentPlayTime.value = '00:00';
     percentage.value = 0;
+    progressValue.value = 0;
   }
 };
 //处理数据还未加载完成时,播放暂停

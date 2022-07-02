@@ -55,11 +55,14 @@ const historyListStyle = computed<CSSProperties>(() => {
 const handleArrowClick = (type: 'back' | 'forward') => {
   if (type === 'back' && backPath) {
     history.back();
+    obverser.emit('closeMusicDetail');
+
   }
   if (type === 'forward' && forwardPath) {
     history.forward();
+    obverser.emit('closeMusicDetail');
+
   }
-  obverser.emit('closeMusicDetail');
 };
 watch(
   [backHover, forwardHover], (value: boolean[]) => {
