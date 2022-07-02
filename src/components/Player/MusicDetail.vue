@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type Ref, watch, reactive, nextTick } from 'vue';
+import { ref, type Ref, watch, reactive, nextTick, type CSSProperties } from 'vue';
 import analyze from 'rgbaster';
 import { BackToTop, Edit } from '@vicons/carbon';
 import { formateSongsAuthor, getArrLast } from '@/utils';
@@ -34,6 +34,9 @@ const scrollContainerRef = ref<HTMLElement>(null as unknown as HTMLElement);
 const active = ref(false);
 const musicComment = ref<AnyObject>({});
 const myCanvas = ref<HTMLCanvasElement>();
+const titleRef = ref<HTMLElement>();
+const isShowTag = ref(false);
+const tagPositionStyle = ref<CSSProperties>();
 const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: executeGetSimiPlayList } = useAsyncState(
   (id) => {
     return getSimilarPlaylist(id).then(res => res.data.playlists);
@@ -174,10 +177,23 @@ const handleContextMenu = (ev:MouseEvent) => {
   ev.preventDefault();
   return false;
 };
+const handleMvTagClick = () => {
+  if (mainStore.playing) {
+    mainStore.changePlaying(false);
+  }
+  router.push(`/mv/${mainStore.currentPlaySong.mv}`);
+
+};
 const handleTransitionAfterEnter = () => {
   updateFooterMaskColor(myCanvas.value!.getContext('2d')!);
 };
-
+const setTagPositionStyle = async () => {
+  await nextTick();
+  isShowTag.value = false;
+  let left = titleRef.value!.offsetLeft + titleRef.value!.offsetWidth + 20;
+  tagPositionStyle.value = { left: left+'px', top: '-15px' };
+  isShowTag.value = true;
+};
 watch(
   () => mainStore.theme, () => {
     fillBackground();
@@ -187,6 +203,9 @@ watch(
   active, async (val) => {
     if (!val) {
       showBackTop.value = false;
+    }
+    if (!isShowTag.value) {
+      setTagPositionStyle();
     }
   }
 );
@@ -205,6 +224,10 @@ watch(
       0, val.id
     );
     fillBackground();
+    isShowTag.value = false;
+    if (active.value) {
+      setTagPositionStyle();
+    }
   }, { immediate: true }
 );
 watch(
@@ -244,15 +267,15 @@ obverser.on(
           <div style="width:550px">
             <div class="relative">
               <div class="text-3xl text-center">
-                <span> {{ mainStore.currentPlaySong.name }}</span>
-                <div class="absolute">
-                <!-- <n-tag
-                  v-if="mainStore.currentPlaySong.mv !== 0"
-                  size="small" :color="tagColor"
-                  @click="router.push(`/mv/${mainStore.currentPlaySong.mv.mv}`)"
-                >
-                  MV
-                </n-tag> -->
+                <span ref="titleRef"> {{ mainStore.currentPlaySong.name }}</span>
+                <div class="absolute" :style="tagPositionStyle">
+                  <n-tag
+                    v-if="mainStore.currentPlaySong.mv !== 0"
+                    size="small" :color="tagColor"
+                    @click="handleMvTagClick"
+                  >
+                    MV
+                  </n-tag>
                 </div>
               </div>
             </div>

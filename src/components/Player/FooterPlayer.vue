@@ -338,9 +338,6 @@ onUnmounted(() => {
           class="next custom-icon" :size="22" :component="SkipNextSharp"
           @click="handleNextClick"
         />
-        <n-button text>
-          词
-        </n-button>
       </div>
       <div class="flex items-center mt-1">
         <span v-if="isShow" class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
@@ -357,7 +354,7 @@ onUnmounted(() => {
         </span>
       </div>
     </div>
-    <div v-if="isShow" class="flex items-center">
+    <div v-if="isShow" class="flex justify-end items-center w-60">
       <n-popover
         placement="bottom"
         trigger="hover"

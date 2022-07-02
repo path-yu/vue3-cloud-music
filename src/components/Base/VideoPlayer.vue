@@ -56,7 +56,7 @@ watch(
   }
 );
 onDeactivated(() => {
-  player.destroy();
+  player?.destroy();
 });
 </script>
 
