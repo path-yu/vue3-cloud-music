@@ -25,9 +25,9 @@ export function useBlurLineGradient() {
       context, 0, FooterEleTop+eleHeight
     );
     let { rgb: topRgb } = getPixelColor(
-      context, 0, topEleTop + 25
+      context, 0, topEleTop
     );
-    if (topRgb === 'rgb(0, 0, 0)'||footerRgb === 'rgb(0, 0, 0)') {
+    if (topRgb === 'rgb(0,0,0)'||footerRgb === 'rgb(0,0,0)') {
       topRgb = 'transparent';
       footerRgb = 'transparent';
     }

@@ -187,7 +187,7 @@ const handlePlaying = () => {
 
 //播放错误尝试重新播放
 const handlePlayError = () => {
-  if (mainStore.playing && !mainStore.playWaiting) {
+  if (mainStore.playing) {
     tryPlay();
   }
 };
