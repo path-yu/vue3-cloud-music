@@ -55,12 +55,12 @@ const historyListStyle = computed<CSSProperties>(() => {
 const handleArrowClick = (type: 'back' | 'forward') => {
   if (type === 'back' && backPath) {
     history.back();
-    obverser.emit('closeMusicDetail');
+    mainStore.setShowMusicDetail(false);
 
   }
   if (type === 'forward' && forwardPath) {
     history.forward();
-    obverser.emit('closeMusicDetail');
+    mainStore.setShowMusicDetail(false);
 
   }
 };
@@ -95,7 +95,7 @@ const toSearchResult = (val?:string) => {
   }
   mainStore.addSearchHistory(mainStore.searchKeyword);
   showPopover.value = false;
-  obverser.emit('closeMusicDetail');
+  mainStore.setShowMusicDetail(false);
   router.push({
     path: '/searchResult',
     query: { keyword: mainStore.searchKeyword }

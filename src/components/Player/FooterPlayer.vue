@@ -14,7 +14,7 @@ import {
   VolumeOffRound, KeyboardArrowUpOutlined, AddBoxOutlined
 } from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 import type { PlayListExpose } from './PlayList.vue';
@@ -31,8 +31,6 @@ const mainStore = useMainStore();
 // 触发显示打开歌曲详情交互元素
 const triggerRef = ref();
 const isHover = useElementHover(triggerRef);
-
-const musicDetailRef = ref<MusicDetailExpose>();
 const heardLikeRef = ref<HeartIconExpose>();
 const subscribeModalRef = ref<{show:() => void}>();
 let isLoad = false;
@@ -64,7 +62,7 @@ const currentPlayModeIcon = computed(() => {
 });
 const activeStyle = computed(() => {
   let transformStyle;
-  if (!musicDetailRef.value?.active) {
+  if (!mainStore.showMusicDetail) {
     transformStyle = 'translateY(0)';
   } else {
     transformStyle = 'translateY(-54px)';
@@ -247,7 +245,7 @@ const handlePressSpace = (e:KeyboardEvent) => {
 };
 // 点击箭头打开歌曲详情
 const handleArrowClick = () => {
-  musicDetailRef.value?.toggle();
+  mainStore.toggleShowMusicDetail();
 };
 const likeSuccess = (like:boolean) => {
   mainStore.updatePlayListLike(like);
@@ -304,7 +302,7 @@ onUnmounted(() => {
         <div class="flex items-center h-12">
           <n-icon
             size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
-            @click="musicDetailRef?.close()"
+            @click="mainStore.setShowMusicDetail(false)"
           />
           <div class="ml-4">
             <div class="circleContainer" @click="handleLikeHeartClick">

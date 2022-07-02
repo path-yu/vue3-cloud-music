@@ -31,7 +31,6 @@ const { updateFooterMaskColor, initBackground } = useBlurLineGradient();
 const commentModalRef= ref();
 const commentLoading = ref(true);
 const scrollContainerRef = ref<HTMLElement>(null as unknown as HTMLElement);
-const active = ref(false);
 const musicComment = ref<AnyObject>({});
 const myCanvas = ref<HTMLCanvasElement>();
 const titleRef = ref<HTMLElement>();
@@ -59,23 +58,6 @@ const pageParams = reactive({
   pageSize: 50
 });
 const target = () => scrollContainerRef.value;
-defineExpose({
-  show() {
-    active.value = true;
-  },
-  close() {
-    active.value = false;
-  },
-  toggle() {
-    if (active.value) {
-      active.value = false;
-    } else {
-      active.value = true;
-    }
-  },
-  active
-});
-
 
 const fillBackground = async () => {
   await nextTick();
@@ -143,7 +125,7 @@ const fetchMusicComment = (id:string) => {
 };
 const handleSimiPlayListItem = (id:string) => {
   router.push(`/songList/${id}`);
-  active.value = false;
+  mainStore.setShowMusicDetail(false);
 };
 
 const handleScroll = () => {
@@ -200,7 +182,7 @@ watch(
   }
 );
 watch(
-  active, async (val) => {
+  () => mainStore.showMusicDetail, async (val) => {
     if (!val) {
       showBackTop.value = false;
     }
@@ -225,7 +207,7 @@ watch(
     );
     fillBackground();
     isShowTag.value = false;
-    if (active.value) {
+    if (mainStore.showMusicDetail) {
       setTagPositionStyle();
     }
   }, { immediate: true }
@@ -239,23 +221,19 @@ watch(
     }
   }
 );
-obverser.on(
-  'closeMusicDetail', () => {
-    active.value = false;
-  }
-);
+
 </script>
 
 <template>
   <transition name="bottom-slide-transform" @after-enter="handleTransitionAfterEnter">
     <div
-      v-show="active"
+      v-show="mainStore.showMusicDetail"
       ref="scrollContainerRef" class="fixed inset-x-0 m-auto music-detail" @scroll="handleScroll"
     > 
       <div class="flex items-center p-4">
         <n-icon
           size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
-          @click="active = false"
+          @click="mainStore.setShowMusicDetail(false)"
         />
         <div class="flex flex-1 items-center ml-20">
           <layout-header-search />
@@ -395,7 +373,7 @@ obverser.on(
   </transition>
   <transition name="bottom-slide-transform">
     <canvas
-      v-show="active" ref="myCanvas" class="background"
+      v-show="mainStore.showMusicDetail" ref="myCanvas" class="background"
       @contextmenu="handleContextMenu"
     />
   </transition>
@@ -416,7 +394,7 @@ obverser.on(
   />
   <transition name="fade">
     <n-button
-      v-show="!showBackTop && active"
+      v-show="!showBackTop && mainStore.showMusicDetail"
       class="fixed" style="z-index:9999;bottom: 90px;right:400px"
       round type="primary"
       @click="commentModalRef?.show()"
@@ -428,7 +406,7 @@ obverser.on(
   <!-- 发表我的音乐评论 -->
   <transition name="slide">
     <n-button
-      v-show="showBackTop && active"
+      v-show="showBackTop && mainStore.showMusicDetail"
       type="primary"
       class="fixed w-44" style="z-index:9999;bottom: 90px;right:0;left:0;margin:auto"
       round

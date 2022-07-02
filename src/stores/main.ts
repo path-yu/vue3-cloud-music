@@ -324,6 +324,12 @@ export const useMainStore = defineStore({
     clearSearchHistory() {
       this.searchHistory = [];
       localStorage.searchHistory = JSON.stringify([]);
+    },
+    setShowMusicDetail(value:boolean) {
+      this.showMusicDetail = value;
+    },
+    toggleShowMusicDetail() {
+      this.showMusicDetail = !this.showMusicDetail;
     }
   }
 });
