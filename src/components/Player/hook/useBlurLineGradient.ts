@@ -21,12 +21,16 @@ export function useBlurLineGradient() {
     // dom 还未在页面显示 可能为0
     const { top: FooterEleTop } = lyricFooterMaskELement.getBoundingClientRect();
     const { top: topEleTop } = lyricTopMaskElement.getBoundingClientRect(); 
-    const { rgb: footerRgb } = getPixelColor(
+    let { rgb: footerRgb } = getPixelColor(
       context, 0, FooterEleTop+eleHeight
     );
-    const { rgb: topRgb } = getPixelColor(
-      context, 0, topEleTop+25
+    let { rgb: topRgb } = getPixelColor(
+      context, 0, topEleTop + 25
     );
+    if (topRgb === 'rgb(0, 0, 0)'||footerRgb === 'rgb(0, 0, 0)') {
+      topRgb = 'transparent';
+      footerRgb = 'transparent';
+    }
     if (FooterEleTop && topEleTop) {
       footerMaskStyle = { background: `linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, ${footerRgb} 80%)` };
       topMaskStyle = { background: `linear-gradient(${topRgb} , rgba(255, 255, 255, 0)` };

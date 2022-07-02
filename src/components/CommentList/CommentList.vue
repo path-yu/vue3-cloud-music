@@ -79,7 +79,7 @@ const handleLikedClick = (
   <div v-for="(item,index) in list" :key="item.id" class="flex mt-5">
     <n-avatar round :size="50" :src="item.user.avatarUrl" />
     <div class="flex-1 pb-5 ml-4 border-0 border-b border-gray-200 dark:border-gray-200/20 border-solid">
-      <div>
+      <div style="overflow-wrap: anywhere;">
         <span class="text-sky-500"> {{ item?.user.nickname }}：</span>
         <span>{{ item.content }}</span>
       </div>
