@@ -277,7 +277,7 @@ onUnmounted(() => {
                   <span v-if="item.alias" class="opacity-50">{{ item.alias[0] }}</span>
                   <span>-  {{ formateSongsAuthor(item.artists) }}</span>
                 </div>
-                <p v-show="!suggestLoading && (suggestList.albums || suggestList.playlists)" class="flex items-center pl-4 text-base opacity-50">
+                <p v-show="!suggestLoading && suggestList.playlists" class="flex items-center pl-4 text-base opacity-50">
                   <n-icon :component="List" />
                   <span class="ml-2">歌单</span>
                 </p>
