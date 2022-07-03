@@ -5,7 +5,7 @@ import { formateNumber, getArrLast } from '@/utils';
 import { computed, reactive, ref, toRaw, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import LoadImg from '@/components/Base/LoadImg.vue';
-import { Play, AddOutline, StarOutline, Star, ShareSocialOutline, Search } from '@vicons/ionicons5';
+import { StarOutline, Star, ShareSocialOutline, Search } from '@vicons/ionicons5';
 import { Edit } from '@vicons/carbon';
 import { useMainStore } from '@/stores/main';
 import type { SelectSongListTagModalExpose } from '@/components/SongsList/SelectSongListTagModal.vue';

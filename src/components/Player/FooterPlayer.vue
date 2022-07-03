@@ -1,10 +1,8 @@
 <script setup lang="ts">
-
 import StopIcon from '@/components/Icon/StopIcon.vue';
 import OrderPlay from '@/components/Icon/OrderPlay.vue';
 import RandomIcon from '@/components/Icon/RandomIcon.vue';
 import SingleLoop from '@/components/Icon/SingleLoop.vue';
-
 import { formateSongsAuthor } from '@/utils';
 import { List } from '@vicons/ionicons5';
 import {
@@ -19,7 +17,6 @@ import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 import type { PlayListExpose } from './PlayList.vue';
 import { useElementHover } from '@vueuse/core';
-import type { MusicDetailExpose } from './MusicDetail.vue';
 import obverser from '@/utils/obverser';
 import type { HeartIconExpose } from '../common/HeartIcon.vue';
 import { useAudioLoadProgress } from './hook/useAudioLoadProgress';
@@ -37,7 +34,7 @@ let isLoad = false;
 // audio元素
 const audioRef = ref<HTMLAudioElement>();
 const { updateBuffer, progressValue } = useAudioLoadProgress(
-  audioRef, mainStore.currentPlaySong.dt / 1000
+  audioRef, mainStore.currentPlaySong?.dt / 1000
 );
 // 进度条百分比
 const percentage = ref(0);
