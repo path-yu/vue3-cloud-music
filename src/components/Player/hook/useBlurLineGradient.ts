@@ -44,21 +44,10 @@ export function useBlurLineGradient() {
   const resetBackground = () => {
     footerMaskStyle = { background: 'transparent' };
     topMaskStyle = { background: 'transparent' };
-  };
-  const initBackground = () => {
-    resetBackground();
     obverser.emit(
       'updateLyricMaskStyle', { footerMaskStyle, topMaskStyle }
     );
   };
-  watch(
-    () => mainStore.theme, () => {
-      initBackground();
-      obverser.emit(
-        'updateLyricMaskStyle', { footerMaskStyle, topMaskStyle }
-      );
-    }
-  );
 
-  return { updateFooterMaskColor, initBackground };
+  return { updateFooterMaskColor, resetBackground };
 }

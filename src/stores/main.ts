@@ -261,6 +261,11 @@ export const useMainStore = defineStore({
       const lyricRes = await getLyric(id);
       if (res.data.code === 200) {
         result.lyric = lyricRes.data?.lrc?.lyric;
+        if (result.lyric.includes('纯音乐，请欣赏') || !result.lyric) {
+          result.isNotLyric = true;
+        } else {
+          result.isNotLyric = false;
+        }
         result.tlyric = lyricRes.data?.tlyric?.lyric;
       } else {
         console.log('获取歌词失败');

@@ -27,7 +27,7 @@ export function parseRangeLyric(lyricList:LineItem[]) {
   let currentIndex = 0;
   let nextIndex = 1;
   // 如果第一项播放时间不为0，则手动插入一个
-  if (lyricList[currentIndex].time !== 0) {
+  if (lyricList[currentIndex].time !== 0 && lyricList[currentIndex].content !== '纯音乐，请欣赏') {
     lyricList.unshift({
       ...lyricList[currentIndex],
       time: 0

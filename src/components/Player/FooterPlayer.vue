@@ -151,13 +151,22 @@ const handleEnded = () => {
 // 播放进度变化
 const handleTimeupdate = (event:Event) => {
   const target = event.target as HTMLAudioElement;
-  currentPlayTime.value = dayjs(target.currentTime * 1000).format('mm:ss');
+  updatePlayTime(target.currentTime);
+};
+const updatePlayTime = (
+  time:number, triggerPlay=false
+) => {
+  currentPlayTime.value = dayjs(time * 1000).format('mm:ss');
   // 如果当前滑动条正在改变,则不设置对应的值, 避免冲突
   if (!slideValueChange) {
-    percentage.value = Math.round(((target.currentTime * 1000) / currentSong.value?.dt) * 100);
+    percentage.value = Math.round(((time * 1000) / currentSong.value?.dt) * 100);
   }
+  if (triggerPlay) {
+    tryPlay();
+    audioRef.value!.currentTime = time;
+  } 
   obverser.emit(
-    'timeUpdate', Math.round(target.currentTime)
+    'timeUpdate', Math.round(time)
   );
 };
 // 媒体的第一帧加载完成
@@ -257,6 +266,13 @@ const handleLikeHeartClick = () => {
 onMounted(() => {
   document.body.addEventListener(
     'keypress', handlePressSpace
+  );
+  obverser.on(
+    'selectLyricPlay', (time) => {
+      updatePlayTime(
+        time, true
+      );
+    }
   );
 });
 onUnmounted(() => {

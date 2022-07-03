@@ -13,7 +13,6 @@ import { getMusicComment } from '@/service/songs';
 import { getSimilarPlaylist, getSimilarSong } from '@/service/playlist';
 import { useAsyncState } from '@vueuse/core';
 import { mapSongs } from '@/utils/arr-map';
-import obverser from '@/utils/obverser';
 import { useBlurLineGradient } from './hook/useBlurLineGradient';
 
 export interface MusicDetailExpose {
@@ -27,7 +26,7 @@ let backTopEle:HTMLElement;
 const mainStore = useMainStore();
 const router = useRouter();
 const { tagColor } = useThemeStyle();
-const { updateFooterMaskColor, initBackground } = useBlurLineGradient();
+const { updateFooterMaskColor, resetBackground } = useBlurLineGradient();
 const commentModalRef= ref();
 const commentLoading = ref(true);
 const scrollContainerRef = ref<HTMLElement>(null as unknown as HTMLElement);
@@ -195,9 +194,6 @@ watch(
   () => mainStore.currentPlaySong, (
     val, oldVal
   ) => {
-    if (val && oldVal && val.id !== oldVal.id) {
-      initBackground();
-    }
     fetchMusicComment(val.id);
     executeGetSimiPlayList(
       0, val.id
@@ -205,6 +201,9 @@ watch(
     executeGetSimiSong(
       0, val.id
     );
+    if (val && oldVal && val.id !== oldVal.id) {
+      resetBackground();
+    }
     fillBackground();
     isShowTag.value = false;
     if (mainStore.showMusicDetail) {
