@@ -68,6 +68,7 @@ const activeStyle = computed(() => {
 });
 watch(
   () => mainStore.currentPlaySong, (val) => {
+    audioRef.value?.load();
     tryPlay();
   }
 );
@@ -273,11 +274,6 @@ onMounted(() => {
         time, true
       );
     }
-  );
-});
-onUnmounted(() => {
-  document.body.removeEventListener(
-    'keypress', handlePressSpace
   );
 });
 </script>
