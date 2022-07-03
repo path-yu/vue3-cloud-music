@@ -99,7 +99,9 @@ const handleImgClick = async (id:number) => {
 };
 watch(
   () => route.path, (val:string) => {
-    reloadMvData();
+    if (route.path.includes('mv')) {
+      reloadMvData();
+    }
   } 
 );
 const reloadMvData = () => {

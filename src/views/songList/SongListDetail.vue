@@ -125,7 +125,7 @@ const searchSongList = (keyword:string) => {
 watch(
   () => route.params, (val) => {
     let id = val.id as string;
-    if (!route.path.includes('edit') && id) {
+    if (!route.path.includes('edit') && id && route.path.includes('songList')) {
       songListId.value = id;
       fetchSongListDetail(id);
       fetchSongListComment();
