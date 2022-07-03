@@ -50,7 +50,13 @@ const historyListStyle = computed<CSSProperties>(() => {
   if (spread.value) {
     return { height: defaultHeight.value, overflow: 'visible' };
   }
-  return { height: '54px', overflow: 'hidden' };
+  return {
+    height: defaultHeight.value
+      ? parseInt(defaultHeight.value) >= 54
+        ? '54px'
+        : '100%'
+      :'100%', overflow: 'hidden' 
+  };
 });
 const handleArrowClick = (type: 'back' | 'forward') => {
   if (type === 'back' && backPath) {
@@ -137,6 +143,12 @@ const handleSearchSongClick = async(song:any) => {
   }
   showPopover.value = false;
 };
+const handleClearClick = (
+  e:MouseEvent, index:number
+) => {
+  e.stopPropagation();
+  mainStore.removeSearchHistory(index);
+};
 const handleSearchPlayListClick = (id:string) => {
   router.push(`/songList/${id}`);
   showPopover.value = false;
@@ -202,7 +214,7 @@ onUnmounted(() => {
         v-show="showPopover"
         ref="searchWrapContainerRef"
         :style="{background:themeVars.modalColor,zIndex:1000,width:mainStore.searchKeyword.length > 0 ? '420px ': '384px'}"
-        class="absolute top-10  pb-5 rounded-sm shadow-lg dark:shadow-black/60 transition-width origin-top-left searchWrapContainer"
+        class="absolute top-10  rounded-sm shadow-lg dark:shadow-black/60 transition-width origin-top-left searchWrapContainer"
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
@@ -229,7 +241,7 @@ onUnmounted(() => {
                   closable size="small"
                   round
                   @click="toSearchResult(item)"
-                  @close="mainStore.removeSearchHistory(index)"
+                  @close="(e:MouseEvent) => handleClearClick(e,index)"
                 >
                   {{ item }}
                 </n-tag>
