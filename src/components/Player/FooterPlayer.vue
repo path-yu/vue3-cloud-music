@@ -12,7 +12,7 @@ import {
   VolumeOffRound, KeyboardArrowUpOutlined, AddBoxOutlined
 } from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 import type { PlayListExpose } from './PlayList.vue';
@@ -150,7 +150,7 @@ const handleTimeupdate = (event:Event) => {
   const target = event.target as HTMLAudioElement;
   updatePlayTime(target.currentTime);
 };
-const updatePlayTime = (
+const updatePlayTime = async (
   time:number, triggerPlay=false
 ) => {
   currentPlayTime.value = dayjs(time * 1000).format('mm:ss');
@@ -160,7 +160,10 @@ const updatePlayTime = (
   }
   if (triggerPlay) {
     tryPlay();
-    audioRef.value!.currentTime = time;
+    await nextTick();
+    if (audioRef.value) {
+      audioRef.value!.currentTime = time;
+    }
   } 
   obverser.emit(
     'timeUpdate', Math.round(time)
@@ -389,7 +392,7 @@ onUnmounted(() => {
     </div>
     <audio
       ref="audioRef" :src="currentSong?.url"
-      preload="metadata" @timeupdate="handleTimeupdate" 
+      @timeupdate="handleTimeupdate" 
       @ended="handleEnded" @play="handlePlay" @error="handlePlayError"
       @waiting="handleWaiting" @playing="handlePlaying"
       @progress="updateBuffer" @loadeddata="handleLoadeddata"
