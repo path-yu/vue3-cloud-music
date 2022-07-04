@@ -82,7 +82,7 @@
 
 ## 项目预览
 
-![![loading-ag-609](https://upload-images.jianshu.io/upload_images/20032554-2b49a2c31e6ceda6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
+![loading-ag-609](https://upload-images.jianshu.io/upload_images/20032554-2b49a2c31e6ceda6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ![](C:\Users\19746\AppData\Roaming\marktext\images\2022-07-04-13-27-27-image.png)
 
