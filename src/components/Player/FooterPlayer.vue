@@ -154,9 +154,9 @@ const handleTimeupdate = (event:Event) => {
 const updatePlayTime = async (
   time:number, triggerPlay=false
 ) => {
-  currentPlayTime.value = dayjs(time * 1000).format('mm:ss');
   // 如果当前滑动条正在改变,则不设置对应的值, 避免冲突
   if (!slideValueChange) {
+    currentPlayTime.value = dayjs(time * 1000).format('mm:ss');
     percentage.value = Math.round(((time * 1000) / currentSong.value?.dt) * 100);
   }
   if (triggerPlay) {
@@ -213,8 +213,9 @@ const handleSliderDone = () => {
     'slideValueChange', Math.round(currentTime / 1000)
   );
 };
-const handleSliderChange = () => {
+const handleSliderChange = (time:number) => {
   slideValueChange = true;
+  currentPlayTime.value = dayjs(time * 1000).format('mm:ss');
 };
 // 音量滑动选择器监听回调
 const handleVolumeChange = (value:number) => {
@@ -388,10 +389,9 @@ onMounted(() => {
     </div>
     <audio
       ref="audioRef" :src="currentSong?.url"
-      @timeupdate="handleTimeupdate" 
-      @ended="handleEnded" @play="handlePlay" @error="handlePlayError"
-      @waiting="handleWaiting" @playing="handlePlaying"
-      @progress="updateBuffer" @loadeddata="handleLoadeddata"
+      preload="metadata" @timeupdate="handleTimeupdate" @ended="handleEnded"
+      @play="handlePlay" @error="handlePlayError" @waiting="handleWaiting"
+      @playing="handlePlaying" @progress="updateBuffer" @loadeddata="handleLoadeddata"
     />
     <play-list ref="playListRef" />
     <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
