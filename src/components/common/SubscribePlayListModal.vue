@@ -4,13 +4,15 @@ import { useMainStore } from '@/stores/main';
 import obverser from '@/utils/obverser';
 import { ArrowBackIosSharp } from '@vicons/material';
 import { computed, ref, watch } from 'vue';
-const showModal = ref(false);
+let isLoad = false;
 const mainStore = useMainStore();
 const showCreatePlayList = ref(false);
 const isPrivate = ref(false);
 const playListTitle = ref('');
+const showModal = ref(false);
+const btnLoading = ref(false);
 const props = defineProps<{
-  tracks?:number;
+  tracks:number;
 }>();
 const modalStyle = computed(() => {
   return {
@@ -22,19 +24,31 @@ const modalStyle = computed(() => {
     overflow: 'hidden' 
   };
 });
-const handleItemClick = (item:any) => {
+const handleItemClick = (
+  item:any, index:number
+) => {
   if (!mainStore.isLogin) {
     return window.$message.error('请先登录');
   }
+  if (isLoad) return undefined;
+  isLoad = true;
   let params:{tracks:number, op:'add'|'del', pid:number} = {
     tracks: props.tracks,
     op: 'add',
     pid: item.id
   };
+  window.$message.loading(
+    '加载中..', { duration: 0 }
+  );
   return updatePlaylistTracks(params).then((res) => {
-    if (res.data?.code === 200) {
-      window.$message.success('添加成功');
-    } 
+    if (res.data?.body.code === 200) {
+      window.$message.success('已收藏到歌单');
+      mainStore.mySubscribeSongList[index].trackCount = res.data.body.count;
+    } else {
+      window.$message.error(res.data.body.message);
+    }
+    window.$message.destroyAll();
+    isLoad = false;
   });
 };
 const handleCreateClick = () => {
@@ -45,6 +59,7 @@ const handleCreateClick = () => {
   if (isPrivate.value) {
     params.privacy = '10';
   }
+  btnLoading.value = true;
   return createPlaylist(params).then((res) => {
     if (res.data?.code === 200) {
       window.$message.success('创建成功');
@@ -54,6 +69,7 @@ const handleCreateClick = () => {
       obverser.emit(
         'updateMyCreatePlayList', res.data.playlist
       );
+      btnLoading.value = false;
     } 
   });
 };
@@ -98,10 +114,10 @@ watch(
           <base-empty v-if="!mainStore.mySubscribeSongList.length" description="您还未创建歌单" />
           <n-scrollbar style="max-height: 300px">
             <div
-              v-for="item in mainStore.mySubscribeSongList"
+              v-for="(item,index) in mainStore.mySubscribeSongList"
               :key="item.id"
               class="flex items-center py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-200/20 transition-all cursor-pointer"
-              @click="handleItemClick(item)"
+              @click="handleItemClick(item,index)"
             >
               <n-image class="w-14 h-14 rounded-lg" :src="item.coverImgUrl" />
               <div class="ml-2">
@@ -122,7 +138,10 @@ watch(
             <n-checkbox v-model:checked="isPrivate" size="small" label="设置为隐私歌单" />
           </n-space>
           <div class="flex justify-center mt-4">
-            <n-button :disabled="!playListTitle" type="primary" @click="handleCreateClick">
+            <n-button
+              :loading="btnLoading" :disabled="!playListTitle" type="primary"
+              @click="handleCreateClick"
+            >
               创建
             </n-button>
           </div>
