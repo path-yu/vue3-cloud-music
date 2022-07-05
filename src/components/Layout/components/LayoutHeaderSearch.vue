@@ -229,7 +229,7 @@ onUnmounted(() => {
                   确定删除历史记录?
                 </n-popconfirm>
               </div>
-              <n-button text @click="spread = !spread">
+              <n-button v-if="parseInt(defaultHeight) >= 54" text @click="spread = !spread">
                 {{ spread ? '收起' :'查看全部' }}
               </n-button>
             </div>
