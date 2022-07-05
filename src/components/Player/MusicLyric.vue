@@ -225,8 +225,12 @@ watch(
 );
 obverser.on(
   'updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
-    footerMaskBackground.value = footerMaskStyle;
-    topMaskBackground.value = topMaskStyle;
+    if (footerMaskStyle !== footerMaskBackground.value) {
+      footerMaskBackground.value = footerMaskStyle;
+    }
+    if (topMaskStyle !== topMaskBackground.value) {
+      topMaskBackground.value = topMaskStyle;
+    }
   }
 );
 onMounted(() => {

@@ -19,23 +19,30 @@ export function useBlurLineGradient() {
       lyricTopMaskElement = document.querySelector('.top-mask') as HTMLElement;
     }
     // dom 还未在页面显示 可能为0
-    const { top: FooterEleTop } = lyricFooterMaskELement.getBoundingClientRect();
-    const { top: topEleTop } = lyricTopMaskElement.getBoundingClientRect(); 
-    let { rgb: footerRgb } = getPixelColor(
-      context, 0, FooterEleTop+eleHeight
+    let { top: footerEleTop } = lyricFooterMaskELement.getBoundingClientRect();
+    let { top: topEleTop } = lyricTopMaskElement.getBoundingClientRect(); 
+    if (footerEleTop <= 0) {
+      footerEleTop = 0;
+    }
+    if (topEleTop <= 0) {
+      topEleTop = 0;
+    }
+    const { rgb: footerRgb } = getPixelColor(
+      context, 0, footerEleTop+eleHeight
     );
-    let { rgb: topRgb } = getPixelColor(
+    const { rgb: topRgb } = getPixelColor(
       context, 0, topEleTop
     );
-    if (topRgb === 'rgb(0,0,0)'||footerRgb === 'rgb(0,0,0)') {
-      topRgb = 'transparent';
-      footerRgb = 'transparent';
-    }
-    if (FooterEleTop && topEleTop) {
-      footerMaskStyle = { background: `linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, ${footerRgb} 80%)` };
-      topMaskStyle = { background: `linear-gradient(${topRgb} , rgba(255, 255, 255, 0)` };
+    if (topRgb === 'rgb(0,0,0)') {
+      topMaskStyle = { background: 'transparent' };
     } else {
-      resetBackground();
+      topMaskStyle = { background: `linear-gradient(${topRgb} , rgba(255, 255, 255, 0)` };
+    }
+    if (footerRgb === 'rgb(0,0,0)') {
+      footerMaskStyle = { background: 'transparent' };
+    } else {
+      footerMaskStyle = { background: `linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, ${footerRgb} 80%)` };
+
     }
     obverser.emit(
       'updateLyricMaskStyle', { footerMaskStyle, topMaskStyle }
@@ -44,6 +51,7 @@ export function useBlurLineGradient() {
   const resetBackground = () => {
     footerMaskStyle = { background: 'transparent' };
     topMaskStyle = { background: 'transparent' };
+    console.log('reset');
     obverser.emit(
       'updateLyricMaskStyle', { footerMaskStyle, topMaskStyle }
     );

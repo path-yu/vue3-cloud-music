@@ -100,7 +100,6 @@ const fillBackground = async () => {
   ctx.fillRect(
     0, 0, width, height
   );
-  updateFooterMaskColor(ctx);
 };
 // 获取歌单评论
 const fetchMusicComment = (id:string) => {
@@ -177,6 +176,7 @@ const setTagPositionStyle = async () => {
 };
 watch(
   () => mainStore.theme, () => {
+    resetBackground();
     fillBackground();
   }
 );
