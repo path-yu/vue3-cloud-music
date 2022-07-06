@@ -68,7 +68,7 @@ const handleUpdateMusicListLike = (
 watch(
   [
     () => route.query, () => playListPageParams.page, () => playListPageParams.pageSize, 
-    () => songListPageParams.page, () => songListPageParams.pageSize
+    () => songListPageParams.page, () => songListPageParams.pageSize, currentTabIndex
   ], () => {
     let songParams = {
       limit: songListPageParams.pageSize,
