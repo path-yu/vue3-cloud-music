@@ -213,9 +213,10 @@ const handleSliderDone = () => {
     'slideValueChange', Math.round(currentTime / 1000)
   );
 };
-const handleSliderChange = (time:number) => {
+const handleSliderChange = () => {
   slideValueChange = true;
-  currentPlayTime.value = dayjs(time * 1000).format('mm:ss');
+  let currentTime = (currentSong.value?.dt * percentage.value) / 100;
+  currentPlayTime.value = dayjs(currentTime).format('mm:ss');
 };
 // 音量滑动选择器监听回调
 const handleVolumeChange = (value:number) => {
