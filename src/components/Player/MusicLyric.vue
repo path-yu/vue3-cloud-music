@@ -115,14 +115,14 @@ const handleScroll = (event:Event) => {
   }
   clearTimeout(timeId);
   timeId = setTimeout(
-    async () => {
+    () => {
       selectLyricLine.value = null;
       showSelectLyric.value = false;
       scrollTo(currentScrollTop);
-    }, 4000
+    }, 2500
   );
 };
-const handlePlayIconClick = async () => {
+const handlePlayIconClick = () => {
   let time = selectLyricLine.value!.time;
   currentPlayLine.value = selectLyricLine.value!.index;
   showSelectLyric.value = false;

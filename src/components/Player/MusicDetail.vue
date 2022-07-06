@@ -58,7 +58,7 @@ const pageParams = reactive({
 });
 const target = () => scrollContainerRef.value;
 
-const fillBackground = async () => {
+const fillBackground = async (updateMask=true) => {
   await nextTick();
   let ctx = myCanvas.value!.getContext('2d') as CanvasRenderingContext2D;
   let width = (window.innerWidth * 0.85);
@@ -100,6 +100,9 @@ const fillBackground = async () => {
   ctx.fillRect(
     0, 0, width, height
   );
+  if (updateMask) {
+    updateFooterMaskColor(ctx);
+  }
 };
 // 获取歌单评论
 const fetchMusicComment = (id:string) => {
@@ -177,7 +180,7 @@ const setTagPositionStyle = async () => {
 watch(
   () => mainStore.theme, () => {
     resetBackground();
-    fillBackground();
+    fillBackground(false);
   }
 );
 watch(
@@ -204,7 +207,11 @@ watch(
     if (val && oldVal && val.id !== oldVal.id) {
       resetBackground();
     }
-    fillBackground();
+    if (mainStore.showMusicDetail) {
+      fillBackground();
+    } else {
+      fillBackground(false);
+    }
     isShowTag.value = false;
     if (mainStore.showMusicDetail) {
       setTagPositionStyle();
