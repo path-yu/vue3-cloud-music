@@ -61,8 +61,8 @@ const historyListStyle = computed<CSSProperties>(() => {
   }
   return {
     height: defaultHeight.value
-      ? parseInt(defaultHeight.value) >= 54
-        ? '54px'
+      ? parseInt(defaultHeight.value) >= 62
+        ? '62px'
         : '100%'
       :'100%', overflow: 'hidden' 
   };
@@ -236,7 +236,7 @@ onUnmounted(() => {
                   确定删除历史记录?
                 </n-popconfirm>
               </div>
-              <n-button v-if="parseInt(defaultHeight) >= 54" text @click="spread = !spread">
+              <n-button v-if="parseInt(defaultHeight) > 62" text @click="spread = !spread">
                 {{ spread ? '收起' :'查看全部' }}
               </n-button>
             </div>
