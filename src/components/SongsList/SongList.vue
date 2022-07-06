@@ -13,7 +13,7 @@ defineProps<{
 
 </script>
 <template>
-  <div v-if="songs && songs.length !== 0">
+  <div v-if="songs && songs.length !== 0" class="mb-4">
     <n-grid
       cols="2 s:3 m:5 l:5 xl:5 2xl:7"
       responsive="screen"

@@ -249,6 +249,11 @@ const handleCompleteClick = (selectTagList:any[]) => {
     btnLoading.value = false;
   });
 };
+const handleShareClick = () => {
+  navigator.clipboard.writeText(window.location.href).then(() => {
+    window.$message.success('链接复制成功');
+  });
+};
 // 点击评论
 const handleCommentClick = () => {
   userCheckLogin(() => {
@@ -351,7 +356,7 @@ const handleUpdateMusicListLike = (
                 {{ songListDetail.subscribed ? '已收藏' :' 收藏' }}
                 ({{ formateNumber(songListDetail.subscribedCount) }})
               </n-button>
-              <n-button size="medium" round>
+              <n-button size="medium" round @click="handleShareClick">
                 <template #icon>
                   <n-icon :component="ShareSocialOutline" />
                 </template>
