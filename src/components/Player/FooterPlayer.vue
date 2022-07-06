@@ -68,7 +68,6 @@ const activeStyle = computed(() => {
 });
 watch(
   () => mainStore.currentPlaySong, (val) => {
-    audioRef.value?.load();
     tryPlay();
   }
 );
@@ -116,6 +115,7 @@ const togglePlayStatus = async () => {
 const tryPlay = () => {
   // 歌曲url可能过期
   audioRef.value?.play().catch(async err => {
+    console.log(err);
     if (isLoad) return;
     isLoad = true;
     await mainStore.setMusicData(
