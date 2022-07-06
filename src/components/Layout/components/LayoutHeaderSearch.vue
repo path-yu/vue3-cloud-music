@@ -38,6 +38,8 @@ const { state: hotSearch, isLoading: hotSearchLoading } = useAsyncState(
 const { state: suggestList, isLoading: suggestLoading, execute } = useAsyncState(
   (val) => getSuggestSearchList(val).then(async res => {
     res.data.result.songs = mapSongs(res.data.result.songs);
+    // 标记搜索
+    
     return res.data.result;
   }), {}, { resetOnExecute: false, immediate: false }
 );
