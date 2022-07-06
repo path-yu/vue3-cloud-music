@@ -430,7 +430,7 @@ watch(
   width: 85vw;
   height: calc(100vh - 73px);
   overflow-y: scroll;
-  z-index: 999;
+  z-index: 1000;
 }
 .background{
   position: fixed;
@@ -440,7 +440,7 @@ watch(
   left:0;
   right:0;
   margin:auto;
-  z-index: 998;
+  z-index: 999;
 }
 :deep(.n-back-top-placeholder){
   z-index:8888 !important;
