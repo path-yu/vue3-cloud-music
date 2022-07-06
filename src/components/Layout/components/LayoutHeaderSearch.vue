@@ -5,15 +5,15 @@ import { Search, List } from '@vicons/ionicons5';
 import { Delete, Music } from '@vicons/carbon';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover } from '@vueuse/core';
-import { throttle } from 'lodash';
-import { formateSongsAuthor, isEmptyObject } from '@/utils';
+import { isArray, isPlainObject, throttle } from 'lodash';
+import { isEmptyObject } from '@/utils';
 import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch, type CSSProperties } from 'vue';
 import { useRouter } from 'vue-router';
 import { userHistory } from '../hook/useHistoryRoutePath';
 import { mapSongs } from '@/utils/arr-map';
-import obverser from '@/utils/obverser';
 import { nanoid } from 'nanoid';
+import { markSearchKeyword } from '@/utils/markSearhKeyword';
 
 const backIconRef = ref();
 const forwardIconRef = ref();
@@ -35,14 +35,21 @@ const { state: defaultSearchKeyWord } = useAsyncState(
 const { state: hotSearch, isLoading: hotSearchLoading } = useAsyncState(
   getHotSearchList().then(res => res.data.data), {}
 );
-const { state: suggestList, isLoading: suggestLoading, execute } = useAsyncState(
+const { state: suggestResult, isLoading: suggestLoading, execute } = useAsyncState(
   (val) => getSuggestSearchList(val).then(async res => {
+    let result = res.data.result;
+    let primaryColor = themeVars.value.primaryColor;
     res.data.result.songs = mapSongs(res.data.result.songs);
-    // 标记搜索
-    
+    res.data.result.songs = markSearchKeyword(
+      result.songs, ['name', 'formatAuthor', 'alias'], mainStore.searchKeyword, primaryColor
+    );
+    res.data.result.playlists = markSearchKeyword(
+      result.playlists, ['name'], mainStore.searchKeyword, primaryColor
+    );
     return res.data.result;
   }), {}, { resetOnExecute: false, immediate: false }
 );
+
 const arrowIconClass = (value: string) => {
   return value
     ? 'opacity-100 cursor-pointer'
@@ -64,12 +71,10 @@ const handleArrowClick = (type: 'back' | 'forward') => {
   if (type === 'back' && backPath) {
     history.back();
     mainStore.setShowMusicDetail(false);
-
   }
   if (type === 'forward' && forwardPath) {
     history.forward();
     mainStore.setShowMusicDetail(false);
-
   }
 };
 watch(
@@ -94,6 +99,16 @@ watch(
     }
   }
 );
+watch(
+  () => mainStore.theme, () => {
+    suggestResult.value.songs = markSearchKeyword(
+      suggestResult.value.songs, ['name', 'formatAuthor', 'alias'], mainStore.searchKeyword, themeVars.value.primaryColor
+    );
+    suggestResult.value.playlists = markSearchKeyword(
+      suggestResult.value.playlists, ['name'], mainStore.searchKeyword, themeVars.value.primaryColor
+    );
+  }
+);
 const toSearchResult = (val?:string) => {
   if (!mainStore.searchKeyword && defaultSearchKeyWord.value?.realkeyword && !val) {
     mainStore.searchKeyword = defaultSearchKeyWord.value.realkeyword;
@@ -114,7 +129,7 @@ const getSearchSuggest = (
   val:string, oldVal:string
 ) => {
   if (val === oldVal) return;
-  suggestList.value = {};
+  suggestResult.value = {};
   execute(
     0, val
   );
@@ -251,7 +266,7 @@ onUnmounted(() => {
             </div>
           </div>
           <!-- 热搜榜 -->
-          <div v-show="showPopover && !mainStore.searchKeyword.length && hotSearch.length ">
+          <div v-show="showPopover && !mainStore.searchKeyword.length">
             <p class="pl-4 mt-4 opacity-70">
               热搜榜
             </p>
@@ -280,33 +295,35 @@ onUnmounted(() => {
             <n-spin :show="suggestLoading" size="small" description="搜索中...">
               <div v-show="suggestLoading" class="h-80" />
               <div>
-                <p v-show="!suggestLoading && suggestList.songs" class="flex items-center pl-4 text-base opacity-50">
+                <p v-show="!suggestLoading && suggestResult.songs" class="flex items-center pl-4 text-base opacity-50">
                   <n-icon :component="Music" />
                   <span class="ml-2">单曲</span>
                 </p>
                 <div
-                  v-for="item in suggestList.songs" 
+                  v-for="item in suggestResult.songs" 
                   :key="item.id"
                   class="py-2 pl-10 cursor-pointer base-hover-bg"
                   @click="handleSearchSongClick(item)"
                 >
-                  {{ item.name }} 
-                  <span v-if="item.alias" class="opacity-50">{{ item.alias[0] }}</span>
-                  <span>-  {{ formateSongsAuthor(item.artists) }}</span>
+                  <span v-html="item.nameRichText" />
+                  <span v-if="item.alias[0]" class="opacity-50">
+                    （<span v-html="item.alias[0]" />）
+                  </span>
+                  <span> - </span>
+                  <span v-html="item.formatAuthorRichText" />
                 </div>
-                <p v-show="!suggestLoading && suggestList.playlists" class="flex items-center pl-4 text-base opacity-50">
+                <p v-show="!suggestLoading && suggestResult.playlists" class="flex items-center pl-4 text-base opacity-50">
                   <n-icon :component="List" />
                   <span class="ml-2">歌单</span>
                 </p>
                 <div
-                  v-for="item in suggestList.playlists" 
+                  v-for="item in suggestResult.playlists" 
                   :key="item.id"
                   class="py-2 pl-10 cursor-pointer base-hover-bg"
                   @click="handleSearchPlayListClick(item.id)"
-                >
-                  {{ item.name }} 
-                </div>
-                <base-empty v-show="mainStore.searchKeyword.length > 0 && isEmptyObject(suggestList) && !suggestLoading" description="没有搜索到数据" />
+                  v-html="item.nameRichText"
+                />
+                <base-empty v-show="mainStore.searchKeyword.length > 0 && isEmptyObject(suggestResult) && !suggestLoading" description="没有搜索到数据" />
               </div>
             </n-spin>
           </div>

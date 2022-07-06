@@ -1,3 +1,5 @@
+import { formateSongsAuthor } from '.';
+
 export function mapSongs(songs:any[]) {
   return songs.map((item:any) => {
     const target = item.song
@@ -7,6 +9,7 @@ export function mapSongs(songs:any[]) {
     item.dt = target.duration;
     item.al = target.album;
     item.ar = target.artists;
+    item.formatAuthor = formateSongsAuthor(item.artists);
     return item;
   });
 } 
