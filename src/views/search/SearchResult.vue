@@ -146,6 +146,7 @@ watch(
             共找到{{ songsSearchResult.songCount }}首单曲
           </p>
         </div>
+        <div class="h-4" />
         <music-list
           :song-list="songsSearchResult.songs" 
           :loading="songListIsLoading" :play-list-id="currentId" 
