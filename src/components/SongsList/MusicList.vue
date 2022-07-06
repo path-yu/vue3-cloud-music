@@ -13,9 +13,11 @@ import { useRouter } from 'vue-router';
 type RowData= {
   like:boolean;
   ar:any[]
-  al:{name:string};
+  al:{name:string, nameRichText:string};
   dt:number;
   name:string;
+  nameRichText:string;
+  formatAuthorRichText:string;
   mv:number;
   id:string;
   // 免费或无版权1: VIP 歌曲4: 购买专辑8: 非会员可免费播放低音质，会员可播放高音质及下载 
@@ -86,7 +88,9 @@ export default defineComponent({
         width: '200',
         render(row) {
           return <div>
-            {row.name}
+            {row.nameRichText
+              ? <span v-html={row.nameRichText}></span>
+              : row.name}
             {row.mv !== 0
               ? <NTag onClick={() => router.push(`/mv/${row.mv}`)} size="small" color={tagColor.value} class="ml-2">MV</NTag>
               : null}
@@ -102,7 +106,9 @@ export default defineComponent({
         width: '140',
         render(row) {
           return <p class="text-sm truncate">
-            { formateSongsAuthor(row.ar) }
+            {row.formatAuthorRichText
+              ? <span v-html={row.formatAuthorRichText}></span>
+              : formateSongsAuthor(row.ar)}
           </p>;
         }
       },
@@ -113,7 +119,9 @@ export default defineComponent({
         render(row) {
           return <p class="text-sm truncate">
             { row.al.name
-              ? row.al.name
+              ? row.al.nameRichText
+                ? <span v-html={row.al.nameRichText}></span>
+                : row.al.name
               : <span class="opacity-50">未知专辑</span> }
           </p>;
         }

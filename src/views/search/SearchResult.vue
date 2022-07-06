@@ -4,10 +4,11 @@ import { PlayCircleOutlined } from '@vicons/antd';
 import { useMainStore } from '@/stores/main';
 import { useAsyncState } from '@vueuse/core';
 import { formateNumber } from '@/utils';
-import { watch, reactive, ref, type CSSProperties } from 'vue';
+import { watch, reactive, ref, type CSSProperties, nextTick } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import useThemeStyle from '@/hook/useThemeStyle';
 import { useNanoid } from '@/hook/useNanoid';
+import { markSearchKeyword } from '@/utils/markSearhKeyword';
 
 let immediateCall = false;
 let backTopEle:HTMLElement;
@@ -26,11 +27,14 @@ const router = useRouter();
 const route = useRoute();
 const mainStore = useMainStore();
 const { set, currentId } = useNanoid();
-const { themeVars, stripedClass } = useThemeStyle();
+const { themeVars, stripedClass, primaryColor } = useThemeStyle();
 const { state: songsSearchResult, isLoading: songListIsLoading, execute: getSearchSongList } = useAsyncState(
   (val) => search(val).then(async res => {
     let result = res.data.result;
     res.data.result.songs = mainStore.mapSongListAddLike(result.songs);
+    res.data.result.songs = markSearchKeyword(
+      result.songs, ['name', 'formatAuthor', ['al', 'name']], route.query.keyword as string, primaryColor.value
+    );
     songListPageParams.pageCount = Math.round(result.songCount / songListPageParams.pageSize) || 1;
     return res.data.result;
   }), {}, { resetOnExecute: true, immediate: false }
@@ -38,6 +42,10 @@ const { state: songsSearchResult, isLoading: songListIsLoading, execute: getSear
 const { state: playListSearchResult, isLoading: playListIsLoading, execute: getSearchPlayList } = useAsyncState(
   (val) => search(val).then(async res => {
     let result = res.data.result;
+    let keyword = route.query.keyword as string;
+    res.data.result.playlists = markSearchKeyword(
+      result.playlists, ['name', ['creator', 'nickname']], keyword, primaryColor.value
+    );
     playListPageParams.pageCount = Math.round(result.playlistCount / playListPageParams.pageSize) || 1;
     return result;
   }), {}, { resetOnExecute: true, immediate: false }
@@ -172,15 +180,15 @@ watch(
               class-name="w-16 h-16 rounded-md"
               :src="item.coverImgUrl"
             />
-            <n-ellipsis :tooltip="false" class="pl-2 w-80">
-              {{ item.name }}
+            <n-ellipsis :tooltip="false" class="pl-2" style="width:400px">
+              <p v-html="item.nameRichText" />
             </n-ellipsis>
             <p class="w-20 opacity-50">
               {{ item.trackCount }}首
             </p>
             <p class="w-80">
               <span class="opacity-50">by </span> 
-              <span class="opacity-80">{{ item.creator.nickname }}首</span>
+              <span class="pl-2" v-html="item.creator.nicknameRichText" />
             </p>
             <p class="flex items-center w-80 opacity-50">
               <n-icon :component="PlayCircleOutlined" />

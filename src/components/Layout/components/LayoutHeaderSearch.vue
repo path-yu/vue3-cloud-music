@@ -99,22 +99,6 @@ watch(
     }
   }
 );
-watch(
-  () => mainStore.theme, () => {
-    if (suggestResult.value.songs) {
-      suggestResult.value.songs = markSearchKeyword(
-        suggestResult.value.songs, ['name', 'formatAuthor', 'alias'], mainStore.searchKeyword, themeVars.value.primaryColor
-      );
-    }
-    if (suggestResult.value.playlists) {
-      suggestResult.value.playlists = markSearchKeyword(
-        suggestResult.value.playlists, ['name'], mainStore.searchKeyword, themeVars.value.primaryColor
-      );
-    }
-   
- 
-  }
-);
 const toSearchResult = (val?:string) => {
   if (!mainStore.searchKeyword && defaultSearchKeyWord.value?.realkeyword && !val) {
     mainStore.searchKeyword = defaultSearchKeyWord.value.realkeyword;
@@ -329,7 +313,7 @@ onUnmounted(() => {
                   @click="handleSearchPlayListClick(item.id)"
                   v-html="item.nameRichText"
                 />
-                <base-empty v-show="mainStore.searchKeyword.length > 0 && isEmptyObject(suggestResult) && !suggestLoading" description="没有搜索到数据" />
+                <base-empty v-show="mainStore.searchKeyword.length > 0 && isEmptyObject(suggestResult) && !suggestLoading" description="没有搜索建议" />
               </div>
             </n-spin>
           </div>

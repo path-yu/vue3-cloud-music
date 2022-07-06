@@ -1,7 +1,7 @@
 /* eslint-disable consistent-return */
 
 import { checkMusic, getLyric, getMusicUrl } from '@/service';
-import { getNextIndex, getPrevIndex, getRandomIntInclusive } from '@/utils';
+import { formateSongsAuthor, getNextIndex, getPrevIndex, getRandomIntInclusive } from '@/utils';
 import type { AnyObject } from 'env';
 import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
@@ -92,6 +92,7 @@ export const useMainStore = defineStore({
         } else {
           item.like = false;
         }
+        item.formatAuthor = formateSongsAuthor(item.ar);
         item.key = index;
         return item;
       });

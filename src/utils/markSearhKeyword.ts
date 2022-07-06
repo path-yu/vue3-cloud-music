@@ -1,5 +1,4 @@
 import { isArray, isPlainObject } from 'lodash';
-import { useThemeVars } from 'naive-ui';
 
 export const markSearchKeyword = (
   data:any[], keys:(string | string[])[], keyword:string, color:string
@@ -25,9 +24,10 @@ export const markSearchKeyword = (
         }
       } else {
         const itemValue = item[key[0]];
-        if (isArray(itemValue) && typeof isPlainObject(itemValue)) {
-          item[key[0]] = markSearchKeyword(
-            itemValue, [key[1]], keyword, color
+        const target = item[key[0]][key[1]];
+        if (isPlainObject(itemValue)) {
+          item[key[0]][key[1]+'RichText'] = replaceMarkValue(
+            target, keyword, color
           );
         }
       }

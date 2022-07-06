@@ -60,7 +60,7 @@ export const memorize = (fn:Function) => {
   };
 };
 export const formateSongsAuthor = (attr: any[]) => {
-  return attr.map(item => item.name).join('/');
+  return attr.map(item => item.name).join(' / ');
 };
 // 根据指定的数量将数组切片
 export const sliceArr = (

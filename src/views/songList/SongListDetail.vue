@@ -9,11 +9,12 @@ import { StarOutline, Star, ShareSocialOutline, Search } from '@vicons/ionicons5
 import { Edit } from '@vicons/carbon';
 import { useMainStore } from '@/stores/main';
 import type { SelectSongListTagModalExpose } from '@/components/SongsList/SelectSongListTagModal.vue';
-import { useDialog } from 'naive-ui';
+import { useDialog, useThemeVars } from 'naive-ui';
 import obverser from '@/utils/obverser';
 import { userCheckLogin } from '@/hook/useCheckLogin';
 import { useMemorizeRequest } from '@/hook/useMemorizeRequest';
 import { cloneDeep } from 'lodash';
+import { markSearchKeyword } from '@/utils/markSearhKeyword';
 
 let backTopEle:HTMLElement;
 let songListIndexMap = new Map();
@@ -32,6 +33,7 @@ const pageParams = reactive({
   pageSize: 50
 });
 const imageRef = ref();
+const themeVars = useThemeVars();
 const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
 const btnLoading = ref(false);
 const commentBtnLoading = ref(false);
@@ -120,7 +122,9 @@ const searchSongList = (keyword:string) => {
   }).map(item => {
     return { ...item, isSearch: true, index: songListIndexMap.get(item.id) };
   });
-  songList.value = result;
+  songList.value = markSearchKeyword(
+    result, ['name', 'formatAuthor', ['al', 'name']], keyword, themeVars.value.primaryColor
+  );
 };
 watch(
   () => route.params, (val) => {
@@ -150,9 +154,7 @@ watch(
   }
 );
 watch(
-  searchKeyword, (
-    val, oldVal
-  ) => {
+  searchKeyword, (val) => {
     searchSongList(val);
   } 
 );
