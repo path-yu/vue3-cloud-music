@@ -101,12 +101,18 @@ watch(
 );
 watch(
   () => mainStore.theme, () => {
-    suggestResult.value.songs = markSearchKeyword(
-      suggestResult.value.songs, ['name', 'formatAuthor', 'alias'], mainStore.searchKeyword, themeVars.value.primaryColor
-    );
-    suggestResult.value.playlists = markSearchKeyword(
-      suggestResult.value.playlists, ['name'], mainStore.searchKeyword, themeVars.value.primaryColor
-    );
+    if (suggestResult.value.songs) {
+      suggestResult.value.songs = markSearchKeyword(
+        suggestResult.value.songs, ['name', 'formatAuthor', 'alias'], mainStore.searchKeyword, themeVars.value.primaryColor
+      );
+    }
+    if (suggestResult.value.playlists) {
+      suggestResult.value.playlists = markSearchKeyword(
+        suggestResult.value.playlists, ['name'], mainStore.searchKeyword, themeVars.value.primaryColor
+      );
+    }
+   
+ 
   }
 );
 const toSearchResult = (val?:string) => {
