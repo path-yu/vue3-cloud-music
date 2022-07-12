@@ -10,6 +10,7 @@ import { useElementHover } from '@vueuse/core';
 let timeId:any;// 回退滚动位置延时器
 let clearTriggerScrollTimer:any;// 设置滚动是否触发延时器
 let triggerScroll = true;
+let selectLyricLineIndex = 0;
 const mainStore = useMainStore();
 const themeVars = useThemeVars();
 const currentPlayLine = ref(0);
@@ -113,20 +114,25 @@ const handleScroll = (event:Event) => {
   if (!mainStore.currentPlaySong?.isNotLyric) {
     showSelectLyric.value = true;
   }
+  selectLyricLineIndex = selectLyricLine.value!.index;
   clearTimeout(timeId);
   timeId = setTimeout(
     () => {
+      if (selectLyricLineIndex && selectLyricLineIndex !== currentPlayLine.value) {
+        scrollTo(currentScrollTop);
+      }
       selectLyricLine.value = null;
       showSelectLyric.value = false;
-      scrollTo(currentScrollTop);
+      
     }, 2500
   );
 };
 const handlePlayIconClick = () => {
   let time = selectLyricLine.value!.time;
   currentPlayLine.value = selectLyricLine.value!.index;
+  selectLyricLineIndex = currentPlayLine.value;
   showSelectLyric.value = false;
-  triggerScroll = true;
+  triggerScroll = false;
   selectLyricLine.value = null;
   obverser.emit(
     'selectLyricPlay', time
