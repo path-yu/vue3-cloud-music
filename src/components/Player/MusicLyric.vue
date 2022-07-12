@@ -11,6 +11,7 @@ let timeId:any;// 回退滚动位置延时器
 let clearTriggerScrollTimer:any;// 设置滚动是否触发延时器
 let triggerScroll = true;
 let selectLyricLineIndex = 0;
+let pendingSetScrollFn:(() => void)| null = null;
 const mainStore = useMainStore();
 const themeVars = useThemeVars();
 const currentPlayLine = ref(0);
@@ -69,25 +70,39 @@ const currentLyricStyle = computed(() => {
   };
 });
 
-function handlePlayLyric(time:number) {
-  if (mainStore.currentPlaySong.isNotLyric) return;
-  if (!lyricData.value.length) return;
+function handlePlayLyric(
+  time:number, listenScroll=false
+) {
   // 如果当前鼠标正在滚动歌词
   if (selectLyricLine.value) return;
-  let index = rangeLyricList.value.get(time)?.index as number;
-  let currentLyric = lyricData.value[index];
-  if (currentLyric) {
-    currentPlayLine.value = index;
-    setScroll(currentLyric.time);
-  }
+  triggerLyricChange(
+    time, listenScroll
+  );
 }
-const handleSliderChange = (time:number) => {
+const handleSliderChange = (
+  time:number, listenScroll=false
+) => {
+  if (mainStore.showMusicDetail) {
+    triggerLyricChange(
+      time, listenScroll
+    );
+  } else {
+    pendingSetScrollFn = () => triggerLyricChange(
+      time, listenScroll
+    );
+  }
+};
+const triggerLyricChange = (
+  time:number, listenScroll=false
+) => {
   if (mainStore.currentPlaySong.isNotLyric) return;
   if (!lyricData.value.length) return;
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
   if (currentLyric) {
     currentPlayLine.value = currentLyric.index;
-    setScroll(currentLyric.time);
+    setScroll(
+      currentLyric.time, listenScroll
+    );
   }
 };
 const handleScroll = (event:Event) => {
@@ -116,7 +131,6 @@ const handleScroll = (event:Event) => {
       }
       selectLyricLine.value = null;
       showSelectLyric.value = false;
-      
     }, 2500
   );
 };
@@ -179,18 +193,53 @@ const initEleScrollTopMap = () => {
     }
   }
 };
-const setScroll = (time:number) => {
+const setScroll = (
+  time:number, listen=false
+) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
   if (targetELe) {
     currentScrollTop = targetELe!.offsetTop - 175;
-    scrollTo(currentScrollTop);
+    scrollTo(
+      currentScrollTop, listen
+    );
+   
   }
 };
-const scrollTo = (top:number) => {
+const scrollTo = (
+  top:number, listen=false
+) => {
   triggerScroll = false;
   scrollBarRef.value?.scrollTo({ top: top, behavior: 'smooth' });
+  if (listen) {
+    listenScrollComplete(
+      top, () => obverser.emit('scrollComplete')
+    );
+  }
+  
 };
-
+const createListenScrollComplete = (
+  selector='.scrollContainer > .n-scrollbar > .n-scrollbar-container', wait=50
+) => {
+  let scrollTargetEle:null|HTMLElement=null;
+  let timer:any;
+  return async (
+    top:number, callback:()=>void
+  ) => {
+    await nextTick();
+    if (!scrollTargetEle) {
+      scrollTargetEle = document.querySelector(selector) as HTMLElement;
+    }
+    timer = setInterval(
+      () => {
+        if (scrollTargetEle?.scrollTop === top) {
+          callback();
+          clearInterval(timer);
+        }
+      }, wait
+    );
+  };
+};
+let listenScrollComplete = createListenScrollComplete();
 watch(
   isHover, (val) => {
     if (!val) {
@@ -219,6 +268,15 @@ watch(
     if (val && eleScrollTopMap.size === 0) {
       await nextTick();
       initEleScrollTopMap(); 
+    }
+    if (val) {
+      setTimeout(
+        () => {
+          pendingSetScrollFn && pendingSetScrollFn();
+        }, 500
+      );
+    } else {
+      pendingSetScrollFn = null;
     }
   }, { immediate: true }
 );
@@ -253,7 +311,7 @@ onMounted(() => {
   <div ref="scrollContainerRef" class="relative mt-10 scrollContainer">
     <n-scrollbar
       ref="scrollBarRef" style="height: 350px;width:550px"
-      :on-scroll="handleScroll" @wheel="handleWheel"
+      :on-scroll="handleScroll" trigger="none" @wheel="handleWheel"
     >
       <div style="height:175px" />
       <div ref="lyricContainer">
