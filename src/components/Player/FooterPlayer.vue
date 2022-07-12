@@ -206,18 +206,15 @@ const handlePlayError = () => {
 };
 // 处理鼠标在进度条上抬起或者按下操作
 const handleSliderDone = () => {
-  let currentTime = (currentSong.value?.dt * percentage.value) / 100;
-  currentPlayTime.value = dayjs(currentTime).format('mm:ss');
-  audioRef.value!.currentTime = currentTime / 1000;
-  slideValueChange = false;
-  obverser.emit(
-    'timeUpdate', Math.round(currentTime / 1000), true
-  );
   if (mainStore.showMusicDetail) {
     triggerOriginalAudioTimeUpdate = false;
   } else {
     triggerOriginalAudioTimeUpdate = true;
   }
+  let currentTime = (currentSong.value?.dt * percentage.value) / 100;
+  currentPlayTime.value = dayjs(currentTime).format('mm:ss');
+  audioRef.value!.currentTime = currentTime / 1000;
+  slideValueChange = false;
   obverser.emit(
     'slideValueChange', Math.round(currentTime / 1000), true
   );
