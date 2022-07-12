@@ -33,12 +33,8 @@ const handleSliderMouseDown = (e:MouseEvent) => {
     'update:modelValue', percentage
   );
   startWidth = getProgressWidth(percentage);
-  emit(
-    'change', percentage
-  );
-  emit(
-    'onDone', percentage
-  );
+  emit('change');
+  emit('onDone');
 };
 // 在小圆点下按下鼠标
 const handleDotMouseDown = (e:MouseEvent) => {
@@ -81,9 +77,8 @@ const handleMouseUp = (e:MouseEvent) => {
   if (!isTargetClick.value) return;
   isTargetClick.value = false;
   startWidth = getProgressWidth(props.modelValue);
-  emit(
-    'onDone', props.modelValue
-  );
+  emit('change');
+  emit('onDone');
 };
 // 鼠标离开浏览器窗口
 const handleMouseOut = (evt:any) => {
@@ -94,9 +89,8 @@ const handleMouseOut = (evt:any) => {
   if (!to || to.nodeName === 'HTML') {
     if (isTargetClick.value) {
       isTargetClick.value = false;
-      emit(
-        'onDone', props.modelValue
-      );
+      emit('change');
+      emit('onDone');
     }
     
   }
