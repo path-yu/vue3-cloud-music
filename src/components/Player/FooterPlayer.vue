@@ -206,9 +206,9 @@ const handleSliderDone = () => {
   currentPlayTime.value = dayjs(currentTime).format('mm:ss');
   audioRef.value!.currentTime = currentTime / 1000;
   slideValueChange = false;
-  if (audioRef.value?.paused) {
-    tryPlay();
-  }
+  obverser.emit(
+    'timeUpdate', Math.round(currentTime / 1000)
+  );
   obverser.emit(
     'slideValueChange', Math.round(currentTime / 1000)
   );
