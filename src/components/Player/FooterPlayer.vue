@@ -22,6 +22,7 @@ import type { HeartIconExpose } from '../common/HeartIcon.vue';
 import { useAudioLoadProgress } from './hook/useAudioLoadProgress';
 
 let slideValueChange = false;// 记录slider值是否手动发生了改变
+let triggerOriginalAudioTimeUpdate = true;
 const progressWidth = 500;
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
@@ -148,8 +149,11 @@ const handleEnded = () => {
 };
 // 播放进度变化
 const handleTimeupdate = (event:Event) => {
-  const target = event.target as HTMLAudioElement;
-  updatePlayTime(target.currentTime);
+  if (triggerOriginalAudioTimeUpdate) {
+    const target = event.target as HTMLAudioElement;
+    updatePlayTime(target.currentTime);
+  }
+ 
 };
 const updatePlayTime = async (
   time:number, triggerPlay=false
@@ -207,10 +211,15 @@ const handleSliderDone = () => {
   audioRef.value!.currentTime = currentTime / 1000;
   slideValueChange = false;
   obverser.emit(
-    'timeUpdate', Math.round(currentTime / 1000)
+    'timeUpdate', Math.round(currentTime / 1000), true
   );
+  if (mainStore.showMusicDetail) {
+    triggerOriginalAudioTimeUpdate = false;
+  } else {
+    triggerOriginalAudioTimeUpdate = true;
+  }
   obverser.emit(
-    'slideValueChange', Math.round(currentTime / 1000)
+    'slideValueChange', Math.round(currentTime / 1000), true
   );
 };
 const handleSliderChange = () => {
@@ -275,6 +284,11 @@ onMounted(() => {
       updatePlayTime(
         time, true
       );
+    }
+  );
+  obverser.on(
+    'scrollComplete', () => {
+      triggerOriginalAudioTimeUpdate = true;
     }
   );
 });
