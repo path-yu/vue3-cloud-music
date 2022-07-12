@@ -74,14 +74,9 @@ function handlePlayLyric(time:number) {
   if (!lyricData.value.length) return;
   // 如果当前鼠标正在滚动歌词
   if (selectLyricLine.value) return;
-  // 重置状态
-  if (time === 0) {
-    lyricData.value.forEach(item => item.isFind = false);
-  }
   let index = rangeLyricList.value.get(time)?.index as number;
   let currentLyric = lyricData.value[index];
-  if (currentLyric && !currentLyric.isFind) {
-    lyricData.value[index].isFind = true;
+  if (currentLyric) {
     currentPlayLine.value = index;
     setScroll(currentLyric.time);
   }
@@ -91,8 +86,6 @@ const handleSliderChange = (time:number) => {
   if (!lyricData.value.length) return;
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
   if (currentLyric) {
-    lyricData.value.forEach(item => item.isFind = false);
-    lyricData.value[currentLyric.index].isFind = true;
     currentPlayLine.value = currentLyric.index;
     setScroll(currentLyric.time);
   }

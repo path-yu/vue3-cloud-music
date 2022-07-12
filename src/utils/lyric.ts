@@ -16,7 +16,7 @@ export function parseLyric(lrc:string): LineItem[] {
       const sec = Number(String(t.match(/:\d*/i)).slice(1));
       const time = min * 60 + sec;
       if (content !== '') {
-        lrcObj.push({ time: time, content, isFind: false });
+        lrcObj.push({ time: time, content });
       }
     }
   }
@@ -63,7 +63,6 @@ export interface LineItem{
   time:number;
   content:string;
   translateContent?:string;
-  isFind:boolean;
 }
 export interface RangeLyricItem extends LineItem{
   index:number;
