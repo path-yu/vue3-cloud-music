@@ -114,28 +114,10 @@ const togglePlayStatus = async () => {
   }
 };
 const tryPlay = () => {
-  // 歌曲url可能过期
-  audioRef.value?.play().catch(async err => {
-    console.log(err);
-    if (isLoad) return;
-    isLoad = true;
-    await mainStore.setMusicData(
-      mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
-    );
-    localStorage.playList = JSON.stringify(mainStore.playList);
-    isLoad = false;
-    if (currentSong.value?.url && audioRef.value?.paused) {
-      audioRef.value?.load();
-      audioRef.value?.play();
-      mainStore.changePlaying(true);
-    } else {
-      window.$message.error('没有音乐资源');
-    }
-  })
-    .then(() => {
-      mainStore.changePlaying(true);
-    });
-  
+  if (audioRef.value && audioRef.value!.readyState >= 2 && audioRef.value?.paused) {
+    audioRef.value?.play();
+  }
+  mainStore.changePlaying(true);
 };
 const handleEnded = () => {
   // 如果为单曲循环模式,则重新播放
@@ -176,7 +158,7 @@ const updatePlayTime = async (
 };
 // 媒体的第一帧加载完成
 const handleLoadeddata = () => {
-  if (mainStore.playing) {
+  if (mainStore.playing && audioRef.value?.paused) {
     audioRef.value?.play();
   }
   updateBuffer();
@@ -197,20 +179,28 @@ const handleWaiting = () => {
 const handlePlaying = () => {
   mainStore.playWaiting = false;
 };
-
-//播放错误尝试重新播放
-const handlePlayError = () => {
-  if (mainStore.playing) {
-    tryPlay();
+const handleError = async (e:Event) => {
+  // 媒体资源过期,重新获取数据
+  if (audioRef.value?.error!.code === 4) {
+    if (isLoad) return;
+    isLoad = true;
+    const res = await mainStore.setMusicData(
+      mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
+    );
+    localStorage.playList = JSON.stringify(mainStore.playList);
+    isLoad = false;
+    // 重新加载资源
+    if (res.success) {
+      audioRef.value?.load();
+      if (mainStore.playing) {
+        audioRef.value?.play();
+      }
+    }
   }
 };
 // 处理鼠标在进度条上抬起或者按下操作
 const handleSliderDone = () => {
-  if (mainStore.showMusicDetail) {
-    triggerOriginalAudioTimeUpdate = false;
-  } else {
-    triggerOriginalAudioTimeUpdate = true;
-  }
+  triggerOriginalAudioTimeUpdate = false;
   let currentTime = (currentSong.value?.dt * percentage.value) / 100;
   currentPlayTime.value = dayjs(currentTime).format('mm:ss');
   audioRef.value!.currentTime = currentTime / 1000;
@@ -402,7 +392,7 @@ onMounted(() => {
     <audio
       ref="audioRef" :src="currentSong?.url"
       preload="metadata" @timeupdate="handleTimeupdate" @ended="handleEnded"
-      @play="handlePlay" @error="handlePlayError" @waiting="handleWaiting"
+      @play="handlePlay" @error="handleError" @waiting="handleWaiting"
       @playing="handlePlaying" @progress="updateBuffer" @loadeddata="handleLoadeddata"
     />
     <play-list ref="playListRef" />
