@@ -7,8 +7,6 @@ const mainStore = useMainStore();
 
 onMounted(() => {
   mainStore.initDocumentTheme();
-
- 
 });
 </script>
 <template>
