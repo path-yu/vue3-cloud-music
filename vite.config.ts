@@ -11,9 +11,7 @@ export default defineConfig({
     vue(),
     vueJsx(),
     Components({ resolvers: [NaiveUiResolver()] }),
-    viteCompression({
-      deleteOriginFile:true
-    })
+    viteCompression()
   ],
   resolve: {
     alias: {
