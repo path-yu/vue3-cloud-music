@@ -10,9 +10,6 @@ const props = withDefaults(
 );
 // 点击播放全部
 const handleStartPlayAllClick = () => {
-  if (mainStore.playList.length === 0) {
-    return window.$message.error('没有可播放的歌曲');
-  }
   if (mainStore.currentPlayListId === props.songListId) {
     if (mainStore.playing) {
       return window.$message.warning('正在播放中');
