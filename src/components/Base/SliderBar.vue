@@ -1,8 +1,7 @@
 <script setup lang="ts">
 import { useElementHover } from '@vueuse/core';
-import { throttle } from 'lodash';
 import { useThemeVars } from 'naive-ui';
-import { computed, onMounted, onUnmounted, ref, watch } from 'vue';
+import { onMounted, onUnmounted, ref } from 'vue';
 const props = withDefaults(
   defineProps<{
   modelValue:number;  

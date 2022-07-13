@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useMainStore } from '@/stores/main';
 import { Moon, SunnySharp } from '@vicons/ionicons5';
-import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
+import { ArrowForwardIosRound } from '@vicons/material';
 import { UserProfile } from '@vicons/carbon';
 import { ExitToAppRound } from '@vicons/material';
 import { ref, watch } from 'vue';

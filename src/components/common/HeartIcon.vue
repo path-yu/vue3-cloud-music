@@ -14,8 +14,8 @@ const props = withDefaults(
   id:number;
   size?:number;
   triggerClick?:boolean;
-  likeSuccess?:(like:boolean) => void;
-}>(), { size: 20, triggerClick: false }
+  likeSuccess?:((like:boolean) => void) | null;
+}>(), { size: 20, triggerClick: false, likeSuccess: null }
 );
 const mainStore = useMainStore();
 const emit = defineEmits(['likeSuccess']);

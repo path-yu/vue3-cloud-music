@@ -1,12 +1,10 @@
-import { useMainStore } from '@/stores/main';
 import { getPixelColor } from '@/utils/getPixelColor';
 import obverser from '@/utils/obverser';
-import { nextTick, watch, type CSSProperties } from 'vue';
+import { nextTick, type CSSProperties } from 'vue';
 
 export function useBlurLineGradient() {
   let lyricFooterMaskELement:HTMLElement;
   let lyricTopMaskElement:HTMLElement;
-  const mainStore = useMainStore();
   let footerMaskStyle:CSSProperties;
   let topMaskStyle:CSSProperties;
   const eleHeight = 50;

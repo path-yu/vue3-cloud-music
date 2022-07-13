@@ -5,7 +5,7 @@ import { Search, List } from '@vicons/ionicons5';
 import { Delete, Music } from '@vicons/carbon';
 import { ArrowBackIosSharp, ArrowForwardIosRound } from '@vicons/material';
 import { useAsyncState, useElementHover } from '@vueuse/core';
-import { isArray, isPlainObject, throttle } from 'lodash';
+import { throttle } from 'lodash';
 import { isEmptyObject } from '@/utils';
 import { useThemeVars } from 'naive-ui';
 import { computed, nextTick, onMounted, onUnmounted, ref, watch, type CSSProperties } from 'vue';
@@ -35,6 +35,13 @@ const { state: defaultSearchKeyWord } = useAsyncState(
 const { state: hotSearch, isLoading: hotSearchLoading } = useAsyncState(
   getHotSearchList().then(res => res.data.data), {}
 );
+const containerStyle = computed(() => {
+  return {
+    background: themeVars.value.modalColor, zIndex: 1000, width: mainStore.searchKeyword.length > 0
+      ? '420px '
+      : '384px' 
+  };
+});
 const { state: suggestResult, isLoading: suggestLoading, execute } = useAsyncState(
   (val) => getSuggestSearchList(val).then(async res => {
     let result = res.data.result;
@@ -220,8 +227,8 @@ onUnmounted(() => {
       <div 
         v-show="showPopover"
         ref="searchWrapContainerRef"
-        :style="{background:themeVars.modalColor,zIndex:1000,width:mainStore.searchKeyword.length > 0 ? '420px ': '384px'}"
         class="absolute top-10  rounded-sm shadow-lg dark:shadow-black/60 transition-width origin-top-left searchWrapContainer"
+        :style="containerStyle"
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
