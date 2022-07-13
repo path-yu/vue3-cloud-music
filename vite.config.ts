@@ -1,4 +1,3 @@
-import { S } from '@vicons/carbon';
 import vue from '@vitejs/plugin-vue';
 import vueJsx from '@vitejs/plugin-vue-jsx';
 import { NaiveUiResolver } from 'unplugin-vue-components/resolvers';
