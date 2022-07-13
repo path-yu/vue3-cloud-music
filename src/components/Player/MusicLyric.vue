@@ -10,6 +10,7 @@ import { useElementHover } from '@vueuse/core';
 let timeId:any;// 回退滚动位置延时器
 let clearTriggerScrollTimer:any;// 设置滚动是否触发延时器
 let triggerScroll = true;
+let triggerPlayLyric = true;
 let selectLyricLineIndex = 0;
 let pendingSetScrollFn:(() => void)| null = null;
 const mainStore = useMainStore();
@@ -75,6 +76,7 @@ function handlePlayLyric(
 ) {
   // 如果当前鼠标正在滚动歌词
   if (selectLyricLine.value) return;
+  if (!triggerPlayLyric) return;
   triggerLyricChange(
     time, listenScroll
   );
@@ -127,7 +129,10 @@ const handleScroll = (event:Event) => {
   timeId = setTimeout(
     () => {
       if (selectLyricLineIndex && selectLyricLineIndex !== currentPlayLine.value) {
-        scrollTo(currentScrollTop);
+        triggerPlayLyric = false;
+        scrollTo(
+          currentScrollTop, true
+        );
       }
       selectLyricLine.value = null;
       showSelectLyric.value = false;
@@ -212,7 +217,10 @@ const scrollTo = (
   scrollBarRef.value?.scrollTo({ top: top, behavior: 'smooth' });
   if (listen) {
     listenScrollComplete(
-      top, () => obverser.emit('scrollComplete')
+      top, () => {
+        obverser.emit('scrollComplete');
+        triggerPlayLyric = true;
+      }
     );
   }
   
@@ -347,6 +355,7 @@ onMounted(() => {
 
 <style scoped lang="less">
 .lyric-item{
+  width:500px;
   p{
     line-height:35px;
     color:#646463;
