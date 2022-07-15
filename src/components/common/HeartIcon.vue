@@ -8,15 +8,13 @@ export interface HeartIconExpose{
   triggerLike:() => any;
 }
 const themeVars = useThemeVars();
-const props = withDefaults(
-  defineProps<{
+const props = withDefaults(defineProps<{
   like:boolean;
   id:number;
   size?:number;
   triggerClick?:boolean;
   likeSuccess?:((like:boolean) => void) | null;
-}>(), { size: 20, triggerClick: false, likeSuccess: null }
-);
+}>(), { size: 20, triggerClick: false, likeSuccess: null });
 const mainStore = useMainStore();
 const emit = defineEmits(['likeSuccess']);
 const triggerLike = () => {
@@ -26,9 +24,7 @@ const triggerLike = () => {
   let like = props.like
     ? false
     : true;
-  return likeMusic(
-    props.id, like
-  ).then(res => {
+  return likeMusic(props.id, like).then(res => {
     if (res.data.code !== 200) {
       return window.$message.error('喜欢音乐失败!');
     }
@@ -39,9 +35,7 @@ const triggerLike = () => {
       mainStore.removeLikeList(props.id);
       window.$message.success('取消喜欢成功');
     }
-    emit(
-      'likeSuccess', like
-    );
+    emit('likeSuccess', like);
     props.likeSuccess && props.likeSuccess(like);
     return null;
   });

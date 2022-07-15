@@ -103,44 +103,40 @@ const getQrCodePic = () => {
   loopGetQrCodeStatus();
 };
 const loopGetQrCodeStatus = () => {
-  timer = setInterval(
-    async () => {
-      const res = await getQrCodeStatus(qrCodeKey);
-      // 避免当定时器清空时,多余的回调执行
-      if (timer === undefined) return;
-      status.value = res.data.code;
-      if (res.data.code === 803) {
-        clearInterval(timer);
-        window.$message.success('授权登录成功');
-        showModal.value = false;
-        status.value = '';
-        localStorage.isLogin = true;
-        mainStore.isLogin = true;
-        timer = undefined;
-        return;
-      }
-      if (res.data.code === 800) {
-        clearInterval(timer);
-        window.$message.warning('二维码已过期,请重新获取');
-        timer = undefined;
-      }
-    }, 1000
-  );
+  timer = setInterval(async () => {
+    const res = await getQrCodeStatus(qrCodeKey);
+    // 避免当定时器清空时,多余的回调执行
+    if (timer === undefined) return;
+    status.value = res.data.code;
+    if (res.data.code === 803) {
+      clearInterval(timer);
+      window.$message.success('授权登录成功');
+      showModal.value = false;
+      status.value = '';
+      localStorage.isLogin = true;
+      mainStore.isLogin = true;
+      timer = undefined;
+      return;
+    }
+    if (res.data.code === 800) {
+      clearInterval(timer);
+      window.$message.warning('二维码已过期,请重新获取');
+      timer = undefined;
+    }
+  }, 1000);
 };
 const handleRefreshClick = () => {
   qrCodeImg.value = '';
   status.value = '';
   getQsCodeKey();
 };
-watch(
-  showModal, (val) => {
-    if (val) {
-      getQsCodeKey();
-    } else {
-      clearInterval(timer);
-    }
+watch(showModal, (val) => {
+  if (val) {
+    getQsCodeKey();
+  } else {
+    clearInterval(timer);
   }
-);
+});
 onUnmounted(() => {
   clearInterval(timer);
 });

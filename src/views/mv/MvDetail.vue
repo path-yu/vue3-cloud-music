@@ -35,9 +35,7 @@ const commentContent = ref('');
 const commentBtnLoading = ref(false);
 const router = useRouter();
 const mainStore = useMainStore();
-const getMvVideoUrl = (
-  mvId:number=+mvid.value, setReloadLoading=false
-) => {
+const getMvVideoUrl = (mvId:number=+mvid.value, setReloadLoading=false) => {
   getVideoUrl(+mvId).then(res => {
     mvUrl.value = res.data.data.url;
     if (!loadingMaps.reloadLoading) {
@@ -97,40 +95,32 @@ const handleImgClick = async (id:number) => {
   videoPlayRef.value?.stop();
   router.push(`/mv/${id}`);
 };
-watch(
-  () => route.path, (val:string) => {
-    if (route.path.includes('mv')) {
-      reloadMvData();
-    }
-  } 
-);
+watch(() => route.path, (val:string) => {
+  if (route.path.includes('mv')) {
+    reloadMvData();
+  }
+});
 const reloadMvData = () => {
   let id = +route.params.id;
   if (id) {
     loadingMaps.reloadLoading = true;
-    getMvVideoUrl(
-      id, true
-    );
+    getMvVideoUrl(id, true);
     mvid.value = id.toString();
     getMvDetailInfo(id);
     getSimiMvList(id);
     getMvCommentInfo(id.toString());
   }
 };
-watch(
-  pageParams, () => {
-    backTopEle = document.querySelector('.n-back-top') as HTMLElement;
-    backTopEle && backTopEle.click();
-    getMvCommentInfo();
-  }
-);
+watch(pageParams, () => {
+  backTopEle = document.querySelector('.n-back-top') as HTMLElement;
+  backTopEle && backTopEle.click();
+  getMvCommentInfo();
+});
 const updateCommentList = (value:any) => {
   mvComment.value.total += 1;
   mvComment.value.comments.unshift(value);
 };
-const updateCommentLiked = (
-  data:{liked:boolean, index:number}, isHot:boolean
-) => {
+const updateCommentLiked = (data:{liked:boolean, index:number}, isHot:boolean) => {
   let { index, liked } = data;
   if (isHot) {
     mvComment.value.hotComments[index].liked = liked;

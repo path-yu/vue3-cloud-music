@@ -1,16 +1,10 @@
 const { log } = require('console');
 const fs = require('fs');
 const path = require('path');
-fs.readFile(
-  path.resolve(
-    __dirname, './location.json'
-  ), (
-    err, data
-  ) => {
-    if (err) throw err;
-    formate(JSON.parse(data));
-  }
-);
+fs.readFile(path.resolve(__dirname, './location.json'), (err, data) => {
+  if (err) throw err;
+  formate(JSON.parse(data));
+});
 
 const formate = (locationJson) => {
   let arr = [];
@@ -50,9 +44,7 @@ const formate = (locationJson) => {
           cityList: []
         };
         if (item.label.includes('自治区')) {
-          item.label = item.label.replace(
-            /壮族自治区|回族自治区|维吾尔自治区|自治区/, ''
-          );
+          item.label = item.label.replace(/壮族自治区|回族自治区|维吾尔自治区|自治区/, '');
         }
         for (let cityKey in val.cities) {
           item.cityList.push({
@@ -67,9 +59,7 @@ const formate = (locationJson) => {
    
   }
   fs.writeFile(
-    path.resolve(
-      __dirname, './region.json'
-    ), JSON.stringify(arr), (err) => {
+    path.resolve(__dirname, './region.json'), JSON.stringify(arr), (err) => {
       if (err) throw err;
       console.log('写入成功');
     }

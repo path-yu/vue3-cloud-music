@@ -11,14 +11,10 @@ const emit = defineEmits(['update:modelValue']);
 let activeIndex = ref(0);
 let categoryValue = ref(props.list[0]);
 
-const handleClick = (
-  item:string, index:number
-) => {
+const handleClick = (item:string, index:number) => {
   activeIndex.value = index;
   categoryValue.value = item;
-  emit(
-    'update:modelValue', item
-  );
+  emit('update:modelValue', item);
 };
 </script>
 

@@ -19,27 +19,19 @@ const currentIndex = ref(0);
 const {
   state: banners,
   isLoading 
-} = useAsyncState(
-  getBanner().then(res => res.data.banners), []
-);
+} = useAsyncState(getBanner().then(res => res.data.banners), []);
 const {
   state: SongsList,
   isLoading: SongsListIsLoading 
-} = useAsyncState(
-  getPersonalized().then(res => res.data.result), []
-);
+} = useAsyncState(getPersonalized().then(res => res.data.result), []);
 const {
   state: newSongList,
   isLoading: newSongListIsLoading 
-} = useAsyncState(
-  getNewSong().then(res => {
-    return mainStore.mapSongListAddLike(mapSongs(res.data.result));
-  }), []
-);
+} = useAsyncState(getNewSong().then(res => {
+  return mainStore.mapSongListAddLike(mapSongs(res.data.result));
+}), []);
 const { state: MVList, isLoading: MVIsLoading }
-  = useAsyncState(
-    getRecommendMv().then(res => res.data.result), []
-  );
+  = useAsyncState(getRecommendMv().then(res => res.data.result), []);
 const onlyId = nanoid();
 const isHovered = useElementHover(hoverRef);
 const mainStore = useMainStore();

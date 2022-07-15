@@ -29,12 +29,8 @@ const backHover = useElementHover(backIconRef);
 const forwardHover = useElementHover(forwardIconRef);
 const { backPath, forwardPath } = userHistory();
 const router = useRouter();
-const { state: defaultSearchKeyWord } = useAsyncState(
-  getDefaultSearchKeyword().then(res => res.data.data), {}
-);
-const { state: hotSearch, isLoading: hotSearchLoading } = useAsyncState(
-  getHotSearchList().then(res => res.data.data), {}
-);
+const { state: defaultSearchKeyWord } = useAsyncState(getDefaultSearchKeyword().then(res => res.data.data), {});
+const { state: hotSearch, isLoading: hotSearchLoading } = useAsyncState(getHotSearchList().then(res => res.data.data), {});
 const containerStyle = computed(() => {
   return {
     background: themeVars.value.modalColor, zIndex: 1000, width: mainStore.searchKeyword.length > 0
@@ -75,37 +71,35 @@ const historyListStyle = computed<CSSProperties>(() => {
   };
 });
 const handleArrowClick = (type: 'back' | 'forward') => {
-  if (type === 'back' && backPath) {
+  if (type === 'back' && backPath.value) {
     history.back();
     mainStore.setShowMusicDetail(false);
   }
-  if (type === 'forward' && forwardPath) {
+  if (type === 'forward' && forwardPath.value) {
     history.forward();
     mainStore.setShowMusicDetail(false);
   }
 };
-watch(
-  [backHover, forwardHover], (value: boolean[]) => {
-    let [backIsHover, forwardIsHover] = value;
-    let backIconEle = (backIconRef.value as HTMLSpanElement);
-    let forwardIconEle = (forwardIconRef.value as HTMLSpanElement);
+watch([backHover, forwardHover], (value: boolean[]) => {
+  let [backIsHover, forwardIsHover] = value;
+  let backIconEle = (backIconRef.value as HTMLSpanElement);
+  let forwardIconEle = (forwardIconRef.value as HTMLSpanElement);
 
-    if (backPath.value) {
-      backIsHover
-        ? backIconEle.style.color = themeVars.value.primaryColor
-        : backIconEle.style.color = '';
-    } else {
-      backIconEle.style.color = '';
-    }
-    if (forwardPath.value) {
-      forwardIsHover
-        ? forwardIconEle.style.color = themeVars.value.primaryColor
-        : forwardIconEle.style.color = '';
-    } else {
-      forwardIconEle.style.color = '';
-    }
+  if (backPath.value) {
+    backIsHover
+      ? backIconEle.style.color = themeVars.value.primaryColor
+      : backIconEle.style.color = '';
+  } else {
+    backIconEle.style.color = '';
   }
-);
+  if (forwardPath.value) {
+    forwardIsHover
+      ? forwardIconEle.style.color = themeVars.value.primaryColor
+      : forwardIconEle.style.color = '';
+  } else {
+    forwardIconEle.style.color = '';
+  }
+});
 const toSearchResult = (val?:string) => {
   if (!mainStore.searchKeyword && defaultSearchKeyWord.value?.realkeyword && !val) {
     mainStore.searchKeyword = defaultSearchKeyWord.value.realkeyword;
@@ -122,14 +116,10 @@ const toSearchResult = (val?:string) => {
   });
   
 };
-const getSearchSuggest = (
-  val:string, oldVal:string
-) => {
+const getSearchSuggest = (val:string, oldVal:string) => {
   if (val === oldVal) return;
   suggestResult.value = {};
-  execute(
-    0, val
-  );
+  execute(0, val);
 };
 const handleKeyDown = (e:KeyboardEvent) => {
   if (showPopover.value && e.code === 'Enter') {
@@ -157,9 +147,7 @@ const handleSearchSongClick = async(song:any) => {
   }
   showPopover.value = false;
 };
-const handleClearClick = (
-  e:MouseEvent, index:number
-) => {
+const handleClearClick = (e:MouseEvent, index:number) => {
   e.stopPropagation();
   mainStore.removeSearchHistory(index);
 };
@@ -167,32 +155,20 @@ const handleSearchPlayListClick = (id:string) => {
   router.push(`/songList/${id}`);
   showPopover.value = false;
 };
-watch(
-  () => mainStore.searchKeyword, throttle(
-    getSearchSuggest, 300
-  )
-);
-watch(
-  showPopover, async (val) => {
-    if (val && defaultHeight.value === '100%') {
-      await nextTick();
-      defaultHeight.value = document.querySelector('#historyList')?.clientHeight + 'px';
-    }
+watch(() => mainStore.searchKeyword, throttle(getSearchSuggest, 300));
+watch(showPopover, async (val) => {
+  if (val && defaultHeight.value === '100%') {
+    await nextTick();
+    defaultHeight.value = document.querySelector('#historyList')?.clientHeight + 'px';
   }
-);
+});
 onMounted(() => {
-  document.body.addEventListener(
-    'keydown', handleKeyDown
-  );
-  document.body.addEventListener(
-    'click', handleBodyClick
-  );
+  document.body.addEventListener('keydown', handleKeyDown);
+  document.body.addEventListener('click', handleBodyClick);
 });
 
 onUnmounted(() => {
-  document.body.removeEventListener(
-    'keydown', handleKeyDown
-  );
+  document.body.removeEventListener('keydown', handleKeyDown);
 });
 </script>
 <template>

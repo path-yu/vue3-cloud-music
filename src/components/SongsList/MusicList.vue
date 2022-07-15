@@ -35,9 +35,7 @@ export default defineComponent({
     rawSongList: { type: Array, default: () => [] }
   },
   emits: ['updateMusicListLike'],
-  setup(
-    props, ctx
-  ) {
+  setup(props, ctx) {
     const router = useRouter();
     const themeVars = useThemeVars();
     const mainStore = useMainStore();
@@ -52,9 +50,7 @@ export default defineComponent({
         title: '操作',
         key: 'row',
         width: 50,
-        render (
-          row, index
-        ) {
+        render (row, index) {
           let songList = (props.rawSongList.length
             ? props.rawSongList
             : props.songList) as any[];
@@ -75,9 +71,7 @@ export default defineComponent({
             <heart-icon
               id={row.id}
               like={row.like}
-              size={20} likeSuccess={(like:boolean) => likeSuccess(
-                like, index
-              )}
+              size={20} likeSuccess={(like:boolean) => likeSuccess(like, index)}
             /> 
           </div>;
         }
@@ -139,17 +133,13 @@ export default defineComponent({
         }
       }
     ];
-    const rowClassName = (
-      _row: any, index:number
-    ) => {
+    const rowClassName = (_row: any, index:number) => {
       if (index === +mainStore.currentPlayIndex) {
         return 'current-play bg-gray-200/80 dark:bg-gray-200/20';
       }
       return '';
     };
-    const likeSuccess = (
-      like:boolean, index:number
-    ) => {
+    const likeSuccess = (like:boolean, index:number) => {
       ctx.emit(
         'updateMusicListLike', like, index
       );
@@ -165,9 +155,7 @@ export default defineComponent({
           row-class-name={rowClassName}
           virtual-scroll
           loading={props.loading}
-          row-props={(
-            row: any, index:number
-          ) => {
+          row-props={(row: any, index:number) => {
             let rawIndex = row.isSearch
               ? row.index
               : index;

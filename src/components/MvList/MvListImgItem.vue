@@ -2,27 +2,23 @@
 import { formateNumber } from '@/utils/index';
 import { Play } from '@vicons/carbon';
 import { useRouter } from 'vue-router';
-const props = withDefaults(
-  defineProps<{
+const props = withDefaults(defineProps<{
   item:any;
   height?:string;
   isToDetail?:boolean;
   borderRadius?:string;
 }>(), {
-    height: '9vw',
-    isToDetail: true,
-    borderRadius: '10px'
-  }
-);
+  height: '9vw',
+  isToDetail: true,
+  borderRadius: '10px'
+});
 const emit = defineEmits(['handle-img-click']);
 const router = useRouter();
 const toDetail = (id:number) => {
   if (props.isToDetail) {
     router.push(`/mv/${id}`);
   }
-  emit(
-    'handle-img-click', id
-  );
+  emit('handle-img-click', id);
 };
 const styleBorderRadius = { borderRadius: props.borderRadius };
 </script>

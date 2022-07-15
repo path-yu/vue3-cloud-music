@@ -5,8 +5,7 @@ import { sendComment } from '@/service';
 const showModal = ref(false);
 const commentBtnLoading = ref(false);
 const commentContent = ref('');
-const props = withDefaults(
-  defineProps<{
+const props = withDefaults(defineProps<{
   commentPlaceholder?:string;
   title:string;
   resourceId:number;//资源id
@@ -14,8 +13,7 @@ const props = withDefaults(
   commentId?:number;
   t?:number;//评论类型1: 发送 2: 回复
   updateCommentList:(comment:any)=>void;
-}>(), { commentPlaceholder: '请输入评论', title: '评论', type: 1, commentId: 0, t: 2 }
-);
+}>(), { commentPlaceholder: '请输入评论', title: '评论', type: 1, commentId: 0, t: 2 });
 
 defineExpose({
   show() {

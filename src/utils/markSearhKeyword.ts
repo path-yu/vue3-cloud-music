@@ -40,16 +40,10 @@ const replaceMarkValue = (
 ) => {
   if (value.includes(keyword)) {
     let markValue = value.
-      replace(
-        keyword, `<span style="color:${color}">${keyword}</span>`
-      );
+      replace(keyword, `<span style="color:${color}">${keyword}</span>`);
     if (value !== keyword) {
-      markValue = markValue.padStart(
-        markValue.length+6, '<span>'
-      );
-      markValue = markValue.padEnd(
-        markValue.length+7, '</span>'
-      );
+      markValue = markValue.padStart(markValue.length+6, '<span>');
+      markValue = markValue.padEnd(markValue.length+7, '</span>');
     }
     return markValue; 
   }

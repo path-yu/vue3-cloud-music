@@ -28,13 +28,9 @@ export function updateUserInfo(data:{
   return service.get('/user/update?'+params);
 }
 // 更新头像
-export function updateUserAvatar(
-  file: File, imgSize:number
-) {
+export function updateUserAvatar(file: File, imgSize:number) {
   const formData = new FormData();
-  formData.append(
-    'imgFile', file
-  );
+  formData.append('imgFile', file);
   const params = { timestamp: Date.now(), imgSize };
   const url = '/avatar/upload?'+qs.stringify(params);
   return service.post(

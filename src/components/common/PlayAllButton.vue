@@ -2,12 +2,10 @@
 import { useMainStore } from '@/stores/main';
 import { Play, AddOutline } from '@vicons/ionicons5';
 const mainStore = useMainStore();
-const props = withDefaults(
-  defineProps<{
+const props = withDefaults(defineProps<{
   songList?:any[]|undefined;
   songListId:string;
-}>(), { songList: () => [] }
-);
+}>(), { songList: () => [] });
 // 点击播放全部
 const handleStartPlayAllClick = () => {
   if (mainStore.currentPlayListId === props.songListId) {
@@ -27,9 +25,7 @@ const handleStartPlayAllClick = () => {
 const handleAddToAllPlayListClick = () => {
   // 搜索单曲歌单id
   if (!mainStore.playListIdList.includes(props.songListId)) {
-    return mainStore.addPlaylist(
-      props.songList, props.songListId
-    );
+    return mainStore.addPlaylist(props.songList, props.songListId);
   } else {
     return window.$message.warning('已添加到播放列表');
   }

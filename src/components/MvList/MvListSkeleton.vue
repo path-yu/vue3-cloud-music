@@ -1,9 +1,7 @@
 <script setup lang="ts">
-withDefaults(
-  defineProps<{
+withDefaults(defineProps<{
   count?:number;
-}>(), { count: 0 }
-);
+}>(), { count: 0 });
 </script>
 
 <template>

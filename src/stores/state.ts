@@ -34,39 +34,23 @@ const state:StoreState = {
   backTopLeft: initState(
     'backTopLeft', '7vw', false
   ),
-  isLogin: initState(
-    'isLogin', false
-  ),
-  userProfile: initState(
-    'userProfile', {}
-  ),
-  likeSongs: initState(
-    'likeSongs', []
-  ),
-  playList: initState(
-    'playList', []
-  ),
-  currentPlayIndex: initState(
-    'currentPlayIndex', 0
-  ),
+  isLogin: initState('isLogin', false),
+  userProfile: initState('userProfile', {}),
+  likeSongs: initState('likeSongs', []),
+  playList: initState('playList', []),
+  currentPlayIndex: initState('currentPlayIndex', 0),
   playMode: initState(
     'playMode', 'order', false
   ),
   currentPlayListId: initState(
     'currentPlayListId', '', false
   ),
-  playing: false,
-  mySubscribeSongList: initState(
-    'mySubscribeSongList', []
-  ),
-  playListIdList: initState(
-    'playListIdList', []
-  ),
-  searchHistory: initState(
-    'searchHistory', []
-  ),
+  mySubscribeSongList: initState('mySubscribeSongList', []),
+  playListIdList: initState('playListIdList', []),
+  searchHistory: initState('searchHistory', []),
   searchKeyword: '',
-  playWaiting: false,
+  playWaiting: true,
+  playing: false,
   showMusicDetail: false
 };
 

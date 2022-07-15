@@ -28,9 +28,7 @@ const pageParams = reactive({
   page: 1,
   pageSize: 50
 });
-const { wrapRequest, loadSuccess, requestLoading: listIsLoading } = useMemorizeRequest(
-  getMvList, 'getMvList'
-);
+const { wrapRequest, loadSuccess, requestLoading: listIsLoading } = useMemorizeRequest(getMvList, 'getMvList');
 const themeVars = useThemeVars();
 const fetchList = (setPageCount = true) => {
   let data = getParams();
@@ -63,20 +61,16 @@ const getParams = () => {
 
 fetchList();
 
-watch(
-  params, () => {
-    fetchList();
-  }
-);
+watch(params, () => {
+  fetchList();
+});
 
-watch(
-  [() => pageParams.page, () => pageParams.pageSize], async () => {
-    fetchList(false);
-    // 回到顶部
-    await nextTick();
-    (document.querySelector('.n-back-top') as HTMLElement).click();
-  }
-);
+watch([() => pageParams.page, () => pageParams.pageSize], async () => {
+  fetchList(false);
+  // 回到顶部
+  await nextTick();
+  (document.querySelector('.n-back-top') as HTMLElement).click();
+});
 
 </script>
 

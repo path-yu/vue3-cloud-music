@@ -2,14 +2,12 @@
 import { useElementHover } from '@vueuse/core';
 import { useThemeVars } from 'naive-ui';
 import { onMounted, onUnmounted, ref } from 'vue';
-const props = withDefaults(
-  defineProps<{
+const props = withDefaults(defineProps<{
   modelValue:number;  
   loadValue?:number;
   width?:number;
   height?:number;
-}>(), { width: 500, height: 4, loadValue: 0 }
-);
+}>(), { width: 500, height: 4, loadValue: 0 });
 let isTargetClick = ref(false);
 let startWidth = props.width * (props.modelValue / 100);
 const mousePosition = { y: 0, x: 0 };// 鼠标坐标 
@@ -28,9 +26,7 @@ const handleSliderMouseDown = (e:MouseEvent) => {
   if (isTargetClick.value) return;
   let { offsetX } = e;
   let percentage = calcPercentage(offsetX);
-  emit(
-    'update:modelValue', percentage
-  );
+  emit('update:modelValue', percentage);
   startWidth = getProgressWidth(percentage);
   emit('change');
   emit('onDone');
@@ -46,13 +42,9 @@ const handleMouseMove = (e:MouseEvent) => {
   if (!isTargetClick.value) return;
   moveDiff.x += e.clientX - mousePosition.x;
   if (moveDiff.x > 0) {
-    moveDiff.x = Math.min(
-      props.width, moveDiff.x
-    );
+    moveDiff.x = Math.min(props.width, moveDiff.x);
   } else {
-    moveDiff.x = Math.max(
-      -props.width, moveDiff.x
-    );
+    moveDiff.x = Math.max(-props.width, moveDiff.x);
   }
   let value;
   if (e.clientX > mousePosition.x) {
@@ -61,12 +53,8 @@ const handleMouseMove = (e:MouseEvent) => {
     value = calcPercentage(startWidth + moveDiff.x);
   }
   if (value >= 0 && value <= 100 && value !== props.modelValue) {
-    emit(
-      'update:modelValue', value
-    );
-    emit(
-      'change', value
-    );
+    emit('update:modelValue', value);
+    emit('change', value);
   }
   mousePosition.x = e.clientX;
 };
@@ -96,23 +84,13 @@ const handleMouseOut = (evt:any) => {
 };
 const getProgressWidth = (percentage:number) => props.width * (percentage / 100);
 onMounted(() => {
-  document.body.addEventListener(
-    'mousemove', handleMouseMove
-  );
-  document.body.addEventListener(
-    'mouseup', handleMouseUp
-  );
-  document.body.addEventListener(
-    'mouseout', handleMouseOut
-  );
+  document.body.addEventListener('mousemove', handleMouseMove);
+  document.body.addEventListener('mouseup', handleMouseUp);
+  document.body.addEventListener('mouseout', handleMouseOut);
 });
 onUnmounted(() => {
-  document.body.removeEventListener(
-    'mousemove', handleMouseMove
-  );
-  document.body.removeEventListener(
-    'mouseup', handleMouseUp
-  );
+  document.body.removeEventListener('mousemove', handleMouseMove);
+  document.body.removeEventListener('mouseup', handleMouseUp);
  
 });
 

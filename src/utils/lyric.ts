@@ -7,9 +7,7 @@ export function parseLyric(lrc:string): LineItem[] {
     const timeReg = /\[\d*:\d*((\.|:)\d*)*\]/g;
     const timeRegExpArr = lyric.match(timeReg);
     if (!timeRegExpArr) continue;
-    const content = lyric.replace(
-      timeReg, ''
-    );
+    const content = lyric.replace(timeReg, '');
     for (let k = 0, h = timeRegExpArr.length; k < h; k++) {
       const t = timeRegExpArr[k];
       const min = Number(String(t.match(/\[\d*/i)).slice(1));
@@ -37,24 +35,20 @@ export function parseRangeLyric(lyricList:LineItem[]) {
     const cur = lyricList[currentIndex];
     const next = lyricList[nextIndex];
     for (let start = cur.time; start < next.time; start++) {
-      map.set(
-        start, {
-          ...cur,
-          index: currentIndex
-        }
-      );
+      map.set(start, {
+        ...cur,
+        index: currentIndex
+      });
     }
     if (next) {
       currentIndex++;
       nextIndex++;
     }
     if (currentIndex === lyricList.length - 1) {
-      map.set(
-        next.time, {
-          ...next,
-          index: currentIndex
-        }
-      );
+      map.set(next.time, {
+        ...next,
+        index: currentIndex
+      });
     }
   }
   return map;

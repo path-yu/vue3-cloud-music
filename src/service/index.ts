@@ -7,9 +7,7 @@ export function getBanner() {
 export function batchRequest(data: {
   [key: string]: any
 }) {
-  return service.post(
-    '/batch', data
-  );
+  return service.post('/batch', data);
 }
 export * from './mv';
 export * from './playlist';

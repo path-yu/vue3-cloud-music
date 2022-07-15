@@ -13,13 +13,7 @@ export default defineConfig({
     Components({ resolvers: [NaiveUiResolver()] }),
     viteCompression()
   ],
-  resolve: {
-    alias: {
-      '@': fileURLToPath(new URL(
-        './src', import.meta.url
-      ))
-    }
-  },
+  resolve: { alias: { '@': fileURLToPath(new URL('./src', import.meta.url)) } },
   server: {
     port: 8081,
     open: 'http://localhost:8081'

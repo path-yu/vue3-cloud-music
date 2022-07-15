@@ -19,15 +19,13 @@ const computedCircleStyle = (index:number) => {
     border: '1px solid #232426'
   };
 };
-watch(
-  [() => mainStore.playing, () => mainStore.playWaiting], ([playing, playWaiting]) => {
-    if (playing && !playWaiting) {
-      cancelAnimationFrameId = window.requestAnimationFrame(loopSetRotate);
-    } else {
-      window.cancelAnimationFrame(cancelAnimationFrameId);
-    }
+watch([() => mainStore.playing, () => mainStore.playWaiting], ([playing, playWaiting]) => {
+  if (playing && !playWaiting) {
+    cancelAnimationFrameId = window.requestAnimationFrame(loopSetRotate);
+  } else {
+    window.cancelAnimationFrame(cancelAnimationFrameId);
   }
-);
+});
 let start:undefined|number;
 const loopSetRotate = (timestamp:number) => {
   if (start === undefined) {

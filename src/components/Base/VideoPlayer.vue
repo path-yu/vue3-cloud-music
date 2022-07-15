@@ -41,20 +41,16 @@ defineExpose({
   } 
 });
 
-watch(
-  () => props.url, (
-    url, oldUrl
-  ) => {
-    if (url && url !== oldUrl) {
-      if (!player) {
-        initPlayer();
-      } else {
-        player.src = url;
-        player.reload();
-      }
+watch(() => props.url, (url, oldUrl) => {
+  if (url && url !== oldUrl) {
+    if (!player) {
+      initPlayer();
+    } else {
+      player.src = url;
+      player.reload();
     }
   }
-);
+});
 onDeactivated(() => {
   player.pause();
 });

@@ -20,13 +20,9 @@ export const useMemorizeRequest = (
     const key = getKey(params);
     const request = () => {
       const requestData = requestFn(params);
-      cacheResponseMap.set(
-        key, requestData
-      );
+      cacheResponseMap.set(key, requestData);
       requestLoadingMaps.value[requestKey] = true;
-      cacheTimeMap.set(
-        key, Date.now()
-      );
+      cacheTimeMap.set(key, Date.now());
       return requestData;
     };
     

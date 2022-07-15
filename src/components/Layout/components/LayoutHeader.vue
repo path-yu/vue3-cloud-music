@@ -18,28 +18,22 @@ const userDetail = ref<AnyObject>();
 const showUserPopover = ref(false);
 const signBtnLoading = ref(false);
 
-watch(
-  () => active.value, () => {
-    mainStore.changeTheme();
-  }
-);
+watch(() => active.value, () => {
+  mainStore.changeTheme();
+});
 // 监听登录状态 获取用户信息
-watch(
-  () => mainStore.isLogin, (val) => {
-    if (val) {
-      getUserProfile();
-    }
+watch(() => mainStore.isLogin, (val) => {
+  if (val) {
+    getUserProfile();
   }
-);
-onClickOutside(
-  popoverContainerRef, (event:MouseEvent) => {
-    let target = event.target as HTMLElement;
-    // 如果点击的不是不是触发弹出选择的元素
-    if (!target.classList.contains('trigger')) {
-      showUserPopover.value = false;
-    } 
-  }
-);
+});
+onClickOutside(popoverContainerRef, (event:MouseEvent) => {
+  let target = event.target as HTMLElement;
+  // 如果点击的不是不是触发弹出选择的元素
+  if (!target.classList.contains('trigger')) {
+    showUserPopover.value = false;
+  } 
+});
 // 获取用户账号数据
 const getUserProfile = () => {
   // 如果已经设置过,则从store读取userId
@@ -74,9 +68,7 @@ const checkLoginStatus = () => {
   });
 };
 const handlePositiveClick = () => {
-  window.$message.loading(
-    '退出登录中...', { duration: 0 }
-  );
+  window.$message.loading('退出登录中...', { duration: 0 });
   logout().then(res => {
     if (res.data.code === 200) {
       mainStore.isLogin = false;
@@ -114,7 +106,6 @@ if (mainStore.isLogin) {
       <span class=" truncate">奇妙音乐屋！</span>
       <layout-header-search />
     </div>
-
     <div class="flex items-center">
       <!-- 用户信息入口 -->
       <div v-if="mainStore.isLogin">

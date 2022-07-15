@@ -61,9 +61,7 @@ const router = createRouter({
     }
   ]
 });
-export const registerRouteHook = (
-  beforeEachFn: NavigationGuardWithThis<undefined>, beforeResolveFn: NavigationGuardWithThis<undefined>
-) => {
+export const registerRouteHook = (beforeEachFn: NavigationGuardWithThis<undefined>, beforeResolveFn: NavigationGuardWithThis<undefined>) => {
   router.beforeEach(beforeEachFn);
   router.beforeResolve(beforeResolveFn);
 };

@@ -133,19 +133,13 @@ const rules = {
 };
 const indexMap = new Map();
 const initProvinceIndex = () => {
-  regionList.forEach((
-    val, index
-  ) => {
+  regionList.forEach((val, index) => {
     if (val.provinceList) {
       val.provinceList.forEach((item) => {
-        indexMap.set(
-          Object.values(item)[0], index
-        );
+        indexMap.set(Object.values(item)[0], index);
       });
     }
-    indexMap.set(
-      val.value, index
-    );
+    indexMap.set(val.value, index);
   });
 };
 
@@ -199,40 +193,30 @@ const provinceOption = ref(regionList);
 const cityOption = ref(regionList[0].cityList);
 const router = useRouter();
 
-watch(
-  () => model.value.province, (val) => {
-    let index = indexMap.get(val);
-    let target = regionList[index];
-    cityOption.value = target.cityList;
-    model.value.city = target.cityList[0].value;
-  }
-);
-watch(
-  () => birthday.value.year, (val) => {
-    if (isInit) return;
-    birthday.value.month = 1;
-    dayOption.value = getDayOptions(
-      1, +val
-    );
-    birthday.value.day = 1;
-    changeModelBirthday();
-  }
-);
-watch(
-  () => birthday.value.month, (val) => {
-    if (isInit) return;
-    dayOption.value = getDayOptions(+val);
-    birthday.value.day = 1;
-    changeModelBirthday();
-  }
-);
+watch(() => model.value.province, (val) => {
+  let index = indexMap.get(val);
+  let target = regionList[index];
+  cityOption.value = target.cityList;
+  model.value.city = target.cityList[0].value;
+});
+watch(() => birthday.value.year, (val) => {
+  if (isInit) return;
+  birthday.value.month = 1;
+  dayOption.value = getDayOptions(1, +val);
+  birthday.value.day = 1;
+  changeModelBirthday();
+});
+watch(() => birthday.value.month, (val) => {
+  if (isInit) return;
+  dayOption.value = getDayOptions(+val);
+  birthday.value.day = 1;
+  changeModelBirthday();
+});
 watch(
   model, (val) => {
     // 对比是否发生了变化
     if (rawModel) {
-      btnSaveDisabled.value = compareObject(
-        toRaw(val), rawModel
-      );
+      btnSaveDisabled.value = compareObject(toRaw(val), rawModel);
     }
   }, { deep: true }
 );
@@ -314,9 +298,7 @@ const handleFileChange = async (event: Event) => {
     let file = target.files[0];
     updateAvatarLoading.value = true;
     let imgSize = await getImgSize(file);
-    updateUserAvatar(
-      file, imgSize.width
-    ).then((res) => {
+    updateUserAvatar(file, imgSize.width).then((res) => {
       if (res.data.code === 200) {
         window.$message.success('修改头像成功!');
         updateAvatarLoading.value = false;

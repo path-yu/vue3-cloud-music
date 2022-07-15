@@ -51,9 +51,7 @@ const starButtonDisabled = computed(() => {
    && mainStore.userProfile
     && songListDetail.value?.userId === mainStore.userProfile?.profile?.userId;
 });
-const { wrapRequest: wrapFetchPlayList, requestLoading: isLoading, loadSuccess: loadPlayListSuccess, removeCache } = useMemorizeRequest(
-  getPlaylistDetail, 'getPlaylistDetail'
-);
+const { wrapRequest: wrapFetchPlayList, requestLoading: isLoading, loadSuccess: loadPlayListSuccess, removeCache } = useMemorizeRequest(getPlaylistDetail, 'getPlaylistDetail');
 
 // 获取歌单详情
 const fetchSongListDetail = (id:string=route.params.id as string) => {
@@ -69,9 +67,7 @@ const fetchSongListDetail = (id:string=route.params.id as string) => {
     loadPlayListSuccess();
   });
 };
-const { wrapRequest: wrapFetchPlayListComment, requestLoading: isCommentLoading, loadSuccess: loadPlayListCommentSuccess } = useMemorizeRequest(
-  getPlaylistComment, 'getPlaylistComment'
-);
+const { wrapRequest: wrapFetchPlayListComment, requestLoading: isCommentLoading, loadSuccess: loadPlayListCommentSuccess } = useMemorizeRequest(getPlaylistComment, 'getPlaylistComment');
 // 获取歌单评论
 const fetchSongListComment = (id:string=route.params.id as string) => {
   let params:{
@@ -90,9 +86,7 @@ const fetchSongListComment = (id:string=route.params.id as string) => {
     loadPlayListCommentSuccess();
   });
 };
-const { wrapRequest, requestLoading, loadSuccess } = useMemorizeRequest(
-  getPlaylistAllDetail, 'getPlaylistAllDetail'
-);
+const { wrapRequest, requestLoading, loadSuccess } = useMemorizeRequest(getPlaylistAllDetail, 'getPlaylistAllDetail');
 
 const fetchMusicList = (id:string=route.params.id as string) => {
   wrapRequest({ id }).then((res: { data: { code: number; songs: any[]; }; }) => {
@@ -100,12 +94,8 @@ const fetchMusicList = (id:string=route.params.id as string) => {
       let data = mainStore.mapSongListAddLike(res.data.songs);
       rawSongList.value = cloneDeep(data);
       songList.value = data;
-      rawSongList.value.forEach((
-        item: any, index: number
-      ) => {
-        songListIndexMap.set(
-          item.id, index
-        );
+      rawSongList.value.forEach((item: any, index: number) => {
+        songListIndexMap.set(item.id, index);
       });
       loadSuccess();
     }
@@ -126,38 +116,28 @@ const searchSongList = (keyword:string) => {
     result, ['name', 'formatAuthor', ['al', 'name']], keyword, themeVars.value.primaryColor
   );
 };
-watch(
-  () => route.params, (val) => {
-    let id = val.id as string;
-    if (!route.path.includes('edit') && id && route.path.includes('songList')) {
-      songListId.value = id;
-      fetchSongListDetail(id);
-      fetchSongListComment();
-      fetchMusicList(id);
-    }
-  }
-);
-watch(
-  pageParams, () => {
-    backTopEle = document.querySelector('.n-back-top') as HTMLElement;
-    backTopEle && backTopEle.click();
+watch(() => route.params, (val) => {
+  let id = val.id as string;
+  if (!route.path.includes('edit') && id && route.path.includes('songList')) {
+    songListId.value = id;
+    fetchSongListDetail(id);
     fetchSongListComment();
+    fetchMusicList(id);
   }
-);
-watch(
-  () => mainStore.likeSongs, (
-    val, oldVal
-  ) => {
-    if (val.length !== oldVal.length) {
-      removeCache();
-    }
+});
+watch(pageParams, () => {
+  backTopEle = document.querySelector('.n-back-top') as HTMLElement;
+  backTopEle && backTopEle.click();
+  fetchSongListComment();
+});
+watch(() => mainStore.likeSongs, (val, oldVal) => {
+  if (val.length !== oldVal.length) {
+    removeCache();
   }
-);
-watch(
-  searchKeyword, (val) => {
-    searchSongList(val);
-  } 
-);
+});
+watch(searchKeyword, (val) => {
+  searchSongList(val);
+});
 fetchSongListDetail();
 fetchSongListComment();
 fetchMusicList();
@@ -198,9 +178,7 @@ const handleSubscribeClick = (subscribed:boolean) => {
             window.$message.success('取消收藏成功');
             (songListDetail.value as AnyObject).subscribed = false;
             (songListDetail.value as AnyObject).subscribedCount-=1;
-            obverser.emit(
-              'updateCollectPlayList', { subscribed: false, id: route.params.id }
-            );
+            obverser.emit('updateCollectPlayList', { subscribed: false, id: route.params.id });
           } else {
             window.$message.error('取消收藏失败');
           }
@@ -215,9 +193,7 @@ const handleSubscribeClick = (subscribed:boolean) => {
         window.$message.success('收藏成功!');
         (songListDetail.value as AnyObject).subscribed = true;
         (songListDetail.value as AnyObject).subscribedCount+=1;
-        obverser.emit(
-          'updateCollectPlayList', { subscribed: true, songListDetail: toRaw(songListDetail.value) }
-        );
+        obverser.emit('updateCollectPlayList', { subscribed: true, songListDetail: toRaw(songListDetail.value) });
       } else {
         window.$message.error('收藏失败');
       }
@@ -285,9 +261,7 @@ const updateCommentList = (value:any) => {
   songListComment.value.total += 1;
   songListComment.value.comments.unshift(value);
 };
-const updateCommentLiked = (
-  data:{liked:boolean, index:number}, isHot:boolean
-) => {
+const updateCommentLiked = (data:{liked:boolean, index:number}, isHot:boolean) => {
   let { index, liked } = data;
   if (isHot) {
     songListComment.value.hotComments[index].liked = liked;
@@ -301,9 +275,7 @@ const updateCommentLiked = (
       : songListComment.value.comments[index].likedCount - 1;
   }
 };
-const handleUpdateMusicListLike = (
-  like:boolean, index:number
-) => {
+const handleUpdateMusicListLike = (like:boolean, index:number) => {
   let target = songList.value[index];
   // 更新元数据
   if (target.isSearch) {

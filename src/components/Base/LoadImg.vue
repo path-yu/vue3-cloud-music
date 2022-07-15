@@ -60,11 +60,9 @@ export default defineComponent({
           myPreviewDisabled.value = false;
           await nextTick();
           (e.target as HTMLElement).click();
-          setTimeout(
-            () => {
-              myPreviewDisabled.value = true;
-            }, 1000
-          );
+          setTimeout(() => {
+            myPreviewDisabled.value = true;
+          }, 1000);
         }
       };
     };

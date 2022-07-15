@@ -11,17 +11,15 @@ export interface ListLoadingProps {
   loadMore?:(loadSuccess:() => void) => void;
   noMore:boolean,
 }
-const props = withDefaults(
-  defineProps<ListLoadingProps>(), {
-    wrapHeight: '40px',
-    show: true,
-    size: 'medium',
-    strokeWidth: undefined,
-    stroke: undefined,
-    description: '',
-    loadMore: () => {}
-  }
-);
+const props = withDefaults(defineProps<ListLoadingProps>(), {
+  wrapHeight: '40px',
+  show: true,
+  size: 'medium',
+  strokeWidth: undefined,
+  stroke: undefined,
+  description: '',
+  loadMore: () => {}
+});
 const loadingTarget = ref<HTMLElement | null>(null);
 let loadStatus:'pending' | 'loading' | 'done' = 'pending';// 当前加载状态锁
 let firstVisible = ref<boolean | undefined>(); // 首次显示的值

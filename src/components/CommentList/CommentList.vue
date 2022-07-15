@@ -11,9 +11,7 @@ export interface CommentListProps{
   commentTotalNum?:string|number; 
   type?:number;//资源类型0: 歌曲 1: mv2: 歌单3: 专辑4: 电台5: 视频6: 动态
 }
-const props = withDefaults(
-  defineProps<CommentListProps>(), { type: 1, commentTotalNum: 0 }
-);
+const props = withDefaults(defineProps<CommentListProps>(), { type: 1, commentTotalNum: 0 });
 const currentClickedComment = ref<any>();
 const emit = defineEmits(['updateCommentList', 'updateCommentLiked']);
 
@@ -32,15 +30,11 @@ const handleClickComment = (index:number) => {
 };
 
 const handleUpdateCommentList = (comment:any) => {
-  emit(
-    'updateCommentList', comment
-  );
+  emit('updateCommentList', comment);
   currentClickedComment.value = null;
 };
 // 点赞
-const handleLikedClick = (
-  item:any, index:number
-) => {
+const handleLikedClick = (item:any, index:number) => {
   userCheckLogin(() => {
     let t = item.liked
       ? 0
@@ -57,9 +51,7 @@ const handleLikedClick = (
           ? '取消点赞成功'
           :' 点赞成功'; 
         window.$message.success(message);
-        emit(
-          'updateCommentLiked', { index, liked: t } 
-        );
+        emit('updateCommentLiked', { index, liked: t });
       }
     });
   });

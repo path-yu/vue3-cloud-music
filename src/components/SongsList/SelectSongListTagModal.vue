@@ -7,12 +7,10 @@ export interface SelectSongListTagModalExpose{
   close:() => void;
   selectTagList:any[]
 }
-const props = withDefaults(
-  defineProps<{
+const props = withDefaults(defineProps<{
   btnLoading?:boolean;
   handleCompleteClick:(selectTagList:any[]) => void;
-}>(), { btnLoading: false }
-);
+}>(), { btnLoading: false });
 
 defineExpose({
   show() {
@@ -38,9 +36,7 @@ const fetchPlayListTags = () => {
 };
 fetchPlayListTags();
 
-const handleTagClick = (
-  item:{checked:boolean, name:string}, index:number
-) => {
+const handleTagClick = (item:{checked:boolean, name:string}, index:number) => {
   
   if (selectTagList.value.length === 3 && !item.checked) {
     window.$message.warning('最多可选三个标签');
@@ -51,9 +47,7 @@ const handleTagClick = (
   } else {
     let removeIndex = selectTagList.value.findIndex(val => val.name === item.name);
     if (index) {
-      selectTagList.value.splice(
-        removeIndex, 1
-      );
+      selectTagList.value.splice(removeIndex, 1);
     }
   }
   item.checked = !item.checked;

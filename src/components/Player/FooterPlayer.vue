@@ -12,7 +12,7 @@ import {
   VolumeOffRound, KeyboardArrowUpOutlined, AddBoxOutlined
 } from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
-import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 import type { PlayListExpose } from './PlayList.vue';
@@ -34,9 +34,7 @@ const subscribeModalRef = ref<{show:() => void}>();
 let isLoad = false;
 // audio元素
 const audioRef = ref<HTMLAudioElement>();
-const { updateBuffer, progressValue } = useAudioLoadProgress(
-  audioRef, mainStore.currentPlaySong?.dt / 1000
-);
+const { updateBuffer, progressValue } = useAudioLoadProgress(audioRef, mainStore.currentPlaySong?.dt / 1000);
 // 进度条百分比
 const percentage = ref(0);
 // 当前播放时间
@@ -67,28 +65,23 @@ const activeStyle = computed(() => {
   }
   return { transform: transformStyle };
 });
-watch(
-  () => mainStore.currentPlaySong, (val) => {
+watch(() => mainStore.currentPlaySong, (val, oldVal) => {
+  if (val.id !== oldVal?.id) {
     tryPlay();
   }
-);
-watch(
-  () => mainStore.playList, (val) => {
-    if (val.length === 0) {
-      percentage.value = 0;
-    }
+});
+watch(() => mainStore.playList, (val) => {
+  if (val.length === 0) {
+    percentage.value = 0;
   }
-);
-watch(
-  () => mainStore.playing, (val) => {
-    if (val) {
-      tryPlay();
-    } else {
-      audioRef.value?.pause();
-
-    }
+});
+watch(() => mainStore.playing, (val) => {
+  if (val) {
+    tryPlay();
+  } else {
+    audioRef.value?.pause();
   }
-);
+});
 // 点击切换上一首
 const handlePrevClick = async () => {
   if (isLoad) return;
@@ -135,11 +128,8 @@ const handleTimeupdate = (event:Event) => {
     const target = event.target as HTMLAudioElement;
     updatePlayTime(target.currentTime);
   }
- 
 };
-const updatePlayTime = async (
-  time:number, triggerPlay=false
-) => {
+const updatePlayTime = async (time:number, triggerPlay=false) => {
   // 如果当前滑动条正在改变,则不设置对应的值, 避免冲突
   if (!slideValueChange) {
     currentPlayTime.value = dayjs(time * 1000).format('mm:ss');
@@ -152,9 +142,7 @@ const updatePlayTime = async (
       audioRef.value!.currentTime = time;
     }
   } 
-  obverser.emit(
-    'timeUpdate', Math.round(time)
-  );
+  obverser.emit('timeUpdate', Math.round(time));
 };
 // 媒体的第一帧加载完成
 const handleLoadeddata = () => {
@@ -258,29 +246,19 @@ const handleArrowClick = () => {
 const likeSuccess = (like:boolean) => {
   mainStore.updatePlayListLike(like);
 };
-
 const handleLikeHeartClick = () => {
   heardLikeRef.value?.triggerLike();
 };
 onMounted(() => {
-  document.body.addEventListener(
-    'keypress', handlePressSpace
-  );
-  obverser.on(
-    'selectLyricPlay', (time) => {
-      updatePlayTime(
-        time, true
-      );
-    }
-  );
-  obverser.on(
-    'scrollComplete', () => {
-      triggerOriginalAudioTimeUpdate = true;
-    }
-  );
+  document.body.addEventListener('keypress', handlePressSpace);
+  obverser.on('selectLyricPlay', (time) => {
+    updatePlayTime(time, true);
+  });
+  obverser.on('scrollComplete', () => {
+    triggerOriginalAudioTimeUpdate = true;
+  });
 });
 </script>
-
 <template>
   <div class="flex z-30 items-center p-2 footer-player">
     <div v-if="isShow" class="overflow-hidden w-60 h-12">

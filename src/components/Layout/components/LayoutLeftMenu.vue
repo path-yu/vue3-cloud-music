@@ -71,44 +71,38 @@ const mainStyle = computed<CSSProperties>(() => {
       : '800px' 
   };
 });
-const changeMenuOption = (
-  myCreatePlayList:any[]=[], collectPlayList:any[]=[]
-) => {
+const changeMenuOption = (myCreatePlayList:any[]=[], collectPlayList:any[]=[]) => {
   if (!mainStore.isLogin) {
     myMenuOptions.value.unshift(noLoginOption);
   } else {
-    myMenuOptions.value.unshift(
-      {
-        label: '我创建的歌单',
-        key: 'create',
-        icon: () => <NIcon class="mr-2" size={20} component={User} />,
-        children: myCreatePlayList.map((
-          item:any, index:number
-        ) => {
-          return {
-            label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
-            key: item.name,
-            icon: () => <NIcon size={20} component={index === 0
-              ? Heart
-              : QueueMusicFilled}></NIcon>,
-            id: item.id
-          };
-        })
-      },
-      {
-        label: '收藏的歌单',
-        key: 'collect',
-        icon: () => <NIcon component={StarOutline} />,
-        children: collectPlayList.map((item:any) => {
-          return {
-            label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
-            key: item.name,
-            icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
-            id: item.id
-          };
-        })
-      }
-    );
+    myMenuOptions.value.unshift({
+      label: '我创建的歌单',
+      key: 'create',
+      icon: () => <NIcon class="mr-2" size={20} component={User} />,
+      children: myCreatePlayList.map((item:any, index:number) => {
+        return {
+          label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
+          key: item.name,
+          icon: () => <NIcon size={20} component={index === 0
+            ? Heart
+            : QueueMusicFilled}></NIcon>,
+          id: item.id
+        };
+      })
+    },
+    {
+      label: '收藏的歌单',
+      key: 'collect',
+      icon: () => <NIcon component={StarOutline} />,
+      children: collectPlayList.map((item:any) => {
+        return {
+          label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
+          key: item.name,
+          icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
+          id: item.id
+        };
+      })
+    });
   }
 };
 const handleOpenLoginModalClick = () => {
@@ -117,37 +111,31 @@ const handleOpenLoginModalClick = () => {
 const handlePlayListItemClick = (item:any) => {
   router.push(`/songList/${item.id}`);
 };
-watch(
-  () => route.path, (newVal) => {
-    activeKey.value = newVal;
-    if (route.meta.hidden) {
-      hiddenLeftMenu.value = true;
-    } else {
-      hiddenLeftMenu.value = false;
-    }
+watch(() => route.path, (newVal) => {
+  activeKey.value = newVal;
+  if (route.meta.hidden) {
+    hiddenLeftMenu.value = true;
+  } else {
+    hiddenLeftMenu.value = false;
   }
-);
-watch(
-  () => mainStore.userProfile, (val) => {
-    let userId = mainStore.userProfile?.profile?.userId;
-    if (val && userId) {
-      fetchUserPlaylist(userId);
-      fetchMyLikeMusicList(userId);
-    } else {
-      changeMenuOption();
-    }
+});
+watch(() => mainStore.userProfile, (val) => {
+  let userId = mainStore.userProfile?.profile?.userId;
+  if (val && userId) {
+    fetchUserPlaylist(userId);
+    fetchMyLikeMusicList(userId);
+  } else {
+    changeMenuOption();
   }
-);
-watch(
-  () => mainStore.isLogin, (val) => {
-    if (val) {
-      myMenuOptions.value.shift();
-    } else {
-      myMenuOptions.value.shift();
-      myMenuOptions.value.shift();
-    }
+});
+watch(() => mainStore.isLogin, (val) => {
+  if (val) {
+    myMenuOptions.value.shift();
+  } else {
+    myMenuOptions.value.shift();
+    myMenuOptions.value.shift();
   }
-);
+});
 
 if (!mainStore.isLogin) {
   changeMenuOption();
@@ -157,13 +145,9 @@ const fetchUserPlaylist = (userId:number) => {
   getUserPlaylist(userId).then((res) => {
     // 将歌单分类
     if (res.data.code === 200) {
-      let { collectPlayList, myCreatePlayList } = classifySongsList(
-        userId, res.data.playlist
-      );
+      let { collectPlayList, myCreatePlayList } = classifySongsList(userId, res.data.playlist);
       mainStore.setMySubscribeSongList(myCreatePlayList);
-      changeMenuOption(
-        myCreatePlayList, collectPlayList
-      );
+      changeMenuOption(myCreatePlayList, collectPlayList);
     }
   });
 };
@@ -173,80 +157,68 @@ const fetchMyLikeMusicList = (userId:number) => {
     mainStore.setLikeList(res.data.ids);
   });
 };
-const classifySongsList = (
-  userId:number, playList:any[]
-) => {
-  return playList.reduce(
-    (
-      prev, currentValue, index
-    ) => {
-      if (index === 0) currentValue.name = '我喜欢的音乐';
-      if (currentValue.creator.userId === userId) {
-        prev.myCreatePlayList.push(currentValue);
-      } else {
-        prev.collectPlayList.push(currentValue);
-      }
-      return prev;
-    }, { myCreatePlayList: [], collectPlayList: [] }
-  ) as MySongsList;
-};
-registerRouteHook(
-  (to) => {
-    scrollContainer?.scrollTo({
-      behavior: 'smooth',
-      top: 0
-    });
-    if (to.meta.auth && !mainStore.isLogin) {
-      window.$message.error('请先登录');
-      return false;
+const classifySongsList = (userId:number, playList:any[]) => {
+  return playList.reduce((
+    prev, currentValue, index
+  ) => {
+    if (index === 0) currentValue.name = '我喜欢的音乐';
+    if (currentValue.creator.userId === userId) {
+      prev.myCreatePlayList.push(currentValue);
     } else {
-      loadingBar.start();
-      return true;
+      prev.collectPlayList.push(currentValue);
     }
-  
-  }, () => {
-    loadingBar.finish();
+    return prev;
+  }, { myCreatePlayList: [], collectPlayList: [] }) as MySongsList;
+};
+registerRouteHook((to) => {
+  scrollContainer?.scrollTo({
+    behavior: 'smooth',
+    top: 0
+  });
+  if (to.meta.auth && !mainStore.isLogin) {
+    window.$message.error('请先登录');
+    return false;
+  } else {
+    loadingBar.start();
+    return true;
   }
-);
+  
+}, () => {
+  loadingBar.finish();
+});
 //监听歌单收藏状态
 const watchUpdateCollectPlayList = () => {
-  obverser.on(
-    'updateCollectPlayList', (data:any) => {
-      let { subscribed } = data;
-      // 收藏 添加歌单
-      if (subscribed) {
-        let songListDetail = data.songListDetail;
-        myMenuOptions.value[1].children?.unshift({
-          label: () => <span onClick={() => handlePlayListItemClick(songListDetail)}>{songListDetail.name}</span>,
-          key: songListDetail.name,
-          icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
-          id: songListDetail.id
-        });
-      } else { //取消收藏. 删除歌单
-        let id = data.id;
-        let index = myMenuOptions.value[1].children?.findIndex((item:any) => item.id === +id);
-        if (index) {
-          myMenuOptions.value[1].children?.splice(
-            index, 1
-          );
-        }
+  obverser.on('updateCollectPlayList', (data:any) => {
+    let { subscribed } = data;
+    // 收藏 添加歌单
+    if (subscribed) {
+      let songListDetail = data.songListDetail;
+      myMenuOptions.value[1].children?.unshift({
+        label: () => <span onClick={() => handlePlayListItemClick(songListDetail)}>{songListDetail.name}</span>,
+        key: songListDetail.name,
+        icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
+        id: songListDetail.id
+      });
+    } else { //取消收藏. 删除歌单
+      let id = data.id;
+      let index = myMenuOptions.value[1].children?.findIndex((item:any) => item.id === +id);
+      if (index) {
+        myMenuOptions.value[1].children?.splice(index, 1);
       }
     }
-  );
+  });
 };
 const watchUpdateMyCreatePlayList = () => {
-  obverser.on(
-    'updateMyCreatePlayList', (data:any) => {
-      myMenuOptions.value[0].children?.splice(
-        1, 0, {
-          label: () => <span onClick={() => handlePlayListItemClick(data)}>{data.name}</span>,
-          key: data.name,
-          icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
-          id: data.id
-        }
-      );
-    }
-  );
+  obverser.on('updateMyCreatePlayList', (data:any) => {
+    myMenuOptions.value[0].children?.splice(
+      1, 0, {
+        label: () => <span onClick={() => handlePlayListItemClick(data)}>{data.name}</span>,
+        key: data.name,
+        icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
+        id: data.id
+      }
+    );
+  });
 };
 onMounted(() => {
   scrollContainer = document.querySelector('.rightMain>.n-layout-scroll-container');

@@ -37,14 +37,10 @@ export function useMemoryScrollTop(ref:Ref<HTMLElement> | string) {
       scrollTop = targetEle!.scrollTop;
     }
     
-    sessionStorage.setItem(
-      'scrollTop', scrollTop!.toString()
-    );
+    sessionStorage.setItem('scrollTop', scrollTop!.toString());
 
   };
-  const throttleFn = throttle(
-    handleListenScroll, 500
-  );
+  const throttleFn = throttle(handleListenScroll, 500);
   
   onMounted(() => {
     if (!ref) {
@@ -63,18 +59,12 @@ export function useMemoryScrollTop(ref:Ref<HTMLElement> | string) {
         targetEle = window;
       }
     }
-    targetEle.addEventListener(
-      'scroll', throttleFn
-    );
+    targetEle.addEventListener('scroll', throttleFn);
     setScrollPosition('scrollTop');
   });
   onUnmounted(() => {
-    targetEle!.removeEventListener(
-      'scroll', throttleFn
-    );
-    sessionStorage.setItem(
-      'scrollTop', '0'
-    );
+    targetEle!.removeEventListener('scroll', throttleFn);
+    sessionStorage.setItem('scrollTop', '0');
     targetEle!.scrollTo({ top: 0 });
   });
 

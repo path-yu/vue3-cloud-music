@@ -71,40 +71,26 @@ const currentLyricStyle = computed(() => {
   };
 });
 
-function handlePlayLyric(
-  time:number, listenScroll=false
-) {
+function handlePlayLyric(time:number, listenScroll=false) {
   // 如果当前鼠标正在滚动歌词
   if (selectLyricLine.value) return;
   if (!triggerPlayLyric) return;
-  triggerLyricChange(
-    time, listenScroll
-  );
+  triggerLyricChange(time, listenScroll);
 }
-const handleSliderChange = (
-  time:number, listenScroll=false
-) => {
+const handleSliderChange = (time:number, listenScroll=false) => {
   if (mainStore.showMusicDetail) {
-    triggerLyricChange(
-      time, listenScroll
-    );
+    triggerLyricChange(time, listenScroll);
   } else {
-    pendingSetScrollFn = () => triggerLyricChange(
-      time, listenScroll
-    );
+    pendingSetScrollFn = () => triggerLyricChange(time, listenScroll);
   }
 };
-const triggerLyricChange = (
-  time:number, listenScroll=false
-) => {
+const triggerLyricChange = (time:number, listenScroll=false) => {
   if (mainStore.currentPlaySong.isNotLyric) return;
   if (!lyricData.value.length) return;
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
   if (currentLyric) {
     currentPlayLine.value = currentLyric.index;
-    setScroll(
-      currentLyric.time, listenScroll
-    );
+    setScroll(currentLyric.time, listenScroll);
   }
 };
 const handleScroll = (event:Event) => {
@@ -126,18 +112,14 @@ const handleScroll = (event:Event) => {
   }
   selectLyricLineIndex = selectLyricLine.value!.index;
   clearTimeout(timeId);
-  timeId = setTimeout(
-    () => {
-      if (selectLyricLineIndex && selectLyricLineIndex !== currentPlayLine.value) {
-        triggerPlayLyric = false;
-        scrollTo(
-          currentScrollTop, true
-        );
-      }
-      selectLyricLine.value = null;
-      showSelectLyric.value = false;
-    }, 2500
-  );
+  timeId = setTimeout(() => {
+    if (selectLyricLineIndex && selectLyricLineIndex !== currentPlayLine.value) {
+      triggerPlayLyric = false;
+      scrollTo(currentScrollTop, true);
+    }
+    selectLyricLine.value = null;
+    showSelectLyric.value = false;
+  }, 2500);
 };
 const handlePlayIconClick = () => {
   let time = selectLyricLine.value!.time;
@@ -146,25 +128,19 @@ const handlePlayIconClick = () => {
   showSelectLyric.value = false;
   triggerScroll = false;
   selectLyricLine.value = null;
-  obverser.emit(
-    'selectLyricPlay', time
-  );
+  obverser.emit('selectLyricPlay', time);
 };
-const handleWheel = (event:WheelEvent) => {
+const handleWheel = () => {
   triggerScroll = true;
   clearTimeout(clearTriggerScrollTimer);
-  clearTriggerScrollTimer = setTimeout(
-    () => {
-      triggerScroll = false;
-    }, 1000
-  );
+  clearTriggerScrollTimer = setTimeout(() => {
+    triggerScroll = false;
+  }, 1000);
 };
 const initEleScrollTopMap = () => {
   eleScrollTopMap.clear();
   let children = Array.from(lyricContainer.value!.children) as HTMLElement[];
-  let valueList = children.map((
-    child, index
-  ) => {
+  let valueList = children.map((child, index) => {
     return {
       offsetTop: child.offsetTop - 175,
       index,
@@ -177,100 +153,78 @@ const initEleScrollTopMap = () => {
     const cur = valueList[currentIndex];
     const next = valueList[nextIndex];
     for (let start = cur.offsetTop; start < next.offsetTop; start++) {
-      eleScrollTopMap.set(
-        start, {
-          index: cur.index,
-          time: cur.time
-        }
-      );
+      eleScrollTopMap.set(start, {
+        index: cur.index,
+        time: cur.time
+      });
     }
     if (next) {
       currentIndex++;
       nextIndex++;
     }
     if (currentIndex === valueList.length - 1) {
-      eleScrollTopMap.set(
-        next.offsetTop, {
-          index: next.index,
-          time: next.time
-        }
-      );
+      eleScrollTopMap.set(next.offsetTop, {
+        index: next.index,
+        time: next.time
+      });
     }
   }
 };
-const setScroll = (
-  time:number, listen=false
-) => {
+const setScroll = (time:number, listen=false) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
   if (targetELe) {
     currentScrollTop = targetELe!.offsetTop - 175;
-    scrollTo(
-      currentScrollTop, listen
-    );
+    scrollTo(currentScrollTop, listen);
    
   }
 };
-const scrollTo = (
-  top:number, listen=false
-) => {
+const scrollTo = (top:number, listen=false) => {
   triggerScroll = false;
   scrollBarRef.value?.scrollTo({ top: top, behavior: 'smooth' });
   if (listen) {
-    listenScrollComplete(
-      top, () => {
-        obverser.emit('scrollComplete');
-        triggerPlayLyric = true;
-      }
-    );
+    listenScrollComplete(top, () => {
+      obverser.emit('scrollComplete');
+      triggerPlayLyric = true;
+    });
   }
   
 };
-const createListenScrollComplete = (
-  selector='.scrollContainer > .n-scrollbar > .n-scrollbar-container', wait=50
-) => {
+const createListenScrollComplete = (selector='.scrollContainer > .n-scrollbar > .n-scrollbar-container', wait=50) => {
   let scrollTargetEle:null|HTMLElement=null;
   let timer:any;
-  return async (
-    top:number, callback:()=>void
-  ) => {
+  return async (top:number, callback:()=>void) => {
     await nextTick();
     if (!scrollTargetEle) {
       scrollTargetEle = document.querySelector(selector) as HTMLElement;
     }
-    timer = setInterval(
-      () => {
-        if (scrollTargetEle?.scrollTop === top) {
-          callback();
-          clearInterval(timer);
-        }
-      }, wait
-    );
+    timer = setInterval(() => {
+      if (scrollTargetEle?.scrollTop === top) {
+        callback();
+        clearInterval(timer);
+      }
+    }, wait);
   };
 };
 let listenScrollComplete = createListenScrollComplete();
-watch(
-  isHover, (val) => {
-    if (!val) {
-      showSelectLyric.value = false;
+watch(isHover, (val) => {
+  if (!val) {
+    showSelectLyric.value = false;
+  } else {
+    if (selectLyricLine.value && !mainStore.currentPlaySong?.isNotLyric) {
+      showSelectLyric.value = true;
     } else {
-      if (selectLyricLine.value && !mainStore.currentPlaySong?.isNotLyric) {
-        showSelectLyric.value = true;
-      } else {
-        showSelectLyric.value = false;
-      }
+      showSelectLyric.value = false;
     }
   }
-);
-watch(
-  () => mainStore.currentPlaySong, async () => {
-    currentScrollTop = 0;
-    scrollTo(0);
-    if (mainStore.showMusicDetail) {
-      await nextTick();
-      initEleScrollTopMap();
-    }
+});
+watch(() => mainStore.currentPlaySong, async () => {
+  currentScrollTop = 0;
+  scrollTo(0);
+  if (mainStore.showMusicDetail) {
+    await nextTick();
+    initEleScrollTopMap();
   }
-);
+});
 watch(
   () => mainStore.showMusicDetail, async (val) => {
     if (val && eleScrollTopMap.size === 0) {
@@ -278,39 +232,29 @@ watch(
       initEleScrollTopMap(); 
     }
     if (val) {
-      setTimeout(
-        () => {
-          pendingSetScrollFn && pendingSetScrollFn();
-        }, 500
-      );
+      setTimeout(() => {
+        pendingSetScrollFn && pendingSetScrollFn();
+      }, 500);
     } else {
       pendingSetScrollFn = null;
     }
   }, { immediate: true }
 );
-obverser.on(
-  'updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
-    if (footerMaskStyle !== footerMaskBackground.value) {
-      footerMaskBackground.value = footerMaskStyle;
-    }
-    if (topMaskStyle !== topMaskBackground.value) {
-      topMaskBackground.value = topMaskStyle;
-    }
+obverser.on('updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
+  if (footerMaskStyle !== footerMaskBackground.value) {
+    footerMaskBackground.value = footerMaskStyle;
   }
-);
+  if (topMaskStyle !== topMaskBackground.value) {
+    topMaskBackground.value = topMaskStyle;
+  }
+});
 onMounted(() => {
-  obverser.on(
-    'timeUpdate', handlePlayLyric
-  );
-  obverser.on(
-    'slideValueChange', handleSliderChange
-  );
-  obverser.on(
-    'ended', () => {
-      currentScrollTop = 0;
-      scrollTo(0);
-    }
-  );
+  obverser.on('timeUpdate', handlePlayLyric);
+  obverser.on('slideValueChange', handleSliderChange);
+  obverser.on('ended', () => {
+    currentScrollTop = 0;
+    scrollTo(0);
+  });
 });
 
 </script>

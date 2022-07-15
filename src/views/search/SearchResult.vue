@@ -60,9 +60,7 @@ const activeTabStyle:(index:number) => CSSProperties = (index:number) => {
   } 
   return {};
 };
-const handleUpdateMusicListLike = (
-  like:boolean, index:number
-) => {
+const handleUpdateMusicListLike = (like:boolean, index:number) => {
   songsSearchResult.value.songs[index].like = like;
 };
 watch(
@@ -83,23 +81,15 @@ watch(
       offset: ((playListPageParams.page) - 1) * playListPageParams.pageSize
     };
     if (!immediateCall) {
-      getSearchSongList(
-        0, songParams
-      );
-      getSearchPlayList(
-        0, playListParams
-      );
+      getSearchSongList(0, songParams);
+      getSearchPlayList(0, playListParams);
       set(JSON.stringify(songParams));
     } else {
       if (currentTabIndex.value === 0) {
-        getSearchSongList(
-          0, songParams
-        );
+        getSearchSongList(0, songParams);
         set(JSON.stringify(songParams));
       } else {
-        getSearchPlayList(
-          0, playListParams
-        );
+        getSearchPlayList(0, playListParams);
       }
     }
     if (!immediateCall) {
@@ -109,12 +99,10 @@ watch(
   },
   { immediate: true }
 );
-watch(
-  [playListPageParams, songListPageParams], () => {
-    backTopEle = document.querySelector('.n-back-top') as HTMLElement;
-    backTopEle && backTopEle.click();
-  }
-);
+watch([playListPageParams, songListPageParams], () => {
+  backTopEle = document.querySelector('.n-back-top') as HTMLElement;
+  backTopEle && backTopEle.click();
+});
 </script>
 
 <template>

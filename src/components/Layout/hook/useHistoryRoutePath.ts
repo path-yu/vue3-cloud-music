@@ -6,18 +6,13 @@ export function userHistory() {
   const backPath = ref<string>(history.state.back);
   const forwardPath = ref<string>(history.state.forward);
 
-  watch(
-    () => route.path, (
-      value:string, oldVal:string
-    ) => {
-      backPath.value = history.state.back;
-      forwardPath.value = history.state.forward;
-    }
-  );
+  watch(() => route.path, () => {
+    backPath.value = history.state.back;
+    forwardPath.value = history.state.forward;
+  });
   
   return {
     backPath,
     forwardPath
-    
   };
 }

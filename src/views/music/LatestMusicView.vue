@@ -58,9 +58,7 @@ const activeStyle = (value: string):CSSProperties => {
       : '0.8rem'
   };
 };
-const { wrapRequest, requestLoading: isLoading, loadSuccess } = useMemorizeRequest(
-  getTopSong, 'getTopSong'
-);
+const { wrapRequest, requestLoading: isLoading, loadSuccess } = useMemorizeRequest(getTopSong, 'getTopSong');
 const fetchData = () => {
   set(activeType.value);
   wrapRequest(activeType.value as any)
@@ -75,15 +73,11 @@ const handleTypeClick = (value:string) => {
   fetchData();
 };
 const handleDBClick = useDbClickPlay();
-const handleMouseEnter = (
-  e:MouseEvent, value:string
-) => {
+const handleMouseEnter = (e:MouseEvent, value:string) => {
   if (value === activeType.value) return;
   (e.target as HTMLElement).style.opacity = '1';
 };
-const handleMouseLeave = (
-  e:MouseEvent, value:string
-) => {
+const handleMouseLeave = (e:MouseEvent, value:string) => {
   if (value === activeType.value) return;
   (e.target as HTMLElement).style.opacity = '0.8';
 };

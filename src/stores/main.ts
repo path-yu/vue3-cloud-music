@@ -21,9 +21,7 @@ export const useMainStore = defineStore({
     },
     likeSongsIndexMap(state) {
       const map:{[key:number]:number} = Object.create(null);
-      state.likeSongs.forEach((
-        item:number, index:number
-      ) => {
+      state.likeSongs.forEach((item:number, index:number) => {
         map[item] = index;
       });
       return map;
@@ -83,9 +81,7 @@ export const useMainStore = defineStore({
       return !!this.likeSongs[this.likeSongsIndexMap[id]];
     },
     mapSongListAddLike(data:any[]) {
-      return data.map((
-        item, index
-      ) => {
+      return data.map((item, index) => {
         if (this.likeSongs) {
           const hasLike = this.hasLikeSong(item.id);
           item.like = hasLike;
@@ -130,17 +126,13 @@ export const useMainStore = defineStore({
       this.currentPlayListId = '';
       this.playMode = 'order';
     },
-    addPlaylist(
-      list:any[], id:string
-    ) {
+    addPlaylist(list:any[], id:string) {
       this.playList = [...this.playList, ...list];
       this.playListIdList.push(id);
       localStorage.playList = JSON.stringify(this.playList);
     },
     // 切换播放音乐
-    async changePlayIndex(
-      index:number, message='亲爱的, 暂无版权'
-    ) {
+    async changePlayIndex(index:number, message='亲爱的, 暂无版权') {
       // 如果没有获取url, 则获取歌曲url
       if (!this.playList[index].url) {
         const res = await this.setMusicData(
@@ -171,9 +163,7 @@ export const useMainStore = defineStore({
         );
         // 如果获取失败说明无版权,则获取下一首
         if (!res.success) {
-          const nextIndex = getNextIndex(
-            this.currentPlayIndex, this.playListCount - 1
-          );
+          const nextIndex = getNextIndex(this.currentPlayIndex, this.playListCount - 1);
           this.toggleNext(nextIndex);
           return; 
         }
@@ -192,9 +182,7 @@ export const useMainStore = defineStore({
           this.playList, this.playList[resultIndex].id, resultIndex
         );
         if (!res.success) {
-          const prevIndex = getPrevIndex(
-            this.currentPlayIndex, this.playListCount - 1
-          );
+          const prevIndex = getPrevIndex(this.currentPlayIndex, this.playListCount - 1);
           this.togglePrev(prevIndex);
           return;
         }
@@ -221,9 +209,7 @@ export const useMainStore = defineStore({
         this.changePlayIndex(index);
       }
     },
-    updatePlayListLike(
-      like:boolean, index?:number
-    ) {
+    updatePlayListLike(like:boolean, index?:number) {
       const resultIndex = index
         ? index
         : this.currentPlayIndex;
@@ -234,9 +220,7 @@ export const useMainStore = defineStore({
       data:any[], id:string, index:number, message='亲爱的,暂无版权!为你自动跳过此首歌曲'
     ):Promise<any> {
       const result:AnyObject={};
-      window.$message.loading(
-        '获取歌曲数据中...', { duration: 0 }
-      );
+      window.$message.loading('获取歌曲数据中...', { duration: 0 });
       try {
         // 检查歌曲是否可用
         const checkRes = await checkMusic(id) as any;
@@ -290,9 +274,7 @@ export const useMainStore = defineStore({
           0, this.playListCount - 1, currentPlayIndex
         );
       } else {
-        return getNextIndex(
-          currentPlayIndex, this.playListCount - 1
-        );
+        return getNextIndex(currentPlayIndex, this.playListCount - 1);
       }
     },
     getPrevPlayIndex(index?:number) {
@@ -305,9 +287,7 @@ export const useMainStore = defineStore({
           0, this.playListCount - 1, currentPlayIndex
         );
       } else {
-        return getPrevIndex(
-          currentPlayIndex, this.playListCount - 1
-        );
+        return getPrevIndex(currentPlayIndex, this.playListCount - 1);
       }
     },
     setMySubscribeSongList(list:any[]) {
@@ -322,9 +302,7 @@ export const useMainStore = defineStore({
       localStorage.searchHistory = JSON.stringify(this.searchHistory);
     },
     removeSearchHistory(index:number) {
-      this.searchHistory.splice(
-        index, 1
-      );
+      this.searchHistory.splice(index, 1);
       localStorage.searchHistory = JSON.stringify(this.searchHistory);
     },
     clearSearchHistory() {

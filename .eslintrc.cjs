@@ -62,7 +62,7 @@ module.exports = {
     // 强制在对象字面量的键和值之间使用一致的空格
     'key-spacing': ['error', { 'mode': 'strict' }],
     // 强制在函数括号内使用一致的换行, 函数参数超过2个换行
-    'function-paren-newline': ['error', { 'minItems': 2 }],
+    'function-paren-newline': ['error', { 'minItems': 3 }],
     // 强制回调函数最大嵌套深度
     'max-nested-callbacks': ['warn', 3],
     // 强制关键字周围空格的一致性 关键字前后必须有空格

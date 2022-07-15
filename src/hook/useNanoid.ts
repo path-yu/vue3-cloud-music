@@ -8,9 +8,7 @@ export function useNanoid() {
       if (!idMaps.has(key)) {
         const id = nanoid();
         currentId.value = id;
-        idMaps.set(
-          key, id
-        );
+        idMaps.set(key, id);
       } else {
         currentId.value = idMaps.get(key);
       }

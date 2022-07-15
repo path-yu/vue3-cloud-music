@@ -64,9 +64,7 @@ export function updatePlayListCover(
   file: File, imgSize:number, id:string
 ) {
   const formData = new FormData();
-  formData.append(
-    'imgFile', file
-  );
+  formData.append('imgFile', file);
   const params = { timestamp: Date.now(), imgSize, id };
   const url = '/playlist/cover/update?'+qs.stringify(params);
   return service.post(

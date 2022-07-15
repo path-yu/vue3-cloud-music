@@ -24,9 +24,7 @@ const modalStyle = computed(() => {
     overflow: 'hidden' 
   };
 });
-const handleItemClick = (
-  item:any, index:number
-) => {
+const handleItemClick = (item:any, index:number) => {
   if (!mainStore.isLogin) {
     return window.$message.error('请先登录');
   }
@@ -37,9 +35,7 @@ const handleItemClick = (
     op: 'add',
     pid: item.id
   };
-  window.$message.loading(
-    '加载中..', { duration: 0 }
-  );
+  window.$message.loading('加载中..', { duration: 0 });
   return updatePlaylistTracks(params).then((res) => {
     if (res.data?.body.code === 200) {
       window.$message.success('已收藏到歌单');
@@ -66,9 +62,7 @@ const handleCreateClick = () => {
       showCreatePlayList.value = false;
       playListTitle.value = '';
       mainStore.mySubscribeSongList.push(res.data.playlist);
-      obverser.emit(
-        'updateMyCreatePlayList', res.data.playlist
-      );
+      obverser.emit('updateMyCreatePlayList', res.data.playlist);
       btnLoading.value = false;
     } 
   });
@@ -78,17 +72,13 @@ defineExpose({
     showModal.value = true;
   }
 });
-watch(
-  showModal, (val) => {
-    if (!val) {
-      setTimeout(
-        () => {
-          showCreatePlayList.value = false;
-        }, 300
-      );
-    }
+watch(showModal, (val) => {
+  if (!val) {
+    setTimeout(() => {
+      showCreatePlayList.value = false;
+    }, 300);
   }
-);
+});
 </script>
 
 <template>

@@ -65,9 +65,7 @@ const handleFileChange = async (event:Event) => {
   let target = event.target as HTMLInputElement;
   if (target.files) {
     let file = target.files[0];
-    window.$message.loading(
-      '封面上传中', { duration: 0 }
-    );
+    window.$message.loading('封面上传中', { duration: 0 });
     let imgSize = await getImgSize(file);
     updatePlayListCover(
       file, imgSize.width, route.params.id as string

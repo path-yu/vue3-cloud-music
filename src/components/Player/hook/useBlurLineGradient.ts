@@ -42,16 +42,12 @@ export function useBlurLineGradient() {
       footerMaskStyle = { background: `linear-gradient(-180deg, rgba(255, 255, 255, 0) 0%, ${footerRgb} 80%)` };
 
     }
-    obverser.emit(
-      'updateLyricMaskStyle', { footerMaskStyle, topMaskStyle }
-    );
+    obverser.emit('updateLyricMaskStyle', { footerMaskStyle, topMaskStyle });
   };
   const resetBackground = () => {
     footerMaskStyle = { background: 'transparent' };
     topMaskStyle = { background: 'transparent' };
-    obverser.emit(
-      'updateLyricMaskStyle', { footerMaskStyle, topMaskStyle }
-    );
+    obverser.emit('updateLyricMaskStyle', { footerMaskStyle, topMaskStyle });
   };
 
   return { updateFooterMaskColor, resetBackground };

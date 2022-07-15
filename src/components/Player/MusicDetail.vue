@@ -80,22 +80,15 @@ const fillBackground = async (updateMask=true) => {
     primary = mainStore.currentPlaySong.primaryColor;
   }
  
-  let bgColor = color(baseColor).mix(
-    color(primary), 0.2
-  )
+  let bgColor = color(baseColor).mix(color(primary), 0.2)
     .hex();
- 
   myCanvas.value!.width = width;
   myCanvas.value!.height = height;
   let gradient = ctx!.createLinearGradient(
     width / 2, 0, width / 2, height
   );
-  gradient.addColorStop(
-    0, bgColor
-  );
-  gradient.addColorStop(
-    1, baseColor
-  );
+  gradient.addColorStop(0, bgColor);
+  gradient.addColorStop(1, baseColor);
   ctx.fillStyle = gradient;
   ctx.fillRect(
     0, 0, width, height
@@ -137,9 +130,7 @@ const updateCommentList = (value:any) => {
   musicComment.value.total += 1;
   musicComment.value.comments.unshift(value);
 };
-const updateCommentLiked = (
-  data:{liked:boolean, index:number}, isHot:boolean
-) => {
+const updateCommentLiked = (data:{liked:boolean, index:number}, isHot:boolean) => {
   let { index, liked } = data;
   if (isHot) {
     musicComment.value.hotComments[index].liked = liked;
@@ -165,7 +156,6 @@ const handleMvTagClick = () => {
     mainStore.changePlaying(false);
   }
   router.push(`/mv/${mainStore.currentPlaySong.mv}`);
-
 };
 const handleTransitionAfterEnter = () => {
   updateFooterMaskColor(myCanvas.value!.getContext('2d')!);
@@ -177,33 +167,23 @@ const setTagPositionStyle = async () => {
   tagPositionStyle.value = { left: left+'px', top: '-15px' };
   isShowTag.value = true;
 };
-watch(
-  () => mainStore.theme, () => {
-    resetBackground();
-    fillBackground(false);
+watch(() => mainStore.theme, () => {
+  resetBackground();
+  fillBackground(false);
+});
+watch(() => mainStore.showMusicDetail, async (val) => {
+  if (!val) {
+    showBackTop.value = false;
   }
-);
-watch(
-  () => mainStore.showMusicDetail, async (val) => {
-    if (!val) {
-      showBackTop.value = false;
-    }
-    if (!isShowTag.value) {
-      setTagPositionStyle();
-    }
+  if (!isShowTag.value) {
+    setTagPositionStyle();
   }
-);
+});
 watch(
-  () => mainStore.currentPlaySong, (
-    val, oldVal
-  ) => {
+  () => mainStore.currentPlaySong, (val, oldVal) => {
     fetchMusicComment(val.id);
-    executeGetSimiPlayList(
-      0, val.id
-    );
-    executeGetSimiSong(
-      0, val.id
-    );
+    executeGetSimiPlayList(0, val.id);
+    executeGetSimiSong(0, val.id);
     if (val && oldVal && val.id !== oldVal.id) {
       resetBackground();
     }
@@ -218,15 +198,13 @@ watch(
     }
   }, { immediate: true }
 );
-watch(
-  pageParams, () => {
-    backTopEle = document.querySelector('.n-back-top') as HTMLElement;
-    backTopEle && backTopEle.click();
-    if (mainStore.currentPlaySong.id) {
-      fetchMusicComment(mainStore.currentPlaySong.id);
-    }
+watch(pageParams, () => {
+  backTopEle = document.querySelector('.n-back-top') as HTMLElement;
+  backTopEle && backTopEle.click();
+  if (mainStore.currentPlaySong.id) {
+    fetchMusicComment(mainStore.currentPlaySong.id);
   }
-);
+});
 
 </script>
 

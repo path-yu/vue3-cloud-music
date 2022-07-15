@@ -15,33 +15,25 @@ export const getArrLast = (arr:any[]) => {
 };
 
 // 节流
-export const throttle = (
-  fn:Function, delay:number
-) => {
+export const throttle = (fn:Function, delay:number) => {
   let timer:any = null;
   return function () {
     if (timer) return;
-    timer = setTimeout(
-      (...rest) => {
-        fn(...rest);
-        timer = null;
-      }, delay
-    );
+    timer = setTimeout((...rest) => {
+      fn(...rest);
+      timer = null;
+    }, delay);
   };
 };
 // 防抖
-export const debounce = (
-  fn:Function, delay:number
-) => {
+export const debounce = (fn:Function, delay:number) => {
   let timer:any = null;
   return function (...rest: any) {
     if (timer) clearTimeout(timer);
-    timer = setTimeout(
-      () => {
-        fn.apply(rest);
-        timer = null;
-      }, delay
-    );
+    timer = setTimeout(() => {
+      fn.apply(rest);
+      timer = null;
+    }, delay);
   };
 };
 // 根据不同类型记忆函数
@@ -53,9 +45,7 @@ export const memorize = (fn:Function) => {
       return cache.get(key);
     }
     const result = fn(...args);
-    cache.set(
-      key, result
-    );
+    cache.set(key, result);
     return result;
   };
 };
@@ -63,16 +53,12 @@ export const formateSongsAuthor = (attr: any[]) => {
   return attr.map(item => item.name).join(' / ');
 };
 // 根据指定的数量将数组切片
-export const sliceArr = (
-  count=20, list:any[]
-) => {
+export const sliceArr = (count=20, list:any[]) => {
   const arr = [];
   let index = 0;
   let nextSliceIndex = 0;
   while (index < list.length) {
-    const item = list.slice(
-      nextSliceIndex, nextSliceIndex+count
-    );
+    const item = list.slice(nextSliceIndex, nextSliceIndex+count);
     arr.push(item);
     index++;
     nextSliceIndex+=count;
@@ -92,9 +78,7 @@ export const generalTimeOptions = (
   }
   return arr;
 };
-export const getDayOptions = (
-  month:number, year:number=new Date().getFullYear()
-) => {
+export const getDayOptions = (month:number, year:number=new Date().getFullYear()) => {
   let day;
   if ([
     1, 3, 5, 7, 8, 10, 12
@@ -119,9 +103,7 @@ export const getDayOptions = (
   );
 }; 
 // 对比两个对象是否相等
-export const compareObject = (
-  obj1:any, obj2:any
-) => {
+export const compareObject = (obj1:any, obj2:any) => {
   const keys1 = Object.keys(obj1);
   const keys2 = Object.keys(obj2);
   if (keys1.length !== keys2.length) return false;
@@ -131,9 +113,7 @@ export const compareObject = (
   return true;
 };
 export function getImgSize(file: File):Promise<{width:number, height:number}> {
-  return new Promise((
-    resolve, reject
-  ) => {
+  return new Promise((resolve, reject) => {
     const reader = new FileReader();
     reader.readAsDataURL(file);
     reader.onload = function (theFile) {
@@ -167,9 +147,7 @@ export function getRandomIntInclusive(
   while (randomIndex === index) {
     randomIndex = Math.floor(Math.random() * (max - min + 1)) + min;
   }
-  cacheRandomNumMap.set(
-    index, randomIndex
-  );
+  cacheRandomNumMap.set(index, randomIndex);
   return randomIndex;
 }
 // 重置
@@ -177,17 +155,13 @@ export function restRandomNumMap() {
   cacheRandomNumMap.clear();
 }
 // 当值等于最大值时,返回0,否则+1
-export function getNextIndex(
-  index:number, max:number
-) {
+export function getNextIndex(index:number, max:number) {
   return index === max
     ? 0
     : index + 1;
 }
 // 当值等于0时,返回最大值,否则-1
-export function getPrevIndex(
-  index:number, max:number
-) {
+export function getPrevIndex(index:number, max:number) {
   return index === 0
     ? max
     : index - 1;
