@@ -67,6 +67,9 @@ const activeStyle = computed(() => {
 });
 watch(() => mainStore.currentPlaySong, (val, oldVal) => {
   if (val.id !== oldVal?.id) {
+    currentPlayTime.value = '00:00';
+    percentage.value = 0;
+    progressValue.value = 0;
     tryPlay();
   }
 });
@@ -150,14 +153,6 @@ const handleLoadeddata = () => {
     audioRef.value?.play();
   }
   updateBuffer();
-};
-// 播放开始
-const handlePlay = () => {
-  if (percentage.value === 100) {
-    currentPlayTime.value = '00:00';
-    percentage.value = 0;
-    progressValue.value = 0;
-  }
 };
 //处理数据还未加载完成时,播放暂停
 const handleWaiting = () => {
@@ -370,7 +365,7 @@ onMounted(() => {
     <audio
       ref="audioRef" :src="currentSong?.url"
       preload="metadata" @timeupdate="handleTimeupdate" @ended="handleEnded"
-      @play="handlePlay" @error="handleError" @waiting="handleWaiting"
+      @error="handleError" @waiting="handleWaiting"
       @playing="handlePlaying" @progress="updateBuffer" @loadeddata="handleLoadeddata"
     />
     <play-list ref="playListRef" />
