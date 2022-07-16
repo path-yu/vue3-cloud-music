@@ -65,14 +65,16 @@ const activeStyle = computed(() => {
   }
   return { transform: transformStyle };
 });
-watch(() => mainStore.currentPlaySong, (val, oldVal) => {
-  if (val.id !== oldVal?.id) {
-    currentPlayTime.value = '00:00';
-    percentage.value = 0;
-    progressValue.value = 0;
-    tryPlay();
-  }
-});
+watch(
+  () => mainStore.currentPlaySong, (val, oldVal) => {
+    if (oldVal && val.id !== oldVal.id) {
+      // 重新加载媒体资源
+      audioRef.value?.load();
+      resetState();
+      tryPlay();
+    }
+  }, { immediate: true }
+);
 watch(() => mainStore.playList, (val) => {
   if (val.length === 0) {
     percentage.value = 0;
@@ -99,7 +101,12 @@ const handleNextClick = async () => {
   await mainStore.toggleNext();
   isLoad = false;
 };
-
+const resetState = () => {
+  currentPlayTime.value = '00:00';
+  percentage.value = 0;
+  progressValue.value = 0;
+  audioRef.value!.currentTime = 0;
+};
 // 切换播放状态
 const togglePlayStatus = async () => {
   if (audioRef.value?.paused) {
@@ -110,7 +117,7 @@ const togglePlayStatus = async () => {
   }
 };
 const tryPlay = () => {
-  if (audioRef.value && audioRef.value!.readyState >= 2 && audioRef.value?.paused) {
+  if (audioRef.value&& audioRef.value!.readyState >= 2 && audioRef.value?.paused) {
     audioRef.value?.play();
   }
   mainStore.changePlaying(true);
@@ -149,10 +156,10 @@ const updatePlayTime = async (time:number, triggerPlay=false) => {
 };
 // 媒体的第一帧加载完成
 const handleLoadeddata = () => {
+  console.log('load', audioRef.value?.readyState);
   if (mainStore.playing && audioRef.value?.paused) {
     audioRef.value?.play();
   }
-  updateBuffer();
 };
 //处理数据还未加载完成时,播放暂停
 const handleWaiting = () => {
@@ -164,7 +171,7 @@ const handlePlaying = () => {
 };
 const handleError = async (e:Event) => {
   // 媒体资源过期,重新获取数据
-  if (audioRef.value?.error!.code === 4) {
+  if (audioRef.value?.error!.code === 4 || audioRef.value?.error!.code === 2) {
     if (isLoad) return;
     isLoad = true;
     const res = await mainStore.setMusicData(
@@ -175,6 +182,7 @@ const handleError = async (e:Event) => {
     // 重新加载资源
     if (res.success) {
       audioRef.value?.load();
+      resetState();
       if (mainStore.playing) {
         audioRef.value?.play();
       }
@@ -363,10 +371,11 @@ onMounted(() => {
       />
     </div>
     <audio
-      ref="audioRef" :src="currentSong?.url"
-      preload="metadata" @timeupdate="handleTimeupdate" @ended="handleEnded"
-      @error="handleError" @waiting="handleWaiting"
+      ref="audioRef"
+      :src="currentSong?.url"
+      preload="auto" @timeupdate="handleTimeupdate" @ended="handleEnded"
       @playing="handlePlaying" @progress="updateBuffer" @loadeddata="handleLoadeddata"
+      @error="handleError" @waiting="handleWaiting" 
     />
     <play-list ref="playListRef" />
     <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
