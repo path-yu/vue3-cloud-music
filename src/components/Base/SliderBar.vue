@@ -105,7 +105,7 @@ onUnmounted(() => {
       class="relative bg-gray-200 dark:bg-gray-200/50 rounded-md transition-transform"
     >
       <!-- 加载进度条 -->
-      <div class="absolute top-0 h-full bg-gray-300 dark:bg-gray-300/50 rounded-md transition-transform" :style="{width:loadValue+'%'}" />
+      <div class="absolute top-0 h-full bg-gray-300 dark:bg-gray-300/50 rounded-md transition-all" :style="{width:loadValue+'%'}" />
       <!-- 播放进度条 -->
       <div class="absolute top-0 h-full rounded-md transition-transform" :style="{background:themeVars.primaryColor, width:modelValue+'%'}" />
       <!-- 小圆点 -->
