@@ -156,7 +156,6 @@ const updatePlayTime = async (time:number, triggerPlay=false) => {
 };
 // 媒体的第一帧加载完成
 const handleLoadeddata = () => {
-  console.log('load', audioRef.value?.readyState);
   if (mainStore.playing && audioRef.value?.paused) {
     audioRef.value?.play();
   }
@@ -169,7 +168,7 @@ const handleWaiting = () => {
 const handlePlaying = () => {
   mainStore.playWaiting = false;
 };
-const handleError = async (e:Event) => {
+const handleError = async () => {
   // 媒体资源过期,重新获取数据
   if (audioRef.value?.error!.code === 4 || audioRef.value?.error!.code === 2) {
     if (isLoad) return;
