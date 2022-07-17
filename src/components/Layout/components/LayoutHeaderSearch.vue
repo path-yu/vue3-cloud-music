@@ -80,6 +80,10 @@ const handleArrowClick = (type: 'back' | 'forward') => {
     mainStore.setShowMusicDetail(false);
   }
 };
+const handleCheckAllClick = () => {
+  if (defaultHeight.value === '100%') return;
+  spread.value = !spread.value;
+};
 watch([backHover, forwardHover], (value: boolean[]) => {
   let [backIsHover, forwardIsHover] = value;
   let backIconEle = (backIconRef.value as HTMLSpanElement);
@@ -219,7 +223,7 @@ onUnmounted(() => {
                   确定删除历史记录?
                 </n-popconfirm>
               </div>
-              <n-button v-if="parseInt(defaultHeight) > 62" text @click="spread = !spread">
+              <n-button v-if="parseInt(defaultHeight) > 62" text @click="handleCheckAllClick">
                 {{ spread ? '收起' :'查看全部' }}
               </n-button>
             </div>
