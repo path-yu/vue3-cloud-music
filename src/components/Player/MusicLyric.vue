@@ -263,7 +263,7 @@ onMounted(() => {
   <div ref="scrollContainerRef" class="relative mt-10 scrollContainer">
     <n-scrollbar
       ref="scrollBarRef" style="height: 350px;width:550px"
-      :on-scroll="handleScroll" trigger="none" @wheel="handleWheel"
+      :on-scroll="handleScroll" @wheel="handleWheel"
     >
       <div style="height:175px" />
       <div ref="lyricContainer">
