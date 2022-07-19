@@ -394,7 +394,7 @@ watch(pageParams, () => {
     :update-comment-list="updateCommentList" :t="1" :type="0"
     :resource-id="mainStore.currentPlaySong.id"
   />
-  <transition name="fade">
+  <transition name="slide">
     <n-button
       v-show="!showBackTop && mainStore.showMusicDetail"
       class="fixed" style="z-index:9999;bottom: 90px;right:400px"
