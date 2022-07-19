@@ -233,7 +233,7 @@ watch(pageParams, () => {
         <transition v-show="showTopLyric" name="slide">
           <div class="ml-10 text-center" style="width:550px">
             <p>
-              {{ mainStore.currentPlaySong.al.name }}
+              {{ mainStore.currentPlaySong.name }}
             </p>
             <p class="opacity-50">
               {{ mainStore.currentPlayLyric }}
