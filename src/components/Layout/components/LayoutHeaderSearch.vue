@@ -205,14 +205,14 @@ onUnmounted(() => {
       leave-to-class="transform opacity-0 scale-95"
     >
       <div 
-        v-show="showPopover"
+        v-show="showPopover" 
         ref="searchWrapContainerRef"
-        class="absolute top-10  rounded-sm shadow-lg dark:shadow-black/60 transition-width origin-top-left searchWrapContainer"
+        class="absolute top-10 rounded-sm shadow-lg dark:shadow-black/60 transition-all origin-top-left"
         :style="containerStyle"
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
-          <div v-if="mainStore.searchHistory.length && showPopover && !mainStore.searchKeyword.length" class="p-4 pb-0">
+          <div v-if="mainStore.searchHistory.length && !mainStore.searchKeyword.length" class="p-4 pb-0">
             <div class="flex justify-between items-center opacity-70">
               <div>
                 <span class="pr-2">搜索历史</span>
@@ -223,7 +223,7 @@ onUnmounted(() => {
                   确定删除历史记录?
                 </n-popconfirm>
               </div>
-              <n-button v-if="parseInt(defaultHeight) > 62" text @click="handleCheckAllClick">
+              <n-button text @click="handleCheckAllClick">
                 {{ spread ? '收起' :'查看全部' }}
               </n-button>
             </div>
@@ -243,7 +243,7 @@ onUnmounted(() => {
             </div>
           </div>
           <!-- 热搜榜 -->
-          <div v-show="showPopover && !mainStore.searchKeyword.length">
+          <div v-show="!mainStore.searchKeyword.length">
             <p class="pl-4 mt-4 opacity-70">
               热搜榜
             </p>
@@ -268,7 +268,7 @@ onUnmounted(() => {
             </n-spin>
           </div>
           <!-- 搜索建议 -->
-          <div v-if="mainStore.searchKeyword.length > 0 && showPopover" class="py-4">
+          <div v-if="mainStore.searchKeyword.length > 0" class="py-4">
             <n-spin :show="suggestLoading" size="small" description="搜索中...">
               <div v-show="suggestLoading" class="h-80" />
               <div>

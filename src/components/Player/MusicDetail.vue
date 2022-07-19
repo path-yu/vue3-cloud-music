@@ -34,6 +34,7 @@ const musicComment = ref<AnyObject>({});
 const myCanvas = ref<HTMLCanvasElement>();
 const titleRef = ref<HTMLElement>();
 const isShowTag = ref(false);
+const showTopLyric = ref(false);
 const tagPositionStyle = ref<CSSProperties>();
 const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: executeGetSimiPlayList } = useAsyncState(
   (id) => {
@@ -122,7 +123,14 @@ const handleSimiPlayListItem = (id:string) => {
   mainStore.setShowMusicDetail(false);
 };
 
-const handleScroll = () => {
+const handleScroll = (e:Event) => {
+  let target = e.target as HTMLElement;
+  if (target.scrollTop > 100) {
+    showTopLyric.value = true;
+  } else if (target.scrollTop === 0) {
+    showTopLyric.value = false;
+  }
+  console.log(showTopLyric.value);
   updateFooterMaskColor(myCanvas.value!.getContext('2d')!);
 };
 
@@ -212,7 +220,7 @@ watch(pageParams, () => {
   <transition name="bottom-slide-transform" @after-enter="handleTransitionAfterEnter">
     <div
       v-show="mainStore.showMusicDetail"
-      ref="scrollContainerRef" class="fixed inset-x-0 m-auto music-detail" @scroll="handleScroll"
+      class="fixed inset-x-0 m-auto music-detail"
     > 
       <div class="flex items-center p-4">
         <n-icon
@@ -222,8 +230,13 @@ watch(pageParams, () => {
         <div class="flex flex-1 items-center ml-20">
           <layout-header-search />
         </div>
+        <transition v-show="showTopLyric" name="slide">
+          <div>
+            343
+          </div>
+        </transition>
       </div>
-      <div class="flex px-10 pt-5">
+      <div ref="scrollContainerRef" class="flex px-10 pt-5 detail-content" @scroll="handleScroll">
         <rotate-cd />
         <div class="ml-10">
           <div style="width:550px">
@@ -407,8 +420,13 @@ watch(pageParams, () => {
   bottom: 73px;
   width: 85vw;
   height: calc(100vh - 73px);
-  overflow-y: scroll;
+  /* overflow-y: scroll; */
   z-index: 1000;
+}
+.detail-content{
+  height: calc(100vh - 73px - 67px);
+  box-sizing: border-box;
+  overflow-y: scroll;
 }
 .background{
   position: fixed;
