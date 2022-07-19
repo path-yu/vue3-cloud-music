@@ -16,6 +16,7 @@ export interface StoreState{
   searchHistory:string[];
   showMusicDetail:boolean;
   searchKeyword:string;
+  currentPlayLyric:string;
 }
 export type playMode = 'order' | 'random' | 'singleLoop';
 const initState = (
@@ -51,7 +52,8 @@ const state:StoreState = {
   searchKeyword: '',
   playWaiting: true,
   playing: false,
-  showMusicDetail: false
+  showMusicDetail: false,
+  currentPlayLyric: ''
 };
 
 export default state;

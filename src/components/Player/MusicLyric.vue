@@ -90,6 +90,7 @@ const triggerLyricChange = (time:number, listenScroll=false) => {
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
   if (currentLyric) {
     currentPlayLine.value = currentLyric.index;
+    mainStore.currentPlayLyric = currentLyric.content;
     setScroll(currentLyric.time, listenScroll);
   }
 };

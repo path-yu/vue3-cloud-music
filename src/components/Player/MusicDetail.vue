@@ -125,7 +125,7 @@ const handleSimiPlayListItem = (id:string) => {
 
 const handleScroll = (e:Event) => {
   let target = e.target as HTMLElement;
-  if (target.scrollTop > 100) {
+  if (target.scrollTop >= 120) {
     showTopLyric.value = true;
   } else if (target.scrollTop === 0) {
     showTopLyric.value = false;
@@ -222,17 +222,22 @@ watch(pageParams, () => {
       v-show="mainStore.showMusicDetail"
       class="fixed inset-x-0 m-auto music-detail"
     > 
-      <div class="flex items-center p-4">
+      <div class="box-border flex items-center p-4" style="height:77px;">
         <n-icon
           size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
           @click="mainStore.setShowMusicDetail(false)"
         />
-        <div class="flex flex-1 items-center ml-20">
+        <div class="flex items-center ml-20">
           <layout-header-search />
         </div>
         <transition v-show="showTopLyric" name="slide">
-          <div>
-            343
+          <div class="ml-10 text-center" style="width:550px">
+            <p>
+              {{ mainStore.currentPlaySong.al.name }}
+            </p>
+            <p class="opacity-50">
+              {{ mainStore.currentPlayLyric }}
+            </p>
           </div>
         </transition>
       </div>
@@ -420,11 +425,10 @@ watch(pageParams, () => {
   bottom: 73px;
   width: 85vw;
   height: calc(100vh - 73px);
-  /* overflow-y: scroll; */
   z-index: 1000;
 }
 .detail-content{
-  height: calc(100vh - 73px - 67px);
+  height: calc(100vh - 73px - 77px);
   box-sizing: border-box;
   overflow-y: scroll;
 }

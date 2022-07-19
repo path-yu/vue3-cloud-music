@@ -55,7 +55,7 @@
 
 .slide-enter-from{
   opacity: 0;
-  transform: translateY(-80px);
+  transform: translateY(80px);
 }
 .slide-enter-to{
   opacity: 1;
