@@ -241,6 +241,13 @@ watch(
     }
   }, { immediate: true }
 );
+watch(
+  lyricData, (val) => {
+    if (val.length) {
+      mainStore.currentPlayLyric = val[0].content;
+    }
+  }, { immediate: true }
+);
 obverser.on('updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
   if (footerMaskStyle !== footerMaskBackground.value) {
     footerMaskBackground.value = footerMaskStyle;
