@@ -23,6 +23,7 @@ const inputRef = ref();
 const searchWrapContainerRef = ref();
 const spread = ref(false);
 const defaultHeight = ref('100%');
+const historyListRef = ref<HTMLElement>();
 const themeVars = useThemeVars();
 const mainStore = useMainStore();
 const backHover = useElementHover(backIconRef);
@@ -163,7 +164,7 @@ watch(() => mainStore.searchKeyword, throttle(getSearchSuggest, 300));
 watch(showPopover, async (val) => {
   if (val && defaultHeight.value === '100%') {
     await nextTick();
-    defaultHeight.value = document.querySelector('#historyList')?.clientHeight + 'px';
+    defaultHeight.value = historyListRef!.value!.children[0]!.clientHeight + 'px';
   }
 });
 onMounted(() => {
@@ -227,8 +228,8 @@ onUnmounted(() => {
                 {{ spread ? '收起' :'查看全部' }}
               </n-button>
             </div>
-            <div class="mt-2 transition-height" :style="historyListStyle">
-              <n-space id="historyList">
+            <div ref="historyListRef" class="mt-2 transition-height" :style="historyListStyle">
+              <n-space>
                 <n-tag
                   v-for="(item,index) in mainStore.searchHistory"
                   :key="item"
