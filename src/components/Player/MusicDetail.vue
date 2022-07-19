@@ -426,6 +426,7 @@ watch(pageParams, () => {
   width: 85vw;
   height: calc(100vh - 73px);
   z-index: 1000;
+  overflow: hidden;
 }
 .detail-content{
   height: calc(100vh - 73px - 77px);
