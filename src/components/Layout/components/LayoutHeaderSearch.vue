@@ -33,11 +33,19 @@ const router = useRouter();
 const { state: defaultSearchKeyWord } = useAsyncState(getDefaultSearchKeyword().then(res => res.data.data), {});
 const { state: hotSearch, isLoading: hotSearchLoading } = useAsyncState(getHotSearchList().then(res => res.data.data), {});
 const containerStyle = computed(() => {
-  return {
-    background: themeVars.value.modalColor, zIndex: 1000, width: mainStore.searchKeyword.length > 0
+  let hasLen = mainStore.searchKeyword.length > 0;
+  let style:CSSProperties = {
+    background: themeVars.value.modalColor, zIndex: 1000, width: hasLen
       ? '420px '
-      : '384px' 
+      : '384px'
   };
+  if (hasLen) {
+    style = {
+      ...style,
+      transition: 'width ease-in-out 0.3s'
+    };
+  }
+  return style;
 });
 const { state: suggestResult, isLoading: suggestLoading, execute } = useAsyncState(
   (val) => getSuggestSearchList(val).then(async res => {
@@ -167,6 +175,10 @@ watch(showPopover, async (val) => {
     defaultHeight.value = historyListRef!.value!.children[0]!.clientHeight + 'px';
   }
 });
+watch(() => mainStore.searchHistory, async () => {
+  await nextTick();
+  defaultHeight.value = historyListRef!.value!.children[0]!.clientHeight + 'px';
+});
 onMounted(() => {
   document.body.addEventListener('keydown', handleKeyDown);
   document.body.addEventListener('click', handleBodyClick);
@@ -197,23 +209,16 @@ onUnmounted(() => {
         </template>
       </n-input>
     </div>
-    <transition
-      enter-active-class="transition ease-out duration-300" 
-      enter-from-class="transform opacity-0 scale-95" 
-      enter-to-class="transform opacity-100 scale-100"
-      leave-active-class="transition ease-in duration-75"
-      leave-from-class="transform opacity-100 scale-100"
-      leave-to-class="transform opacity-0 scale-95"
-    >
+    <transition name="fade-in-scale-up">
       <div 
         v-show="showPopover" 
         ref="searchWrapContainerRef"
-        class="absolute top-10 rounded-sm shadow-lg dark:shadow-black/60 transition-all origin-top-left"
+        class="absolute top-10 rounded-sm shadow-lg dark:shadow-black/60 origin-top-left searchWrapContainer"
         :style="containerStyle"
       >
         <n-scrollbar style="max-height:500px">
           <!-- 搜索历史 -->
-          <div v-if="mainStore.searchHistory.length && !mainStore.searchKeyword.length" class="p-4 pb-0">
+          <div v-show="mainStore.searchHistory.length && !mainStore.searchKeyword.length" class="p-4 pb-0">
             <div class="flex justify-between items-center opacity-70">
               <div>
                 <span class="pr-2">搜索历史</span>
@@ -224,7 +229,7 @@ onUnmounted(() => {
                   确定删除历史记录?
                 </n-popconfirm>
               </div>
-              <n-button text @click="handleCheckAllClick">
+              <n-button v-if="parseInt(defaultHeight) > 62" text @click="handleCheckAllClick">
                 {{ spread ? '收起' :'查看全部' }}
               </n-button>
             </div>
@@ -269,7 +274,7 @@ onUnmounted(() => {
             </n-spin>
           </div>
           <!-- 搜索建议 -->
-          <div v-if="mainStore.searchKeyword.length > 0" class="py-4">
+          <div v-show="mainStore.searchKeyword.length > 0" class="py-4">
             <n-spin :show="suggestLoading" size="small" description="搜索中...">
               <div v-show="suggestLoading" class="h-80" />
               <div>
