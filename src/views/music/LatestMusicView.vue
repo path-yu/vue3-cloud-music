@@ -86,7 +86,7 @@ fetchData();
 </script>
 
 <template>
-  <div class="p-4">
+  <div class="sticky top-0  z-10  p-4 bg-slate-50 dark:bg-black">
     <span
       v-for="item in typeList"
       :key="item.value" class="px-2 rounded-md opacity-50 transition duration-150 ease-in-out cursor-pointer"
@@ -190,11 +190,5 @@ fetchData();
 }
 .flex-30{
   flex: 0.5;
-}
-.songList{
-  height: 700px;
-  padding-left: 0;
-  overflow-y: scroll;
-  
 }
 </style>

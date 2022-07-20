@@ -251,21 +251,21 @@ onMounted(() => {
         :default-expand-all="true"
       />
     </n-layout-sider>
+    <login-modal ref="loginModalRef" />
+    <n-back-top :right="mainStore.backTopLeft" :bottom="220" :visibility-height="800">
+      <n-icon :component="BackToTop" />
+    </n-back-top>
     <n-layout :style="mainStyle">
       <router-view v-slot="{ Component }">
         <transition
           name="fade-transform"
           mode="out-in"
         >
-          <div>
-            <login-modal ref="loginModalRef" />
-            <n-back-top :right="mainStore.backTopLeft" :bottom="220" :visibility-height="800">
-              <n-icon :component="BackToTop" />
-            </n-back-top>
-            <keep-alive exclude="MvDetail">
+          <keep-alive exclude="MvDetail">
+            <div :key="route.name">  
               <component :is="Component" />
-            </keep-alive>
-          </div>
+            </div>
+          </keep-alive>
         </transition>
       </router-view>
     </n-layout>
