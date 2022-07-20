@@ -221,14 +221,14 @@ watch(isHover, (val) => {
 watch(() => mainStore.currentPlaySong, async () => {
   currentScrollTop = 0;
   scrollTo(0);
-  if (mainStore.showMusicDetail) {
+  if (mainStore.showMusicDetail && !mainStore.currentPlaySong?.isNotLyric) {
     await nextTick();
     initEleScrollTopMap();
   }
 });
 watch(
   () => mainStore.showMusicDetail, async (val) => {
-    if (val && eleScrollTopMap.size === 0) {
+    if (val && eleScrollTopMap.size === 0 && !mainStore.currentPlaySong?.isNotLyric) {
       await nextTick();
       initEleScrollTopMap(); 
     }
@@ -274,7 +274,7 @@ onMounted(() => {
       :on-scroll="handleScroll" @wheel="handleWheel"
     >
       <div style="height:175px" />
-      <div ref="lyricContainer">
+      <div v-if="!mainStore.currentPlaySong?.isNotLyric" ref="lyricContainer">
         <div
           v-for="(item,index) in lyricData" :id="'time'+item.time" :key="index"
           class="text-center lyric-item" :data-time="item.time"
@@ -286,6 +286,9 @@ onMounted(() => {
             {{ item.translateContent }}
           </p>
         </div>
+      </div>
+      <div v-else class="text-center opacity-40">
+        暂无歌词...
       </div>
       <div style="height:175px" />
     </n-scrollbar>
