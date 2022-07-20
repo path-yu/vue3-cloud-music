@@ -3,7 +3,7 @@
 </template>
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui';
-import { computed, onDeactivated, ref, watch } from 'vue';
+import { computed, ref, watch, onUnmounted } from 'vue';
 import Player from 'xgplayer';
 export interface VideoPlayProps{
   url?:string;
@@ -51,8 +51,8 @@ watch(() => props.url, (url, oldUrl) => {
     }
   }
 });
-onDeactivated(() => {
-  player.pause();
+onUnmounted(() => {
+  player.destroy();
 });
 </script>
 

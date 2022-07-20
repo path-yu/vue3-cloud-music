@@ -262,7 +262,7 @@ onMounted(() => {
             <n-back-top :right="mainStore.backTopLeft" :bottom="220" :visibility-height="800">
               <n-icon :component="BackToTop" />
             </n-back-top>
-            <keep-alive>
+            <keep-alive exclude="MvDetail">
               <component :is="Component" />
             </keep-alive>
           </div>
