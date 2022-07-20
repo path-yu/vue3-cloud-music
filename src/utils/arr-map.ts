@@ -9,7 +9,7 @@ export function mapSongs(songs:any[]) {
     item.dt = target.duration;
     item.al = target.album;
     item.ar = target.artists;
-    item.formatAuthor = formateSongsAuthor(item.artists);
+    item.formatAuthor = formateSongsAuthor(target.artists);
     return item;
   });
 } 

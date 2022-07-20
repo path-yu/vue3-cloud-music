@@ -99,7 +99,7 @@ fetchData();
   <!-- 新歌速递列表 -->
   <div class="mt-4">
     <div v-show="isLoading">
-      <div v-for="item in 15" :key="item" class="flex justify-between items-center p-2">
+      <div v-for="item in 9" :key="item" class="flex justify-between items-center p-2">
         <div class="flex items-center">
           <n-skeleton width="15px" class="mt-2" type="text" />
           <n-skeleton
