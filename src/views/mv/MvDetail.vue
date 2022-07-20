@@ -300,6 +300,7 @@ onUnmounted(() => {
           <div v-for="item in simiMvList" :key="item.id" class="group flex mt-4">
             <mv-list-img-item
               :is-to-detail="false" :item="item" height="6vw"
+              class-name="w-48"
               @handle-img-click="handleImgClick"
             />
             <div class="flex flex-col justify-center ml-4 w-48">

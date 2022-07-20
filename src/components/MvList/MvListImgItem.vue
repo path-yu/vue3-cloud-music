@@ -7,10 +7,12 @@ const props = withDefaults(defineProps<{
   height?:string;
   isToDetail?:boolean;
   borderRadius?:string;
+  className?:string;
 }>(), {
   height: '9vw',
   isToDetail: true,
-  borderRadius: '10px'
+  borderRadius: '10px',
+  className: ''
 });
 const emit = defineEmits(['handle-img-click']);
 const router = useRouter();
@@ -27,6 +29,7 @@ const styleBorderRadius = { borderRadius: props.borderRadius };
     <load-img
       :loading-height="height"
       :src="item.picUrl || item.cover"
+      :class-name="className"
       @click="toDetail(item.id)"
     />
     <div
