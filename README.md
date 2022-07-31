@@ -3,9 +3,11 @@
 这是一个主要基于Vue3+TypeScript+Vite构建的高仿网易云pc端的音乐流媒体网站.
 
 ### 前言
+
 为了探索最前沿的前端技术栈, 一切为了好玩, 肝代码不易,觉得喜欢的可以点个star,本项目仅供参考学习.
 
 ### 项目部署
+
 本项目预览地址采用vercel部署, 推荐大家使用vercel部署, 部署步骤非常简单, fork本仓库,在vercel中导入该仓库,按照提示点击部署即可.
 
 ### 主要技术栈如下
@@ -43,9 +45,7 @@
 16. xgplayer: 西瓜播放器(HTML5),带解析器,能节省流量 提供开箱即用的HTML5视频播放器库
 
 17. tailwindcss: 基于原子化css的实用程序优先的css框架,用于快速构建自定义用户界面.
-
-     
-
+   
 ## 功能亮点如下
 
 1. 基于图片主色混入的canvas渐变背景
@@ -80,8 +80,6 @@
 
 16. 评论列表,点击评论,回复评论,添加评论.发表评论
 
-
-
 ## 项目预览
 
 ![loading-ag-609](https://upload-images.jianshu.io/upload_images/20032554-2b49a2c31e6ceda6.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
@@ -100,9 +98,12 @@
 
 推荐使用pnpm安装依赖，推荐node版本14.18+, 16+。
 建议使用nvm管理不同node版本，nvm安装前建议卸载当前已经安装的node。
+
 ### nvm仓库
+
 在首页点击Releases进入版本页面，下载最新版本即可
 https://github.com/coreybutler/nvm-windows
+
 ### pnpm 安装
 ```shell
 npm i pnpm -g
