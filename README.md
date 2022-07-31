@@ -28,7 +28,7 @@
 
 8. [lodash](https://lodash.com/docs/): 实用JavaScript工具函数库,提供了类似防抖节流,深拷贝开箱即用的函数.
 
-9. https://github.com/ai/nanoid/blob/main/README.zh-CN.md: 小型的安全的,用于生成唯一字符串id的JavaScript库.
+9. [nanoid](https://github.com/ai/nanoid/blob/main/README.zh-CN.md): 小型的安全的,用于生成唯一字符串id的JavaScript库.
 
 10. [normalize.css](https://github.com/necolas/normalize.css): 一个用于现代化的重置css的库,用于磨平各个浏览器之间不同样式的兼容问题.
 
@@ -42,7 +42,7 @@
 
 15. [vue-virtual-scroller](https://github.com/Akryum/vue-virtual-scroller): 基于Vue的虚拟滚动JavaScript库.
 
-16. [xgplayer](https://v2.h5player.bytedance.com/）: 西瓜播放器(HTML5),带解析器,能节省流量 提供开箱即用的HTML5视频播放器库
+16. [xgplayer](https://v2.h5player.bytedance.com/): 西瓜播放器(HTML5),带解析器,能节省流量 提供开箱即用的HTML5视频播放器库
 
 17. [tailwindcss](https://tailwindcss.com/): 基于原子化css的实用程序优先的css框架,用于快速构建自定义用户界面.
     
