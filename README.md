@@ -44,8 +44,7 @@
 
 16. xgplayer: 西瓜播放器(HTML5),带解析器,能节省流量 提供开箱即用的HTML5视频播放器库
 
-17. tailwindcss: 基于原子化css的实用程序优先的css框架,用于快速构建自定义用户界面.
-   
+17. tailwindcss: 基于原子化css的实用程序优先的css框架,用于快速构建自定义用户界面.https://tailwindcss.com/
 ## 功能亮点如下
 
 1. 基于图片主色混入的canvas渐变背景
