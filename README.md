@@ -98,9 +98,10 @@
 
 ## 项目运行
 
-推荐使用pnpm安装依赖,推荐node版本14.18+, 16+.
-建议使用nvm管理不同node版本
+推荐使用pnpm安装依赖，推荐node版本14.18+, 16+。
+建议使用nvm管理不同node版本，nvm安装前建议卸载当前已经安装的node。
 ### nvm仓库
+在首页点击Releases进入版本页面，下载最新版本即可
 https://github.com/coreybutler/nvm-windows
 ### pnpm 安装
 ```shell
