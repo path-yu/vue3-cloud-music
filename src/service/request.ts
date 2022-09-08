@@ -1,7 +1,7 @@
 import axios from 'axios';
 // create axios instance
 const instance = axios.create({
-  baseURL: 'https://netease-cloud-music-api-path-yu.vercel.app',
+  baseURL: 'https://www.lghb.top/',
   method: 'get',
   withCredentials: true
 });
