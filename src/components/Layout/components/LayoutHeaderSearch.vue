@@ -172,6 +172,7 @@ watch(() => mainStore.searchKeyword, throttle(getSearchSuggest, 300));
 watch(showPopover, async (val) => {
   if (val && defaultHeight.value === '100%') {
     await nextTick();
+    if (!historyListRef.value?.children[0]) return;
     defaultHeight.value = historyListRef!.value!.children[0]!.clientHeight + 'px';
   }
 });

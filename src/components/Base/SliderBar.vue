@@ -67,31 +67,14 @@ const handleMouseUp = (e:MouseEvent) => {
   emit('change');
   emit('onDone');
 };
-// 鼠标离开浏览器窗口
-const handleMouseOut = (evt:any) => {
-  if (!evt) {
-    evt = window.event;
-  }
-  let to = evt!.relatedTarget || evt!.toElement;
-  if (!to || to.nodeName === 'HTML') {
-    if (isTargetClick.value) {
-      isTargetClick.value = false;
-      emit('change');
-      emit('onDone');
-    }
-    
-  }
-};
 const getProgressWidth = (percentage:number) => props.width * (percentage / 100);
 onMounted(() => {
-  document.body.addEventListener('mousemove', handleMouseMove);
-  document.body.addEventListener('mouseup', handleMouseUp);
-  document.body.addEventListener('mouseout', handleMouseOut);
+  window.addEventListener('mousemove', handleMouseMove);
+  window.addEventListener('mouseup', handleMouseUp);
 });
 onUnmounted(() => {
-  document.body.removeEventListener('mousemove', handleMouseMove);
-  document.body.removeEventListener('mouseup', handleMouseUp);
- 
+  window.removeEventListener('mousemove', handleMouseMove);
+  window.removeEventListener('mouseup', handleMouseUp);
 });
 
 </script>
