@@ -189,6 +189,7 @@ watch(() => mainStore.showMusicDetail, async (val) => {
 });
 watch(
   () => mainStore.currentPlaySong, (val, oldVal) => {
+    if (oldVal && val.id === oldVal.id) return;
     fetchMusicComment(val.id);
     executeGetSimiPlayList(0, val.id);
     executeGetSimiSong(0, val.id);

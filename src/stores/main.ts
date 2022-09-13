@@ -1,8 +1,8 @@
 /* eslint-disable consistent-return */
-
 import { checkMusic, getLyric, getMusicUrl } from '@/service';
 import { formateSongsAuthor, getNextIndex, getPrevIndex, getRandomIntInclusive } from '@/utils';
 import type { AnyObject } from 'env';
+import { cloneDeep, shuffle } from 'lodash';
 import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
 import state, { type playMode } from './state';
@@ -105,14 +105,19 @@ export const useMainStore = defineStore({
         if (!res.success) return;
       }
       this.playList = data;
+      this.initPlayListPrevAndNextIndex();
+     
+      localStorage.rawPlayList = JSON.stringify(cloneDeep(this.playList));
       this.currentPlayIndex = index;
       this.playListIdList = [playListId];
+      this.currentPlayListId = playListId;
       localStorage.currentPlayIndex = index;
       localStorage.playListIdList = JSON.stringify(this.playListIdList);
-      localStorage.playList = JSON.stringify(this.playList);
+      localStorage.playList = JSON.stringify(data);
       localStorage.currentPlayListId = playListId;
-      this.currentPlayListId = playListId;
-      this.playMode = 'order';
+      if (this.playMode === 'random') {
+        this.shufflePlayList();
+      }
       this.changePlaying(true);
     },
     resetPlayList() {
@@ -149,6 +154,19 @@ export const useMainStore = defineStore({
     changePlayMode(mode:playMode) {
       this.playMode = mode;
       localStorage.playMode = mode;
+      if (mode === 'random') {
+        this.shufflePlayList();
+      } else {
+        const currentPlaySong = cloneDeep(this.currentPlaySong);
+        const rawPlayList = JSON.parse(localStorage.rawPlayList) as any[];
+        const newCurrentPlayIndex = rawPlayList.findIndex(item => item.id === currentPlaySong.id);
+        rawPlayList[newCurrentPlayIndex] = currentPlaySong;
+        this.playList = rawPlayList;
+        this.initPlayListPrevAndNextIndex();
+        this.currentPlayIndex = newCurrentPlayIndex;
+        localStorage.currentPlayIndex = this.currentPlayIndex;
+        localStorage.playList = JSON.stringify(rawPlayList);
+      }
     },
     // 切换播放状态
     changePlaying(playing:boolean) {
@@ -268,27 +286,13 @@ export const useMainStore = defineStore({
       const currentPlayIndex = index
         ? +index
         : +this.currentPlayIndex;
-      // 判断播放模式 如果为随机播放
-      if (this.playMode === 'random') {
-        return getRandomIntInclusive(
-          0, this.playListCount - 1, currentPlayIndex
-        );
-      } else {
-        return getNextIndex(currentPlayIndex, this.playListCount - 1);
-      }
+      return this.playList[currentPlayIndex].nextIndx;
     },
     getPrevPlayIndex(index?:number) {
       const currentPlayIndex = index
         ? +index
         : +this.currentPlayIndex;
-      // 判断播放模式 如果为随机播放
-      if (this.playMode === 'random') {
-        return getRandomIntInclusive(
-          0, this.playListCount - 1, currentPlayIndex
-        );
-      } else {
-        return getPrevIndex(currentPlayIndex, this.playListCount - 1);
-      }
+      return this.playList[currentPlayIndex].prevIndex;
     },
     setMySubscribeSongList(list:any[]) {
       this.mySubscribeSongList = list;
@@ -314,6 +318,28 @@ export const useMainStore = defineStore({
     },
     toggleShowMusicDetail() {
       this.showMusicDetail = !this.showMusicDetail;
+    },
+    initPlayListPrevAndNextIndex() {
+      const max = this.playListCount-1;
+      this.playList.forEach((item, index) => {
+        const nextIndex = getNextIndex(index, max);
+        const prevIndex = getPrevIndex(index, max);
+        item.nextIndx = nextIndex;
+        item.prevIndex = prevIndex;
+      });
+    },
+    shufflePlayList() {
+      const currentPlaySong = cloneDeep(this.currentPlaySong);
+      const shufflePlayList = shuffle(cloneDeep(this.playList));
+      const newCurrentPlayIndex = shufflePlayList.findIndex(item => item.id === currentPlaySong.id);
+      shufflePlayList.splice(newCurrentPlayIndex, 1);
+      shufflePlayList.unshift(currentPlaySong);
+      this.playList = shufflePlayList;
+      this.initPlayListPrevAndNextIndex();
+      this.currentPlayIndex = 0;
+      localStorage.currentPlayIndex = 0;
+      localStorage.playList = JSON.stringify(shufflePlayList);
+      console.log(shufflePlayList);
     }
   }
 });
