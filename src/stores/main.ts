@@ -37,20 +37,23 @@ export const useMainStore = defineStore({
     }
   },
   actions: {
-    changeTheme() {
-      if (this.theme === 'dark') {
-        document.documentElement.classList.remove('dark');
-        this.theme = 'light';
-        document.documentElement.style.colorScheme = '';
-        localStorage.theme = 'light';
-        
-      } else {
+    toggleTheme() {
+      const theme = this.theme ==='dark'
+        ? 'light'
+        :'dark';
+      this.changeTheme(theme);
+    },
+    changeTheme(theme:'dark' | 'light') {
+      if (theme === 'dark') {
         document.documentElement.classList.add('dark');
-        // 设置网页的配色方案为dark 
         document.documentElement.style.colorScheme = 'dark';
-        this.theme = 'dark';
-        localStorage.theme = 'dark';
+      } else {
+        document.documentElement.classList.remove('dark');
+        document.documentElement.style.colorScheme = '';
       }
+      // 设置网页的配色方案为dark 
+      this.theme = theme;
+      localStorage.theme = theme;
     },
     initDocumentTheme() {
       if (this.theme === 'dark') {
