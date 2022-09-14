@@ -7,12 +7,18 @@ const mainStore = useMainStore();
 
 onMounted(() => {
   mainStore.initDocumentTheme();
+  let media = window.matchMedia('(prefers-color-scheme: dark)');
+  media.addEventListener('change', (e) => {
+    mainStore.changeTheme(e.matches
+      ?'dark'
+      :'light');
+  });
 });
 </script>
 <template>
   <n-config-provider :locale="zhCN" :theme="mainStore.activeTheme">
     <n-loading-bar-provider>
-      <div class="transition-colors w-100vw">
+      <div class="w-100vw">
         <n-message-provider>
           <n-dialog-provider>
             <LayOut />

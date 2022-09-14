@@ -13,14 +13,10 @@ import { useRouter } from 'vue-router';
 let mainStore = useMainStore();
 const router = useRouter();
 const popoverContainerRef = ref();
-const active = ref(mainStore.isActiveDarkTheme);
 const userDetail = ref<AnyObject>();
 const showUserPopover = ref(false);
 const signBtnLoading = ref(false);
 
-watch(() => active.value, () => {
-  mainStore.changeTheme();
-});
 // 监听登录状态 获取用户信息
 watch(() => mainStore.isLogin, (val) => {
   if (val) {
@@ -94,6 +90,9 @@ const handleSignInClick = () => {
       window.$message.success('签到成功!');
     }
   });
+};
+const handleThemeSwitchUpdateChange = () => {
+  mainStore.toggleTheme();
 };
 if (mainStore.isLogin) {
   getUserProfile();
@@ -191,7 +190,7 @@ if (mainStore.isLogin) {
         </div>
       </div>
       <div class="flex items-center ml-2">
-        <n-switch v-model:value="active" size="large">
+        <n-switch :value="mainStore.isActiveDarkTheme" size="large" :on-update:value="handleThemeSwitchUpdateChange">
           <template #checked-icon>
             <n-icon :component="Moon" />
           </template>
