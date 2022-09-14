@@ -220,7 +220,7 @@ watch(isHover, (val) => {
 });
 watch(() => mainStore.currentPlaySong, async () => {
   currentScrollTop = 0;
-  scrollTo(0);
+  scrollTo(0, true);
   if (mainStore.showMusicDetail && !mainStore.currentPlaySong?.isNotLyric) {
     await nextTick();
     initEleScrollTopMap();
@@ -249,19 +249,15 @@ watch(
   }, { immediate: true }
 );
 obverser.on('updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
-  if (footerMaskStyle !== footerMaskBackground.value) {
-    footerMaskBackground.value = footerMaskStyle;
-  }
-  if (topMaskStyle !== topMaskBackground.value) {
-    topMaskBackground.value = topMaskStyle;
-  }
+  footerMaskBackground.value = footerMaskStyle;
+  topMaskBackground.value = topMaskStyle;
 });
 onMounted(() => {
   obverser.on('timeUpdate', handlePlayLyric);
   obverser.on('slideValueChange', handleSliderChange);
   obverser.on('ended', () => {
     currentScrollTop = 0;
-    scrollTo(0);
+    scrollTo(0, true);
   });
 });
 

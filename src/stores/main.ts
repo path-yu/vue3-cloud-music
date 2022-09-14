@@ -339,7 +339,6 @@ export const useMainStore = defineStore({
       this.currentPlayIndex = 0;
       localStorage.currentPlayIndex = 0;
       localStorage.playList = JSON.stringify(shufflePlayList);
-      console.log(shufflePlayList);
     }
   }
 });

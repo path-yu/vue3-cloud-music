@@ -193,7 +193,7 @@ watch(
     fetchMusicComment(val.id);
     executeGetSimiPlayList(0, val.id);
     executeGetSimiSong(0, val.id);
-    if (val && oldVal && val.id !== oldVal.id) {
+    if (oldVal && val.id !== oldVal.id) {
       resetBackground();
     }
     if (mainStore.showMusicDetail) {
