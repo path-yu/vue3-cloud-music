@@ -130,7 +130,6 @@ const handleScroll = (e:Event) => {
   } else if (target.scrollTop === 0) {
     showTopLyric.value = false;
   }
-  console.log(showTopLyric.value);
   updateFooterMaskColor(myCanvas.value!.getContext('2d')!);
 };
 
