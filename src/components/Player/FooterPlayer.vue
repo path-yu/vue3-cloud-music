@@ -12,7 +12,7 @@ import {
   VolumeOffRound, KeyboardArrowUpOutlined, AddBoxOutlined
 } from '@vicons/material';
 import { useThemeVars } from 'naive-ui';
-import { computed, nextTick, onMounted, ref, watch } from 'vue';
+import { computed, nextTick, onMounted, onUnmounted, ref, watch } from 'vue';
 import { useMainStore } from '@/stores/main';
 import dayjs from 'dayjs';
 import type { PlayListExpose } from './PlayList.vue';
@@ -238,6 +238,7 @@ const handlePlayModeClick = () => {
 };
 // 点击空格播放
 const handlePressSpace = (e:KeyboardEvent) => {
+  e.preventDefault();
   if (e.code === 'Space' && mainStore.currentPlaySong) {
     togglePlayStatus();
   }
@@ -260,6 +261,9 @@ onMounted(() => {
   obverser.on('scrollComplete', () => {
     triggerOriginalAudioTimeUpdate = true;
   });
+});
+onUnmounted(() => {
+  document.body.removeEventListener('keypress', handlePressSpace);
 });
 </script>
 <template>
