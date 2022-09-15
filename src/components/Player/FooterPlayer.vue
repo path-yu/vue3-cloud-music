@@ -65,8 +65,21 @@ const activeStyle = computed(() => {
   }
   return { transform: transformStyle };
 });
+const loadCurrentPrevAndNext = async (val:any) => {
+  // 加载上一首和下一首的歌曲url
+  let next = mainStore.playList[val.nextIndex];
+  let prev = mainStore.playList[val.prevIndex];
+  if (!next.url) {
+    mainStore.setMusicData({ data: mainStore.playList, id: next.id, index: val.nextIndex, showMessage: false });
+  }
+  if (!prev.url) {
+    mainStore.setMusicData({ data: mainStore.playList, id: next.id, index: val.prevIndex, showMessage: false });
+  }
+  localStorage.playList = JSON.stringify(mainStore.playList);
+};
 watch(
   () => mainStore.currentPlaySong, (val, oldVal) => {
+    loadCurrentPrevAndNext(val);
     if (oldVal && val.id !== oldVal.id) {
       // 重新加载媒体资源
       audioRef.value?.load();
@@ -117,7 +130,7 @@ const togglePlayStatus = async () => {
   }
 };
 const tryPlay = () => {
-  if (audioRef.value&& audioRef.value!.readyState >= 2 && audioRef.value?.paused) {
+  if (audioRef.value && audioRef.value!.readyState >= 2 && audioRef.value?.paused) {
     audioRef.value?.play();
   }
   mainStore.changePlaying(true);
@@ -139,6 +152,7 @@ const handleTimeupdate = (event:Event) => {
     updatePlayTime(target.currentTime);
   }
 };
+
 const updatePlayTime = async (time:number, triggerPlay=false) => {
   // 如果当前滑动条正在改变,则不设置对应的值, 避免冲突
   if (!slideValueChange) {
@@ -174,9 +188,7 @@ const handleError = async () => {
     window.$message.warning('歌曲资源过期,准备尝试重新获取');
     if (isLoad) return;
     isLoad = true;
-    const res = await mainStore.setMusicData(
-      mainStore.playList, mainStore.currentPlaySong.id, mainStore.currentPlayIndex
-    );
+    const res = await mainStore.setMusicData({ data: mainStore.playList, id: mainStore.currentPlaySong.id, index: mainStore.currentPlayIndex });
     localStorage.playList = JSON.stringify(mainStore.playList);
     isLoad = false;
     // 重新加载资源
