@@ -102,9 +102,7 @@ export const useMainStore = defineStore({
     ) {
       // 如果没有获取url, 则获取歌曲url
       if (!data[index].url) {
-        const res = await this.setMusicData(
-          data, data[index].id, index, message
-        );
+        const res = await this.setMusicData({ data, id: data[index].id, index: index });
         if (!res.success) return;
       }
       this.playList = data;
@@ -178,10 +176,9 @@ export const useMainStore = defineStore({
     // 切换下一首
     async toggleNext(index?:number) {
       const resultIndex = this.getNextPlayIndex(index);
+      console.log(this.playList[resultIndex].url);
       if (!this.playList[resultIndex].url) {
-        const res = await this.setMusicData(
-          this.playList, this.playList[resultIndex].id, resultIndex
-        );
+        const res = await this.setMusicData({ data: this.playList, id: this.playList[resultIndex].id, index: resultIndex });
         // 如果获取失败说明无版权,则获取下一首
         if (!res.success) {
           const nextIndex = getNextIndex(this.currentPlayIndex, this.playListCount - 1);
@@ -199,9 +196,7 @@ export const useMainStore = defineStore({
     async togglePrev(index?:number) {
       const resultIndex = this.getPrevPlayIndex(index);
       if (!this.playList[resultIndex].url) {
-        const res = await this.setMusicData(
-          this.playList, this.playList[resultIndex].id, resultIndex
-        );
+        const res = await this.setMusicData({ data: this.playList, id: this.playList[resultIndex].id, index: resultIndex });
         if (!res.success) {
           const prevIndex = getPrevIndex(this.currentPlayIndex, this.playListCount - 1);
           this.togglePrev(prevIndex);
@@ -237,22 +232,24 @@ export const useMainStore = defineStore({
       this.playList[resultIndex].like = like;
       localStorage.playList = JSON.stringify(this.playList);
     },
-    async setMusicData(
-      data:any[], id:string, index:number, message='亲爱的,暂无版权!为你自动跳过此首歌曲'
-    ):Promise<any> {
+    async setMusicData(options:{
+      data:any[], id:string, index:number, message?:string;
+      showMessage?:boolean;
+     }):Promise<any> {
+      const { data, id, index, message='亲爱的,暂无版权!为你自动跳过此首歌曲', showMessage=true } = options;
       const result:AnyObject={};
-      window.$message.loading('获取歌曲数据中...', { duration: 0 });
+      showMessage && window.$message.loading('获取歌曲数据中...', { duration: 0 });
       try {
         // 检查歌曲是否可用
         const checkRes = await checkMusic(id) as any;
         if (!checkRes.musicSuccess && !checkRes?.data?.success) {
           window.$message.destroyAll();
-          window.$message.info(message);
+          showMessage && window.$message.info(message);
           return { success: false };
         }
       } catch (error) {
         window.$message.destroyAll();
-        window.$message.info('亲爱的,暂无版权');
+        showMessage && window.$message.info('亲爱的,暂无版权');
         return { success: false };
       }
       // 获取音乐url
@@ -260,7 +257,7 @@ export const useMainStore = defineStore({
       if (res.data.code === 200) {
         result.url = res.data.data[0].url + '?id=' + id;
       } else {
-        window.$message.error('获取歌曲播放地址失败!');
+        showMessage && window.$message.error('获取歌曲播放地址失败!');
         return { success: false };
       }
       // 获取歌曲歌词
@@ -278,7 +275,7 @@ export const useMainStore = defineStore({
       }
       result.isLoading = false;
       window.$message.destroyAll();
-      window.$message.success('获取成功');
+      showMessage && window.$message.success('获取成功');
       data[index] = {
         ...data[index],
         ...result
@@ -289,7 +286,7 @@ export const useMainStore = defineStore({
       const currentPlayIndex = index
         ? +index
         : +this.currentPlayIndex;
-      return this.playList[currentPlayIndex].nextIndx;
+      return this.playList[currentPlayIndex].nextIndex;
     },
     getPrevPlayIndex(index?:number) {
       const currentPlayIndex = index
@@ -327,7 +324,7 @@ export const useMainStore = defineStore({
       this.playList.forEach((item, index) => {
         const nextIndex = getNextIndex(index, max);
         const prevIndex = getPrevIndex(index, max);
-        item.nextIndx = nextIndex;
+        item.nextIndex = nextIndex;
         item.prevIndex = prevIndex;
       });
     },
