@@ -56,7 +56,7 @@ const { state: suggestResult, isLoading: suggestLoading, execute } = useAsyncSta
       result.songs, ['name', 'formatAuthor', 'alias'], mainStore.searchKeyword, primaryColor
     );
     res.data.result.playlists = markSearchKeyword(
-      result.playlists, ['name'], mainStore.searchKeyword, primaryColor
+      result.playlists || [], ['name'], mainStore.searchKeyword, primaryColor
     );
     return res.data.result;
   }), {}, { resetOnExecute: false, immediate: false }
@@ -296,7 +296,7 @@ onUnmounted(() => {
                   <span> - </span>
                   <span v-html="item.formatAuthorRichText" />
                 </div>
-                <p v-show="!suggestLoading && suggestResult.playlists" class="flex items-center pl-4 text-base opacity-50">
+                <p v-show="!suggestLoading && suggestResult.playlists?.length > 0" class="flex items-center pl-4 text-base opacity-50">
                   <n-icon :component="List" />
                   <span class="ml-2">歌单</span>
                 </p>
