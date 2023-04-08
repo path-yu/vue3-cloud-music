@@ -250,7 +250,7 @@ const handlePlayModeClick = () => {
 };
 // 点击空格播放
 const handlePressSpace = (e:KeyboardEvent) => {
-  e.preventDefault();
+  // e.preventDefault();
   if (e.code === 'Space' && mainStore.currentPlaySong) {
     togglePlayStatus();
   }
