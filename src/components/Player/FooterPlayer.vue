@@ -66,6 +66,7 @@ const activeStyle = computed(() => {
   return { transform: transformStyle };
 });
 const loadCurrentPrevAndNext = async (val:any) => {
+  if (!val) return;
   // 加载上一首和下一首的歌曲url
   let next = mainStore.playList[val.nextIndex];
   let prev = mainStore.playList[val.prevIndex];

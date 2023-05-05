@@ -51,7 +51,6 @@ const menuOptions = [
     key: '/latestMv',
     icon: () => <NIcon component={VideocamOutline} />
   }
-
 ];
 
 const route = useRoute();
@@ -73,36 +72,40 @@ const mainStyle = computed<CSSProperties>(() => {
 });
 const changeMenuOption = (myCreatePlayList:any[]=[], collectPlayList:any[]=[]) => {
   if (!mainStore.isLogin) {
-    myMenuOptions.value.unshift(noLoginOption);
+    myMenuOptions.value = [noLoginOption, ...menuOptions];
   } else {
-    myMenuOptions.value.unshift({
-      label: '我创建的歌单',
-      key: 'create',
-      icon: () => <NIcon class="mr-2" size={20} component={User} />,
-      children: myCreatePlayList.map((item:any, index:number) => {
-        return {
-          label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
-          key: item.name,
-          icon: () => <NIcon size={20} component={index === 0
-            ? Heart
-            : QueueMusicFilled}></NIcon>,
-          id: item.id
-        };
-      })
-    },
-    {
-      label: '收藏的歌单',
-      key: 'collect',
-      icon: () => <NIcon component={StarOutline} />,
-      children: collectPlayList.map((item:any) => {
-        return {
-          label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
-          key: item.name,
-          icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
-          id: item.id
-        };
-      })
-    });
+    myMenuOptions.value = [
+      {
+        label: '我创建的歌单',
+        key: 'create',
+        icon: () => <NIcon class="mr-2" size={20} component={User} />,
+        children: myCreatePlayList.map((item:any, index:number) => {
+          return {
+            label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
+            key: item.name,
+            icon: () => <NIcon size={20} component={index === 0
+              ? Heart
+              : QueueMusicFilled}></NIcon>,
+            id: item.id
+          };
+        })
+      },
+      {
+        label: '收藏的歌单',
+        key: 'collect',
+        icon: () => <NIcon component={StarOutline} />,
+        children: collectPlayList.map((item:any) => {
+          return {
+            label: () => <span onClick={() => handlePlayListItemClick(item)}>{item.name}</span>,
+            key: item.name,
+            icon: () => <NIcon size={20} component={QueueMusicFilled}></NIcon>,
+            id: item.id
+          };
+        })
+      },
+      ...menuOptions
+    ];
+   
   }
 };
 const handleOpenLoginModalClick = () => {
@@ -122,34 +125,34 @@ watch(() => route.path, (newVal) => {
 watch(() => mainStore.userProfile, (val) => {
   let userId = mainStore.userProfile?.profile?.userId;
   if (val && userId) {
+    // myMenuOptions.value.shift();
     fetchUserPlaylist(userId);
     fetchMyLikeMusicList(userId);
   } else {
     changeMenuOption();
   }
 });
-watch(() => mainStore.isLogin, (val) => {
-  if (val) {
-    myMenuOptions.value.shift();
-  } else {
-    myMenuOptions.value.shift();
-    myMenuOptions.value.shift();
-  }
-});
-
 if (!mainStore.isLogin) {
   changeMenuOption();
 }
 
 const fetchUserPlaylist = (userId:number) => {
+  window.$message.loading('加载用户歌单中...');
+  if (myMenuOptions.value[0].key === 'login') {
+    myMenuOptions.value.shift();
+  }
   getUserPlaylist(userId).then((res) => {
     // 将歌单分类
     if (res.data.code === 200) {
       let { collectPlayList, myCreatePlayList } = classifySongsList(userId, res.data.playlist);
       mainStore.setMySubscribeSongList(myCreatePlayList);
       changeMenuOption(myCreatePlayList, collectPlayList);
+ 
     }
-  });
+  })
+    .finally(() => {
+      window.$message.destroyAll();
+    });
 };
 // 获取我喜欢的音乐
 const fetchMyLikeMusicList = (userId:number) => {
