@@ -81,7 +81,7 @@ export default defineComponent({
         key: 'name',
         width: '200',
         render(row) {
-          return <div>
+          return <div class="cursor-pointer">
             {row.nameRichText
               ? <span v-html={row.nameRichText}></span>
               : row.name}
