@@ -94,6 +94,9 @@ const handleSignInClick = () => {
 const handleThemeSwitchUpdateChange = () => {
   mainStore.toggleTheme();
 };
+const BackToDiscovery=()=>{
+    router.push('/discovery');
+}
 if (mainStore.isLogin) {
   getUserProfile();
   checkLoginStatus();
@@ -102,7 +105,7 @@ if (mainStore.isLogin) {
 <template>
   <n-layout-header bordered class="flex justify-between items-center px-4 h-14 sm:px-3">
     <div class="flex">
-      <span class=" truncate">奇妙音乐屋！</span>
+      <span class=" truncate cursor-pointer" @click="BackToDiscovery">奇妙音乐屋！</span>
       <layout-header-search />
     </div>
     <div class="flex items-center">
