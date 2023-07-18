@@ -40,5 +40,6 @@
   "scss.lint.unknownAtRules": "ignore",
   // 不折叠文件夹
   "explorer.compactFolders": false,
-  "typescript.tsdk": "node_modules/typescript/lib"
+  "typescript.tsdk": "node_modules/typescript/lib",
+  "vue.codeActions.enabled": false
 }

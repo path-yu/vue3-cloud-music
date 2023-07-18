@@ -29,6 +29,7 @@
   },
   "devDependencies": {
     "@rushstack/eslint-patch": "^1.1.0",
+    "@types/color": "^3.0.3",
     "@types/jsdom": "^16.2.14",
     "@types/node": "^16.11.25",
     "@types/qs": "^6.9.7",

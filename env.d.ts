@@ -22,11 +22,16 @@ declare module 'vue' {
 export type AnyObject = {
   [key: string]: any;
 };
-export interface TopAlbumParams {
-  limit?: number;
-  offset?: number;
-  area?: '全部' | '华语' | '欧美' | '韩国' | '日本';
-  type?: '全部' | '热门',
-  year?: number;
-  month?: number;
-}
+
+declare module 'rgbaster' {
+  interface Opts {
+    ignore?: string[];
+    scale?: number;
+    skipTransparentPixels?: boolean;
+  }
+  export default function (src: string, opts?: Opts): Promise<{
+    color: string;
+    count: number;
+  }[]>;
+  export { };
+};
