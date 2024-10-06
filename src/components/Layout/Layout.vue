@@ -22,19 +22,17 @@ onMounted(() => {
 </script>
 
 <template>
-  <div
-    id="layout-container"
-    style="width: 85vw;margin: auto;"
-  >
+  <div id="layout-container" style="width: 80vw;margin: auto;">
     <n-layout>
       <base-header />
       <layout-left-menu />
-      <n-layout-footer v-if="!route.meta.hidden" :inverted="false" bordered>
+      <n-layout-footer
+        :style="{ background: mainStore.showMusicDetail ? mainStore.canvasBackground : 'var(--n-color)' }"
+        v-if="!route.meta.hidden" :inverted="false" bordered>
         <footer-player />
       </n-layout-footer>
     </n-layout>
   </div>
 </template>
 
-<style scoped>
-</style>
+<style scoped></style>

@@ -30,7 +30,7 @@ const mainStore = useMainStore();
 const triggerRef = ref();
 const isHover = useElementHover(triggerRef);
 const heardLikeRef = ref<HeartIconExpose>();
-const subscribeModalRef = ref<{show:() => void}>();
+const subscribeModalRef = ref<{ show: () => void }>();
 let isLoad = false;
 // audio元素
 const audioRef = ref<HTMLAudioElement>();
@@ -65,7 +65,7 @@ const activeStyle = computed(() => {
   }
   return { transform: transformStyle };
 });
-const loadCurrentPrevAndNext = async (val:any) => {
+const loadCurrentPrevAndNext = async (val: any) => {
   if (!val) return;
   // 加载上一首和下一首的歌曲url
   let next = mainStore.playList[val.nextIndex];
@@ -147,14 +147,14 @@ const handleEnded = () => {
   obverser.emit('ended');
 };
 // 播放进度变化
-const handleTimeupdate = (event:Event) => {
+const handleTimeupdate = (event: Event) => {
   if (triggerOriginalAudioTimeUpdate) {
     const target = event.target as HTMLAudioElement;
     updatePlayTime(target.currentTime);
   }
 };
 
-const updatePlayTime = async (time:number, triggerPlay=false) => {
+const updatePlayTime = async (time: number, triggerPlay = false) => {
   // 如果当前滑动条正在改变,则不设置对应的值, 避免冲突
   if (!slideValueChange) {
     currentPlayTime.value = dayjs(time * 1000).format('mm:ss');
@@ -166,7 +166,7 @@ const updatePlayTime = async (time:number, triggerPlay=false) => {
     if (audioRef.value) {
       audioRef.value!.currentTime = time;
     }
-  } 
+  }
   obverser.emit('timeUpdate', Math.round(time));
 };
 // 媒体的第一帧加载完成
@@ -219,7 +219,7 @@ const handleSliderChange = () => {
   currentPlayTime.value = dayjs(currentTime).format('mm:ss');
 };
 // 音量滑动选择器监听回调
-const handleVolumeChange = (value:number) => {
+const handleVolumeChange = (value: number) => {
   localStorage.volume = value;
   volume.value = value;
   audioRef.value!.volume = volume.value / 100;
@@ -233,7 +233,7 @@ const handleVolumeClick = () => {
     volume.value = 100;
     localStorage.volume = 100;
   }
-   audioRef.value!.volume = volume.value / 100;
+  audioRef.value!.volume = volume.value / 100;
 };
 // 点击切换播放模式
 const handlePlayModeClick = () => {
@@ -250,7 +250,7 @@ const handlePlayModeClick = () => {
   }
 };
 // 点击空格播放
-const handlePressSpace = (e:KeyboardEvent) => {
+const handlePressSpace = (e: KeyboardEvent) => {
   // e.preventDefault();
   if (e.code === 'Space' && mainStore.currentPlaySong) {
     togglePlayStatus();
@@ -260,7 +260,7 @@ const handlePressSpace = (e:KeyboardEvent) => {
 const handleArrowClick = () => {
   mainStore.toggleShowMusicDetail();
 };
-const likeSuccess = (like:boolean) => {
+const likeSuccess = (like: boolean) => {
   mainStore.updatePlayListLike(like);
 };
 const handleLikeHeartClick = () => {
@@ -280,146 +280,124 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <div class="flex z-30 items-center p-1 footer-player">
-    <div v-if="isShow" class="overflow-hidden w-60 h-12">
-      <div :style="activeStyle" class="open-detail-control-wrap">
-        <div class="flex items-center w-40 h-full">
-          <div ref="triggerRef" class="relative" @click="handleArrowClick">
-            <n-image
-              class="w-12 h-12"
-              :src="currentSong?.al?.picUrl"
-              :preview-disabled="true"
-              :style="{filter:isHover ? 'blur(1px)' : 'none'}"
-            />
-            <transition v-show="isHover" name="fade">
-              <div class="absolute top-0 left-0 z-10 w-12  h-12 bg-black/60 flex-items-justify-center">
-                <n-icon :component="KeyboardArrowUpOutlined" size="35" color="white" />
-              </div>
-            </transition>
-          </div>
-          <div class="ml-4">
-            <p class="flex items-center text-base">
-              <n-ellipsis style="max-width: 150px">
-                {{ currentSong?.name }}
+
+  <div class="footer-player" style="">
+    <slider-bar style="position: fixed;bottom: 54px;width: 80vw;z-index: 999;overflow: hidden;"
+      v-if="mainStore.showMusicDetail" width="80vw" v-model="percentage" :load-value="progressValue"
+      @on-done="handleSliderDone" @change="handleSliderChange" />
+    <div class="flex items-center p-2" :style="{
+      transform: mainStore.showMusicDetail ? 'translateY(18px)' : 'translateY(0px)', padding: mainStore.showMusicDetail ? '0px' : '4px '
+    }">
+      <div v-if="isShow" :class="['overflow-hidden h-12',]">
+        <div :style="activeStyle" class="open-detail-control-wrap">
+          <div class="flex items-center h-full">
+            <div ref="triggerRef" class="relative" @click="handleArrowClick">
+              <n-image class="w-12 h-12" :src="currentSong?.al?.picUrl" :preview-disabled="true"
+                :style="{ filter: isHover ? 'blur(1px)' : 'none' }" />
+              <transition v-show="isHover" name="fade">
+                <div class="absolute top-0 left-0 z-10 w-12  h-12 bg-black/60 flex-items-justify-center">
+                  <n-icon :component="KeyboardArrowUpOutlined" size="35" color="white" />
+                </div>
+              </transition>
+            </div>
+            <div class="ml-4">
+              <p class="flex items-center text-base">
+                <n-ellipsis style="max-width: 150px">
+                  {{ currentSong?.name }}
+                </n-ellipsis>
+                <heart-icon :id="mainStore.currentPlaySong.id" class="ml-2" :like="mainStore.currentPlaySong.like"
+                  @like-success="likeSuccess" />
+              </p>
+              <n-ellipsis>
+                <p>{{ formateSongsAuthor(currentSong?.ar || []) }}</p>
               </n-ellipsis>
-              <heart-icon
-                :id="mainStore.currentPlaySong.id" class="ml-2" :like="mainStore.currentPlaySong.like"
-                @like-success="likeSuccess"
-              /> 
-            </p>
-            <n-ellipsis>
-              <p>{{ formateSongsAuthor(currentSong?.ar || []) }}</p>
-            </n-ellipsis>
-          </div>
-        </div>
-        <div class="flex items-center h-12">
-          <n-icon
-            size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
-            @click="mainStore.setShowMusicDetail(false)"
-          />
-          <div class="ml-4">
-            <div class="circleContainer" @click="handleLikeHeartClick">
-              <heart-icon
-                :id="mainStore.currentPlaySong.id"
-                ref="heardLikeRef" :like="mainStore.currentPlaySong.like"
-                :size="25" :trigger-click="true" @like-success="likeSuccess"
-              /> 
             </div>
           </div>
-          <div class="ml-4 circleContainer" @click="subscribeModalRef?.show()">
-            <n-icon :component="AddBoxOutlined" :size="20" />
+          <div class="flex items-center h-12">
+            <n-icon size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
+              @click="mainStore.setShowMusicDetail(false)" />
+            <div class="ml-4">
+              <div class="circleContainer" @click="handleLikeHeartClick">
+                <heart-icon :id="mainStore.currentPlaySong.id" ref="heardLikeRef" :like="mainStore.currentPlaySong.like"
+                  :size="25" :trigger-click="true" @like-success="likeSuccess" />
+              </div>
+            </div>
+            <div class="ml-4 circleContainer" @click="subscribeModalRef?.show()">
+              <n-icon :component="AddBoxOutlined" :size="20" />
+            </div>
+            <div v-if="isShow && mainStore.showMusicDetail" class="pl-4">
+              <span class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
+              <span>/</span>
+              <span class="ml-2 text-xs opacity-50">
+                <n-time format="mm:ss" :time="currentSong?.dt" />
+              </span>
+            </div>
           </div>
         </div>
       </div>
-    </div>
-    <div :style="{opacity:isShow ? '1' : '0.6'}" class="flex flex-col flex-1 items-center control">
-      <div v-if="!isShow" class="absolute z-50 w-full footer-player" />
-      <div style="width:300px" class="flex justify-between items-center">
-        <n-icon
-          class="custom-icon" :size="22" :component="currentPlayModeIcon"
-          @click="handlePlayModeClick"
-        />
-        <n-icon
-          class="prev custom-icon" :size="22" :component="SkipPreviousSharp"
-          @click="handlePrevClick"
-        />
-        <div class="flex justify-center items-center w-8 h-8  bg-neutral-200/60 hover:bg-neutral-200 dark:bg-slate-100/20 dark:hover:bg-slate-100/40 rounded-full" @click="togglePlayStatus">
-          <n-icon :size="mainStore.playing ? 14 : 20" :component="mainStore.playing ? StopIcon :PlayArrowSharp" />
+      <div :style="{ opacity: isShow ? '1' : '0.6' }" class="flex flex-col flex-1 items-center control">
+        <div v-if="!isShow" class="absolute z-50 w-full footer-player" />
+        <div style="width:25%" class="flex justify-evenly items-center">
+          <n-icon class="custom-icon" :size="22" :component="currentPlayModeIcon" @click="handlePlayModeClick" />
+          <n-icon class="prev custom-icon" :size="22" :component="SkipPreviousSharp" @click="handlePrevClick" />
+          <div
+            class="flex justify-center items-center w-8 h-8  bg-neutral-200/60 hover:bg-neutral-200 dark:bg-slate-100/20 dark:hover:bg-slate-100/40 rounded-full"
+            @click="togglePlayStatus">
+            <n-icon :size="mainStore.playing ? 14 : 20" :component="mainStore.playing ? StopIcon : PlayArrowSharp" />
+          </div>
+          <n-icon class="next custom-icon" :size="22" :component="SkipNextSharp" @click="handleNextClick" />
         </div>
-        <n-icon
-          class="next custom-icon" :size="22" :component="SkipNextSharp"
-          @click="handleNextClick"
-        />
-      </div>
-      <div class="flex items-center mt-1">
-        <span v-if="isShow" class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
-        <div class="flex flex-1 items-center" :style="{width:progressWidth+'px'}">
-          <slider-bar
-            v-model="percentage"
-            :load-value="progressValue"
-            @on-done="handleSliderDone"
-            @change="handleSliderChange"
-          />
+        <div class="flex items-center mt-1">
+          <span v-if="isShow && !mainStore.showMusicDetail" class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
+          <div class="flex flex-1 items-center" :style="{ width: progressWidth + 'px' }">
+            <slider-bar v-if="!mainStore.showMusicDetail" v-model="percentage" :load-value="progressValue"
+              @on-done="handleSliderDone" @change="handleSliderChange" />
+          </div>
+          <span v-if="isShow && !mainStore.showMusicDetail" class="ml-2 text-xs opacity-50">
+            <n-time format="mm:ss" :time="currentSong?.dt" />
+          </span>
         </div>
-        <span v-if="isShow" class="ml-2 text-xs opacity-50">
-          <n-time format="mm:ss" :time="currentSong?.dt" />
-        </span>
       </div>
+      <div v-if="isShow" class="flex justify-end items-center ">
+        <n-popover placement="bottom" trigger="hover">
+          <template #trigger>
+            <n-icon :component="volume === 0 ? VolumeOffRound : VolumeUpRound" :size="25" class="mr-2 custom-icon"
+              @click="handleVolumeClick" />
+          </template>
+          <n-slider :value="volume" vertical style="height:100px" @update-value="handleVolumeChange" />
+        </n-popover>
+        <n-icon :component="List" :size="25" class="mr-2 custom-icon" @click="playListRef?.show()" />
+      </div>
+      <audio ref="audioRef" :src="currentSong?.url" preload="auto" @timeupdate="handleTimeupdate" @ended="handleEnded"
+        @playing="handlePlaying" @progress="updateBuffer" @loadeddata="handleLoadeddata" @error="handleError"
+        @waiting="handleWaiting" />
     </div>
-    <div v-if="isShow" class="flex justify-end items-center w-60">
-      <n-popover
-        placement="bottom"
-        trigger="hover"
-      >
-        <template #trigger>
-          <n-icon
-            :component="volume === 0 ? VolumeOffRound : VolumeUpRound" :size="25" class="mr-2 custom-icon"
-            @click="handleVolumeClick"
-          />
-        </template>
-        <n-slider
-          :value="volume" vertical style="height:100px"
-          @update-value="handleVolumeChange"
-        />
-      </n-popover>
-      <n-icon
-        :component="List" :size="25" class="mr-2 custom-icon"
-        @click="playListRef?.show()"
-      />
-    </div>
-    <audio
-      ref="audioRef"
-      :src="currentSong?.url"
-      preload="auto" @timeupdate="handleTimeupdate" @ended="handleEnded"
-      @playing="handlePlaying" @progress="updateBuffer" @loadeddata="handleLoadeddata"
-      @error="handleError" @waiting="handleWaiting" 
-    />
-    <play-list ref="playListRef" />
-    <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
-    <subscribe-play-list-modal v-if="mainStore.currentPlaySong?.id" ref="subscribeModalRef" :tracks="mainStore.currentPlaySong?.id" />
   </div>
+  <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
+  <subscribe-play-list-modal v-if="mainStore.currentPlaySong?.id" ref="subscribeModalRef"
+    :tracks="mainStore.currentPlaySong?.id" />
+  <play-list ref="playListRef" />
 </template>
 <style scoped>
-.footer-player{
-  height: 60px;
+.footer-player {
+  height: 68px;
   /* bottom:0px; */
   /* box-sizing: border-box; */
 }
-:deep(.custom-icon:hover){
+
+:deep(.custom-icon:hover) {
   color: v-bind(primaryColor);
 }
-:deep(.n-icon){
+
+:deep(.n-icon) {
   cursor: pointer;
 }
-.open-detail-control-wrap{
+
+.open-detail-control-wrap {
   transition: transform .6s ease;
 }
-.circleContainer{
-  @apply w-10 h-10 rounded-full border 
-  border-gray-200 
-  dark:border-gray-200/30 border-solid
-  hover:bg-gray-100
-  dark:hover:bg-gray-100/20
-   flex-items-justify-center;
+
+.circleContainer {
+  @apply w-10 h-10 rounded-full border border-gray-200 dark:border-gray-200/30 border-solid hover:bg-gray-100 dark:hover:bg-gray-100/20 flex-items-justify-center;
 }
 </style>

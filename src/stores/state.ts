@@ -17,6 +17,7 @@ export interface StoreState{
   showMusicDetail:boolean;
   searchKeyword:string;
   currentPlayLyric:string;
+  canvasBackground?:string;
 }
 export type playMode = 'order' | 'random' | 'singleLoop';
 const initState = (
@@ -34,6 +35,9 @@ const state:StoreState = {
   ),
   backTopLeft: initState(
     'backTopLeft', '7vw', false
+  ),
+  canvasBackground:initState(
+    'canvasBackground', 'var(--n-color);', false
   ),
   isLogin: initState('isLogin', false),
   userProfile: initState('userProfile', {}),
