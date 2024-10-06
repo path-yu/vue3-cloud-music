@@ -425,20 +425,20 @@ watch(pageParams, () => {
 .music-detail {
   bottom: 73px;
   width: 85vw;
-  height: calc(100vh - 73px);
+  height: calc(100vh - 68px);
   z-index: 1000;
   overflow: hidden;
 }
 .detail-content{
-  height: calc(100vh - 73px - 77px);
+  height: calc(100vh - 68px - 77px);
   box-sizing: border-box;
   overflow-y: scroll;
 }
 .background{
   position: fixed;
   width: 85vw;
-  height: calc(100vh - 73px);
-  bottom: 73px;
+  height: calc(100vh - 68px);
+  bottom: 68px;
   left:0;
   right:0;
   margin:auto;

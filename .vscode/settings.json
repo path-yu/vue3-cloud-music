@@ -29,7 +29,7 @@
   ],
   //  // 保存时自动启用 eslint --fix 自动修复
    "editor.codeActionsOnSave": {
-    "source.fixAll": true
+    "source.fixAll": "explicit"
   },
   "files.associations": {
     "*.json": "jsonc",

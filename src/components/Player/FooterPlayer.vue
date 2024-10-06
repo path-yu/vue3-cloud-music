@@ -74,12 +74,13 @@ const loadCurrentPrevAndNext = async (val:any) => {
     mainStore.setMusicData({ data: mainStore.playList, id: next.id, index: val.nextIndex, showMessage: false });
   }
   if (!prev.url) {
-    mainStore.setMusicData({ data: mainStore.playList, id: next.id, index: val.prevIndex, showMessage: false });
+    mainStore.setMusicData({ data: mainStore.playList, id: prev.id, index: val.prevIndex, showMessage: false });
   }
   localStorage.playList = JSON.stringify(mainStore.playList);
 };
 watch(
   () => mainStore.currentPlaySong, (val, oldVal) => {
+    // console.log(val.url,currentSong);
     loadCurrentPrevAndNext(val);
     if (oldVal && val.id !== oldVal.id) {
       // 重新加载媒体资源
@@ -280,7 +281,7 @@ onUnmounted(() => {
 });
 </script>
 <template>
-  <div class="flex z-30 items-center p-2 footer-player">
+  <div class="flex z-30 items-center p-1 footer-player">
     <div v-if="isShow" class="overflow-hidden w-60 h-12">
       <div :style="activeStyle" class="open-detail-control-wrap">
         <div class="flex items-center w-40 h-full">
@@ -401,8 +402,9 @@ onUnmounted(() => {
 </template>
 <style scoped>
 .footer-player{
-  height: calc(100vh - 800px - 57px);
-  box-sizing: border-box;
+  height: 60px;
+  /* bottom:0px; */
+  /* box-sizing: border-box; */
 }
 :deep(.custom-icon:hover){
   color: v-bind(primaryColor);

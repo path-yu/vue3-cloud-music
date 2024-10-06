@@ -174,7 +174,6 @@ export const useMainStore = defineStore({
     // 切换下一首
     async toggleNext(index?:number) {
       const resultIndex = this.getNextPlayIndex(index);
-      console.log(this.playList[resultIndex].url);
       if (!this.playList[resultIndex].url) {
         const res = await this.setMusicData({ data: this.playList, id: this.playList[resultIndex].id, index: resultIndex });
         // 如果获取失败说明无版权,则获取下一首

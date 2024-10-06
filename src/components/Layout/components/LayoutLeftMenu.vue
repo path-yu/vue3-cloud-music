@@ -67,7 +67,7 @@ const mainStyle = computed<CSSProperties>(() => {
   return {
     height: route.meta.hidden
       ? '100%'
-      : '800px' 
+      : 'calc(100vh - 68px - 56px)' 
   };
 });
 const changeMenuOption = (myCreatePlayList:any[]=[], collectPlayList:any[]=[]) => {
