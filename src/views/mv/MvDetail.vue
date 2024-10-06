@@ -11,7 +11,7 @@ import { userCheckLogin } from '@/hook/useCheckLogin';
 
 const route = useRoute();
 let mvid = ref(route.params.id);
-let backTopEle:HTMLElement;
+let backTopEle: HTMLElement;
 const loadingMaps = reactive({
   mvUrlLoading: true,
   myDetailLoading: true,
@@ -35,7 +35,7 @@ const commentContent = ref('');
 const commentBtnLoading = ref(false);
 const router = useRouter();
 const mainStore = useMainStore();
-const getMvVideoUrl = (mvId:number=+mvid.value, setReloadLoading=false) => {
+const getMvVideoUrl = (mvId: number = +mvid.value, setReloadLoading = false) => {
   getVideoUrl(+mvId).then(res => {
     mvUrl.value = res.data.data.url;
     if (!loadingMaps.reloadLoading) {
@@ -46,26 +46,26 @@ const getMvVideoUrl = (mvId:number=+mvid.value, setReloadLoading=false) => {
     }
   });
 };
-const getSimiMvList = (mvId:number=+mvid.value) => {
+const getSimiMvList = (mvId: number = +mvid.value) => {
   getSimiMv(mvId).then(res => {
     simiMvList.value = res.data.mvs;
     !loadingMaps.reloadLoading && (loadingMaps.simiMvLoading = false);
   });
 };
-const getMvDetailInfo = (mvId:number=+mvid.value) => {
+const getMvDetailInfo = (mvId: number = +mvid.value) => {
   getMvDetail(+mvId).then(res => {
     mvDetail.value = res.data.data;
     !loadingMaps.reloadLoading && (loadingMaps.myDetailLoading = false);
     getSingerSongInfo(res.data.data.artistId);
   });
 };
-const getSingerSongInfo = (id:number) => {
+const getSingerSongInfo = (id: number) => {
   getSingerSong(id).then((res) => {
     authorInfo.value = res.data.artist;
     !loadingMaps.reloadLoading && (loadingMaps.authorInfoLoading = false);
   });
 };
-const getMvCommentInfo = (mvId:string=mvid.value.toString()) => {
+const getMvCommentInfo = (mvId: string = mvid.value.toString()) => {
   !loadingMaps.reloadLoading && (loadingMaps.commentLoading = true);
   let params = {
     id: mvId,
@@ -91,11 +91,11 @@ const init = () => {
 };
 
 init();
-const handleImgClick = async (id:number) => {
+const handleImgClick = async (id: number) => {
   videoPlayRef.value?.stop();
   router.push(`/mv/${id}`);
 };
-watch(() => route.path, (val:string) => {
+watch(() => route.path, (val: string) => {
   if (route.path.includes('mv')) {
     reloadMvData();
   }
@@ -116,11 +116,11 @@ watch(pageParams, () => {
   backTopEle && backTopEle.click();
   getMvCommentInfo();
 });
-const updateCommentList = (value:any) => {
+const updateCommentList = (value: any) => {
   mvComment.value.total += 1;
   mvComment.value.comments.unshift(value);
 };
-const updateCommentLiked = (data:{liked:boolean, index:number}, isHot:boolean) => {
+const updateCommentLiked = (data: { liked: boolean, index: number }, isHot: boolean) => {
   let { index, liked } = data;
   if (isHot) {
     mvComment.value.hotComments[index].liked = liked;
@@ -182,20 +182,14 @@ onUnmounted(() => {
             <n-skeleton height="440px" width="100%" />
           </div>
           <n-spin :show="loadingMaps.reloadLoading">
-            <video-player
-              v-show="loadingMaps.mvUrlLoading === false" ref="videoPlayRef" :url="mvUrl"
-              :poster="mvDetail.cover"
-            />
+            <video-player v-show="loadingMaps.mvUrlLoading === false" ref="videoPlayRef" :url="mvUrl"
+              :poster="mvDetail.cover" />
           </n-spin>
-           
+
           <div v-if="!loadingMaps.authorInfoLoading">
             <!-- 歌手信息 -->
             <div class="flex items-center mt-5">
-              <n-avatar
-                round
-                :size="75"
-                :src="authorInfo.picUrl"
-              />
+              <n-avatar round :size="75" :src="authorInfo.picUrl" />
               <div class="ml-4">
                 <p class=" text-lg">
                   {{ authorInfo.name }}
@@ -257,38 +251,26 @@ onUnmounted(() => {
               评论
               <span class="text-sm opacity-60">({{ mvComment.total }})</span>
             </p>
-            <n-input
-              v-model:value="commentContent" maxlength="140" :show-count="true"
-              class="mt-5 h-32" type="textarea"
-            />
+            <n-input v-model:value="commentContent" maxlength="140" :show-count="true" class="mt-5 h-32"
+              type="textarea" />
             <div class="flex justify-end mt-4">
               <n-button :loading="commentBtnLoading" type="primary" @click="handleCommentClick">
                 评论
               </n-button>
             </div>
             <!-- 精彩评论 -->
-            <comment-list
-              :resource-id="+mvid" title="精彩评论" :list="mvComment.hotComments || []"
+            <comment-list :resource-id="+mvid" title="精彩评论" :list="mvComment.hotComments || []"
               @update-comment-list="updateCommentList"
-              @update-comment-liked="(data:any) => updateCommentLiked(data,true)"
-            />
+              @update-comment-liked="(data: any) => updateCommentLiked(data, true)" />
             <!-- 最新评论 -->
-            <comment-list
-              :resource-id="+mvid"
-              :comment-total-num="mvComment.total" title="最新评论" :list="mvComment.comments || []"
-              @update-comment-list="updateCommentList"
-              @update-comment-liked="(data:any) => updateCommentLiked(data,false)"
-            />
+            <comment-list :resource-id="+mvid" :comment-total-num="mvComment.total" title="最新评论"
+              :list="mvComment.comments || []" @update-comment-list="updateCommentList"
+              @update-comment-liked="(data: any) => updateCommentLiked(data, false)" />
           </div>
           <!-- 分页 -->
           <div v-if="pageParams.pageCount > 1" class="flex justify-end mt-6">
-            <n-pagination
-              v-model:page="pageParams.page" 
-              v-model:page-size="pageParams.pageSize" 
-              :page-count="pageParams.pageCount" 
-              show-size-picker
-              :page-sizes="[10, 20, 30, 40,50]"
-            />
+            <n-pagination v-model:page="pageParams.page" v-model:page-size="pageParams.pageSize"
+              :page-count="pageParams.pageCount" show-size-picker :page-sizes="[10, 20, 30, 40, 50]" />
           </div>
         </div>
       </div>
@@ -298,11 +280,8 @@ onUnmounted(() => {
         </p>
         <div v-if="simiMvList.length">
           <div v-for="item in simiMvList" :key="item.id" class="group flex mt-4">
-            <mv-list-img-item
-              :is-to-detail="false" :item="item" height="6vw"
-              class-name="w-48"
-              @handle-img-click="handleImgClick"
-            />
+            <mv-list-img-item :is-to-detail="false" :item="item" height="6vw" class-name="w-48"
+              @handle-img-click="handleImgClick" />
             <div class="flex flex-col justify-center ml-4 w-48">
               <n-ellipsis>
                 {{ item.name }}
@@ -327,8 +306,7 @@ onUnmounted(() => {
 </template>
 
 <style scoped>
-.title{
+.title {
   @apply text-lg font-bold;
 }
-
 </style>

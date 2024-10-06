@@ -164,7 +164,7 @@ const handleMvTagClick = () => {
   if (mainStore.playing) {
     mainStore.changePlaying(false);
   }
-  router.push(`/mv/${mainStore.currentPlaySong.mv}`);
+  router.push(`/mv/${mainStore.currentPlaySong.mvid}`);
 };
 const handleTransitionAfterEnter = () => {
   updateFooterMaskColor(myCanvas.value!.getContext('2d')!);
@@ -372,7 +372,7 @@ watch(pageParams, () => {
 <style scoped>
 .music-detail {
   bottom: 68px;
-  width: 80vw;
+  width: 75vw;
   height: calc(100vh - 68px);
   z-index: 1000;
   overflow: hidden;
@@ -386,7 +386,7 @@ watch(pageParams, () => {
 
 .background {
   position: fixed;
-  width: 80vw;
+  width: 75vw;
   height: calc(100vh - 68px);
   bottom: 68px;
   left: 0;

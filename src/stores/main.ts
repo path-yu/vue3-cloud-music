@@ -1,6 +1,6 @@
 /* eslint-disable consistent-return */
 import { checkMusic, getLyric, getMusicUrl } from '@/service';
-import { formateSongsAuthor, getNextIndex, getPrevIndex, getRandomIntInclusive } from '@/utils';
+import { formateSongsAuthor, getNextIndex, getPrevIndex } from '@/utils';
 import type { AnyObject } from 'env';
 import { cloneDeep, shuffle } from 'lodash';
 import { darkTheme } from 'naive-ui';
@@ -20,8 +20,8 @@ export const useMainStore = defineStore({
       return state.theme === 'dark';
     },
     likeSongsIndexMap(state) {
-      const map:{[key:number]:number} = Object.create(null);
-      state.likeSongs.forEach((item:number, index:number) => {
+      const map: { [key: number]: number } = Object.create(null);
+      state.likeSongs.forEach((item: number, index: number) => {
         map[item] = index;
       });
       return map;
@@ -38,12 +38,12 @@ export const useMainStore = defineStore({
   },
   actions: {
     toggleTheme() {
-      const theme = this.theme ==='dark'
+      const theme = this.theme === 'dark'
         ? 'light'
-        :'dark';
+        : 'dark';
       this.changeTheme(theme);
     },
-    changeTheme(theme:'dark' | 'light') {
+    changeTheme(theme: 'dark' | 'light') {
       if (theme === 'dark') {
         document.documentElement.classList.add('dark');
         document.documentElement.style.colorScheme = 'dark';
@@ -64,11 +64,11 @@ export const useMainStore = defineStore({
         document.documentElement.style.colorScheme = '';
       }
     },
-    setLikeList(data:number[]) {
+    setLikeList(data: number[]) {
       this.likeSongs = data;
       localStorage.likeSongs = JSON.stringify(data);
     },
-    removeLikeList(id:number) {
+    removeLikeList(id: number) {
       this.likeSongs = this.likeSongs.filter((item: number) => item !== id);
       localStorage.likeSongs = JSON.stringify(this.likeSongs);
     },
@@ -76,14 +76,14 @@ export const useMainStore = defineStore({
       this.likeSongs = [];
       localStorage.likeSongs = JSON.stringify(this.likeSongs);
     },
-    addLikeList(id:number) {
+    addLikeList(id: number) {
       this.likeSongs.push(id);
       localStorage.likeSongs = JSON.stringify(this.likeSongs);
     },
-    hasLikeSong(id:number) {
+    hasLikeSong(id: number) {
       return !!this.likeSongs[this.likeSongsIndexMap[id]];
     },
-    mapSongListAddLike(data:any[]) {
+    mapSongListAddLike(data: any[]) {
       return data.map((item, index) => {
         if (this.likeSongs) {
           const hasLike = this.hasLikeSong(item.id);
@@ -98,7 +98,7 @@ export const useMainStore = defineStore({
     },
     // 初始化播放 列表
     async initPlayList(
-      data:any[], index=0, playListId:string, message='亲爱的, 暂无版权'
+      data: any[], index = 0, playListId: string, message = '亲爱的, 暂无版权'
     ) {
       // 如果没有获取url, 则获取歌曲url
       if (!data[index].url) {
@@ -107,7 +107,7 @@ export const useMainStore = defineStore({
       }
       this.playList = data;
       this.initPlayListPrevAndNextIndex();
-     
+
       localStorage.rawPlayList = JSON.stringify(cloneDeep(this.playList));
       this.currentPlayIndex = index;
       this.playListIdList = [playListId];
@@ -132,24 +132,24 @@ export const useMainStore = defineStore({
       this.currentPlayListId = '';
       this.playMode = 'order';
     },
-    addPlaylist(list:any[], id:string) {
+    addPlaylist(list: any[], id: string) {
       this.playList = [...this.playList, ...list];
       this.playListIdList.push(id);
       localStorage.playList = JSON.stringify(this.playList);
     },
     // 切换播放音乐
-    async changePlayIndex(index:number, message='亲爱的, 暂无版权',id?:number) {
+    async changePlayIndex(index: number, message = '亲爱的, 暂无版权', id?: number) {
       // 如果没有获取url, 则获取歌曲url
       if (!this.playList[index].url) {
         const res = await this.setMusicData({ data: this.playList, id: this.playList[index].id, index, message });
         if (!res.success) return { success: false };
       }
       // find origin song
-      if(this.playMode === 'random' && id){
+      if (this.playMode === 'random' && id) {
         let index = this.playList.findIndex(item => item.id === id);
         this.currentPlayIndex = index;
         localStorage.currentPlayIndex = index;
-      }else{
+      } else {
         this.currentPlayIndex = index;
         localStorage.currentPlayIndex = index;
       }
@@ -157,7 +157,7 @@ export const useMainStore = defineStore({
       this.changePlaying(true);
     },
     // 切换播放模式
-    changePlayMode(mode:playMode) {
+    changePlayMode(mode: playMode) {
       this.playMode = mode;
       localStorage.playMode = mode;
       if (mode === 'random') {
@@ -175,73 +175,71 @@ export const useMainStore = defineStore({
       }
     },
     // 切换播放状态
-    changePlaying(playing:boolean) {
+    changePlaying(playing: boolean) {
       this.playing = playing;
     },
     // 切换下一首
-    async toggleNext(index?:number) {
-      const resultIndex = this.getNextPlayIndex(index);
-      if (!this.playList[resultIndex].url) {
-        const res = await this.setMusicData({ data: this.playList, id: this.playList[resultIndex].id, index: resultIndex });
+    async toggleNext(index?: number) {
+      const nextIndex =  getNextIndex(index ? index: this.currentPlayIndex, this.playListCount - 1);
+      if (!this.playList[nextIndex].url) {
+        const res = await this.setMusicData({ data: this.playList, id: this.playList[nextIndex].id, index: nextIndex });
         // 如果获取失败说明无版权,则获取下一首
         if (!res.success) {
-          const nextIndex = getNextIndex(this.currentPlayIndex, this.playListCount - 1);
-          this.toggleNext(nextIndex);
-          return; 
+          this.toggleNext( getNextIndex(this.currentPlayIndex, this.playListCount - 1));
+          return;
         }
       }
-      this.currentPlayIndex = resultIndex;
-      localStorage.currentPlayIndex = resultIndex;
+      this.currentPlayIndex = nextIndex;
+      localStorage.currentPlayIndex = nextIndex;
       localStorage.playList = JSON.stringify(this.playList);
       this.changePlaying(true);
       return { success: true };
     },
     // 切换上一首
-    async togglePrev(index?:number) {
-      const resultIndex = this.getPrevPlayIndex(index);
-      if (!this.playList[resultIndex].url) {
-        const res = await this.setMusicData({ data: this.playList, id: this.playList[resultIndex].id, index: resultIndex });
+    async togglePrev(index?: number) {
+      const prevIndex = getPrevIndex(index ? index: this.currentPlayIndex, this.playListCount - 1);
+      if (!this.playList[prevIndex].url) {
+        const res = await this.setMusicData({ data: this.playList, id: this.playList[prevIndex].id, index: prevIndex });
         if (!res.success) {
-          const prevIndex = getPrevIndex(this.currentPlayIndex, this.playListCount - 1);
-          this.togglePrev(prevIndex);
+          this.togglePrev( getPrevIndex(this.currentPlayIndex, this.playListCount - 1));
           return;
         }
       }
-      this.currentPlayIndex = resultIndex;
-      localStorage.currentPlayIndex = resultIndex;
+      this.currentPlayIndex = prevIndex;
+      localStorage.currentPlayIndex = prevIndex;
       localStorage.playList = JSON.stringify(this.playList);
       this.changePlaying(true);
       return { success: true };
     },
     // 插入播放
-    async insertPlay(value:any) {
+    async insertPlay(value: any) {
       const index = this.playList.findIndex(item => item.id === value.id);
       value.like = this.hasLikeSong(value.id);
       // 未添加则插入
       if (index === -1) {
         this.playList.splice(
-          this.currentPlayIndex+1, 0, value
+          this.currentPlayIndex + 1, 0, value
         );
-        const insertIndex = this.playList.findIndex((item:any) => item.id === value.id);
+        const insertIndex = this.playList.findIndex((item: any) => item.id === value.id);
         localStorage.playList = JSON.stringify(this.playList);
         this.changePlayIndex(insertIndex);
       } else {
         this.changePlayIndex(index);
       }
     },
-    updatePlayListLike(like:boolean, index?:number) {
+    updatePlayListLike(like: boolean, index?: number) {
       const resultIndex = index
         ? index
         : this.currentPlayIndex;
       this.playList[resultIndex].like = like;
       localStorage.playList = JSON.stringify(this.playList);
     },
-    async setMusicData(options:{
-      data:any[], id:string, index:number, message?:string;
-      showMessage?:boolean;
-     }):Promise<any> {
-      const { data, id, index, message='亲爱的,暂无版权!为你自动跳过此首歌曲', showMessage=true } = options;
-      const result:AnyObject={};
+    async setMusicData(options: {
+      data: any[], id: string, index: number, message?: string;
+      showMessage?: boolean;
+    }): Promise<any> {
+      const { data, id, index, message = '亲爱的,暂无版权!为你自动跳过此首歌曲', showMessage = true } = options;
+      const result: AnyObject = {};
       showMessage && window.$message.loading('获取歌曲数据中...', { duration: 0 });
       try {
         // 检查歌曲是否可用
@@ -286,30 +284,18 @@ export const useMainStore = defineStore({
       };
       return { success: true };
     },
-    getNextPlayIndex(index?:number) {
-      const currentPlayIndex = index
-        ? +index
-        : +this.currentPlayIndex;
-      return this.playList[currentPlayIndex].nextIndex;
-    },
-    getPrevPlayIndex(index?:number) {
-      const currentPlayIndex = index
-        ? +index
-        : +this.currentPlayIndex;
-      return this.playList[currentPlayIndex].prevIndex;
-    },
-    setMySubscribeSongList(list:any[]) {
+    setMySubscribeSongList(list: any[]) {
       this.mySubscribeSongList = list;
       localStorage.mySubscribeSongList = JSON.stringify(list);
     },
-    addSearchHistory(value:string) {
+    addSearchHistory(value: string) {
       if (this.searchHistory.includes(value)) {
         return;
       }
       this.searchHistory.push(value);
       localStorage.searchHistory = JSON.stringify(this.searchHistory);
     },
-    removeSearchHistory(index:number) {
+    removeSearchHistory(index: number) {
       this.searchHistory.splice(index, 1);
       localStorage.searchHistory = JSON.stringify(this.searchHistory);
     },
@@ -317,14 +303,14 @@ export const useMainStore = defineStore({
       this.searchHistory = [];
       localStorage.searchHistory = JSON.stringify([]);
     },
-    setShowMusicDetail(value:boolean) {
+    setShowMusicDetail(value: boolean) {
       this.showMusicDetail = value;
     },
     toggleShowMusicDetail() {
       this.showMusicDetail = !this.showMusicDetail;
     },
     initPlayListPrevAndNextIndex() {
-      const max = this.playListCount-1;
+      const max = this.playListCount - 1;
       this.playList.forEach((item, index) => {
         const nextIndex = getNextIndex(index, max);
         const prevIndex = getPrevIndex(index, max);

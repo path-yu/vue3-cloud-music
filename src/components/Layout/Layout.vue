@@ -22,7 +22,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div id="layout-container" style="width: 80vw;margin: auto;">
+  <div id="layout-container" style="width: 75vw;margin: auto;">
     <n-layout>
       <base-header />
       <layout-left-menu />

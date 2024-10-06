@@ -70,10 +70,10 @@ const loadCurrentPrevAndNext = async (val: any) => {
   // 加载上一首和下一首的歌曲url
   let next = mainStore.playList[val.nextIndex];
   let prev = mainStore.playList[val.prevIndex];
-  if (!next.url) {
+  if (next && !next.url) {
     mainStore.setMusicData({ data: mainStore.playList, id: next.id, index: val.nextIndex, showMessage: false });
   }
-  if (!prev.url) {
+  if (prev && !prev.url) {
     mainStore.setMusicData({ data: mainStore.playList, id: prev.id, index: val.prevIndex, showMessage: false });
   }
   localStorage.playList = JSON.stringify(mainStore.playList);
@@ -282,8 +282,8 @@ onUnmounted(() => {
 <template>
 
   <div class="footer-player" style="">
-    <slider-bar style="position: fixed;bottom: 54px;width: 80vw;z-index: 999;overflow: hidden;"
-      v-if="mainStore.showMusicDetail" width="80vw" v-model="percentage" :load-value="progressValue"
+    <slider-bar style="position: fixed;bottom: 54px;width: 75vw;z-index: 999;overflow: hidden;"
+      v-if="mainStore.showMusicDetail" width="75vw" v-model="percentage" :load-value="progressValue"
       @on-done="handleSliderDone" @change="handleSliderChange" />
     <div class="flex items-center p-2" :style="{
       transform: mainStore.showMusicDetail ? 'translateY(18px)' : 'translateY(0px)', padding: mainStore.showMusicDetail ? '0px' : '4px '
