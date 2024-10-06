@@ -80,7 +80,6 @@ const loadCurrentPrevAndNext = async (val:any) => {
 };
 watch(
   () => mainStore.currentPlaySong, (val, oldVal) => {
-    // console.log(val.url,currentSong);
     loadCurrentPrevAndNext(val);
     if (oldVal && val.id !== oldVal.id) {
       // 重新加载媒体资源
