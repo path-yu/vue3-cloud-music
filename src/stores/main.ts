@@ -138,14 +138,21 @@ export const useMainStore = defineStore({
       localStorage.playList = JSON.stringify(this.playList);
     },
     // 切换播放音乐
-    async changePlayIndex(index:number, message='亲爱的, 暂无版权') {
+    async changePlayIndex(index:number, message='亲爱的, 暂无版权',id?:number) {
       // 如果没有获取url, 则获取歌曲url
       if (!this.playList[index].url) {
         const res = await this.setMusicData({ data: this.playList, id: this.playList[index].id, index, message });
         if (!res.success) return { success: false };
       }
-      this.currentPlayIndex = index;
-      localStorage.currentPlayIndex = index;
+      // find origin song
+      if(this.playMode === 'random' && id){
+        let index = this.playList.findIndex(item => item.id === id);
+        this.currentPlayIndex = index;
+        localStorage.currentPlayIndex = index;
+      }else{
+        this.currentPlayIndex = index;
+        localStorage.currentPlayIndex = index;
+      }
       localStorage.playList = JSON.stringify(this.playList);
       this.changePlaying(true);
     },

@@ -22,12 +22,12 @@ defineExpose({
   }
 });
 // 双击播放
-const handleDoubleClick = async (index:number) => {
+const handleDoubleClick = async (index:number,id:number) => {
   const value = useValidateVipSong(mainStore.playList[index]);
   if (value) return;
   if (isLoad) return;
   isLoad= true;
-  await mainStore.changePlayIndex(index);
+  await mainStore.changePlayIndex(index,id);
   isLoad= false;
 };
 // 点击清空播放列表
@@ -85,7 +85,7 @@ const handleGoHemeClick = () => {
           >
             <div
               :class="'flex justify-between text-sm item ' + stripedClass(index)"
-              @dblclick="handleDoubleClick(index)"
+              @dblclick="handleDoubleClick(index,item.id,item)"
             >
               <div class="flex overflow-hidden flex-1 items-center pr-2">
                 <n-icon
