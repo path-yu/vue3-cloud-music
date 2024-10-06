@@ -2,7 +2,7 @@
 import { checkMusic, getLyric, getMusicUrl } from '@/service';
 import { formateSongsAuthor, getNextIndex, getPrevIndex } from '@/utils';
 import type { AnyObject } from 'env';
-import { cloneDeep, shuffle } from 'lodash';
+import { cloneDeep, isUndefined, shuffle } from 'lodash';
 import { darkTheme } from 'naive-ui';
 import { defineStore } from 'pinia';
 import state, { type playMode } from './state';
@@ -105,9 +105,9 @@ export const useMainStore = defineStore({
         const res = await this.setMusicData({ data, id: data[index].id, index: index });
         if (!res.success) return;
       }
-      this.playList = data;
+      // 过滤掉无音源歌曲
+      this.playList = data.filter(item => item.fee !== 0);
       this.initPlayListPrevAndNextIndex();
-
       localStorage.rawPlayList = JSON.stringify(cloneDeep(this.playList));
       this.currentPlayIndex = index;
       this.playListIdList = [playListId];
@@ -138,20 +138,22 @@ export const useMainStore = defineStore({
       localStorage.playList = JSON.stringify(this.playList);
     },
     // 切换播放音乐
-    async changePlayIndex(index: number, message = '亲爱的, 暂无版权', id?: number) {
+    async changePlayIndex(index: number, target?: any) {
+      // 无音源 跳过
+      if (target['fee'] === 0) return;
       // 如果没有获取url, 则获取歌曲url
-      if (!this.playList[index].url) {
-        const res = await this.setMusicData({ data: this.playList, id: this.playList[index].id, index, message });
+      if (target && !target.url) {
+        const res = await this.setMusicData({ data: this.playList, id: target.id, index, });
         if (!res.success) return { success: false };
       }
       // find origin song
-      if (this.playMode === 'random' && id) {
-        let index = this.playList.findIndex(item => item.id === id);
+      if (this.playMode === 'random' && target.id) {
+        let index = this.playList.findIndex(item => item.id === target.id);
         this.currentPlayIndex = index;
         localStorage.currentPlayIndex = index;
       } else {
-        this.currentPlayIndex = index;
-        localStorage.currentPlayIndex = index;
+        this.currentPlayIndex = target ? this.playList.findIndex(item => item.id === target.id) : index;
+        localStorage.currentPlayIndex = this.currentPlayIndex;
       }
       localStorage.playList = JSON.stringify(this.playList);
       this.changePlaying(true);
@@ -180,12 +182,17 @@ export const useMainStore = defineStore({
     },
     // 切换下一首
     async toggleNext(index?: number) {
-      const nextIndex =  getNextIndex(index ? index: this.currentPlayIndex, this.playListCount - 1);
+      let nextIndex ;
+      if(!isUndefined(this.currentPlaySong.nextIndex)){
+        nextIndex = this.currentPlaySong.nextIndex
+      }else{
+        nextIndex = isUndefined(index) ? getNextIndex(this.currentPlayIndex, this.playListCount - 1) : index
+      }
       if (!this.playList[nextIndex].url) {
         const res = await this.setMusicData({ data: this.playList, id: this.playList[nextIndex].id, index: nextIndex });
         // 如果获取失败说明无版权,则获取下一首
         if (!res.success) {
-          this.toggleNext( getNextIndex(this.currentPlayIndex, this.playListCount - 1));
+          this.toggleNext(getNextIndex(nextIndex, this.playListCount - 1));
           return;
         }
       }
@@ -197,11 +204,16 @@ export const useMainStore = defineStore({
     },
     // 切换上一首
     async togglePrev(index?: number) {
-      const prevIndex = getPrevIndex(index ? index: this.currentPlayIndex, this.playListCount - 1);
+      let prevIndex ;
+      if(!isUndefined(this.currentPlaySong.prevIndex)){
+        prevIndex = this.currentPlaySong.prevIndex
+      }else{
+        prevIndex = isUndefined(index) ? getNextIndex(this.currentPlayIndex, this.playListCount - 1) : index
+      }
       if (!this.playList[prevIndex].url) {
         const res = await this.setMusicData({ data: this.playList, id: this.playList[prevIndex].id, index: prevIndex });
         if (!res.success) {
-          this.togglePrev( getPrevIndex(this.currentPlayIndex, this.playListCount - 1));
+          this.togglePrev(getPrevIndex(prevIndex, this.playListCount - 1));
           return;
         }
       }
@@ -222,9 +234,9 @@ export const useMainStore = defineStore({
         );
         const insertIndex = this.playList.findIndex((item: any) => item.id === value.id);
         localStorage.playList = JSON.stringify(this.playList);
-        this.changePlayIndex(insertIndex);
+        this.changePlayIndex(insertIndex, value);
       } else {
-        this.changePlayIndex(index);
+        this.changePlayIndex(index, value);
       }
     },
     updatePlayListLike(like: boolean, index?: number) {
@@ -242,6 +254,7 @@ export const useMainStore = defineStore({
       const result: AnyObject = {};
       showMessage && window.$message.loading('获取歌曲数据中...', { duration: 0 });
       try {
+       
         // 检查歌曲是否可用
         const checkRes = await checkMusic(id) as any;
         if (!checkRes.musicSuccess && !checkRes?.data?.success) {
@@ -249,9 +262,22 @@ export const useMainStore = defineStore({
           showMessage && window.$message.info(message);
           return { success: false };
         }
-      } catch (error) {
+      } catch (error : any) {
         window.$message.destroyAll();
-        showMessage && window.$message.info('亲爱的,暂无版权');
+        // 捕获错误
+        if (error.response) {
+          // 服务器响应的状态码不在 2xx 范围内
+          console.log('错误状态码:', error.response.status);
+          console.log('错误数据:', error.response.data);
+        } else if (error.request) {
+          // 请求已发出，但没有收到响应
+          console.log('请求没有收到响应:', error.request);
+        } else {
+          // 其他错误
+          console.log('错误信息:', error.message);
+        }
+        window.$message.info( error.response.data.message);
+        // showMessage && window.$message.info('亲爱的,暂无版权');
         return { success: false };
       }
       // 获取音乐url
