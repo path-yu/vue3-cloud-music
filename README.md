@@ -83,7 +83,7 @@
 
 ## 项目预览
 
-![loading-ag-609](https://p0-xtjj-private.juejin.cn/tos-cn-i-73owjymdk6/60d1181fc29f49338a2c9b3ce1faa33f~tplv-73owjymdk6-jj-mark-v1:0:0:0:0:5o6Y6YeR5oqA5pyv56S-5Yy6IEAg5Y-L5ZaE55qE56iL5bqP5ZGY:q75.awebp?policy=eyJ2bSI6MywidWlkIjoiMTg3MzIyMzU0NjgzOTQwNSJ9&rk3s=e9ecf3d6&x-orig-authkey=f32326d3454f2ac7e96d3d06cdbb035152127018&x-orig-expires=1728372942&x-orig-sign=8EyDh29OaeoE0u%2FGpZVntrUcSes%3D)
+![loading-ag-609](https://upload-images.jianshu.io/upload_images/24914540-0e85a7e0a774cfec.jpg?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
 ![](C:\Users\19746\AppData\Roaming\marktext\images\2022-07-04-13-27-27-image.png)
 
