@@ -114,7 +114,7 @@ export const useMainStore = defineStore({
       this.currentPlayListId = playListId;
       localStorage.currentPlayIndex = index;
       localStorage.playListIdList = JSON.stringify(this.playListIdList);
-      localStorage.playList = JSON.stringify(data);
+      localStorage.playList = JSON.stringify(this.playList);
       localStorage.currentPlayListId = playListId;
       if (this.playMode === 'random') {
         this.shufflePlayList();
@@ -188,19 +188,11 @@ export const useMainStore = defineStore({
       } else {
         nextIndex = isUndefined(index) ? getNextIndex(this.currentPlayIndex, this.playListCount - 1) : index
       }
-      if (!this.playList[nextIndex].url) {
-        const res = await this.setMusicData({ data: this.playList, id: this.playList[nextIndex].id, index: nextIndex });
-        // 如果获取失败说明无版权,则获取下一首
-        if (!res.success) {
-          this.toggleNext(getNextIndex(nextIndex, this.playListCount - 1));
-          return;
-        }
-      }
       this.currentPlayIndex = nextIndex;
       localStorage.currentPlayIndex = nextIndex;
       localStorage.playList = JSON.stringify(this.playList);
       this.changePlaying(true);
-      return { success: true };
+     
     },
     // 切换上一首
     async togglePrev(index?: number) {
@@ -210,13 +202,7 @@ export const useMainStore = defineStore({
       } else {
         prevIndex = isUndefined(index) ? getNextIndex(this.currentPlayIndex, this.playListCount - 1) : index
       }
-      if (!this.playList[prevIndex].url) {
-        const res = await this.setMusicData({ data: this.playList, id: this.playList[prevIndex].id, index: prevIndex });
-        if (!res.success) {
-          this.togglePrev(getPrevIndex(prevIndex, this.playListCount - 1));
-          return;
-        }
-      }
+    
       this.currentPlayIndex = prevIndex;
       localStorage.currentPlayIndex = prevIndex;
       localStorage.playList = JSON.stringify(this.playList);
@@ -234,6 +220,8 @@ export const useMainStore = defineStore({
         );
         const insertIndex = this.playList.findIndex((item: any) => item.id === value.id);
         localStorage.playList = JSON.stringify(this.playList);
+        // change origin data
+        localStorage.rawPlayList = JSON.stringify(cloneDeep(this.playList));
         this.changePlayIndex(insertIndex, value);
       } else {
         this.changePlayIndex(index, value);
@@ -254,7 +242,6 @@ export const useMainStore = defineStore({
       const result: AnyObject = {};
       showMessage && window.$message.loading('获取歌曲数据中...', { duration: 0 });
       try {
-
         // 检查歌曲是否可用
         const checkRes = await checkMusic(id) as any;
         if (!checkRes.musicSuccess && !checkRes?.data?.success) {
