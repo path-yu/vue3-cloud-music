@@ -51,7 +51,6 @@ const lyricData = computed(() => {
     }
   }
 });
-console.log(lyricData);
 
 const rangeLyricList = computed(() => {
   return parseRangeLyric(toRaw(lyricData.value));
@@ -77,8 +76,6 @@ const currentLyricStyle = computed(() => {
 });
 
 function handlePlayLyric(time: number, listenScroll = false) {
-  console.log(time);
-
   // 如果当前鼠标正在滚动歌词
   if (selectLyricLine.value) return;
   if (!triggerPlayLyric) return;
