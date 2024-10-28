@@ -164,7 +164,7 @@ const handleMvTagClick = () => {
   if (mainStore.playing) {
     mainStore.changePlaying(false);
   }
-  router.push(`/mv/${mainStore.currentPlaySong.mvid}`);
+  router.push(`/mv/${mainStore.currentPlaySong.mvid || mainStore.currentPlaySong.mv}`);
 };
 const handleTransitionAfterEnter = () => {
   updateFooterMaskColor(myCanvas.value!.getContext('2d')!);

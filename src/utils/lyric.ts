@@ -6,15 +6,20 @@ export function parseLyric(lrc:string): LineItem[] {
     const lyric = decodeURIComponent(lyrics[i]);
     const timeReg = /\[\d*:\d*((\.|:)\d*)*\]/g;
     const timeRegExpArr = lyric.match(timeReg);
+;
+    
     if (!timeRegExpArr) continue;
     const content = lyric.replace(timeReg, '');
     for (let k = 0, h = timeRegExpArr.length; k < h; k++) {
       const t = timeRegExpArr[k];
+      
       const min = Number(String(t.match(/\[\d*/i)).slice(1));
-      const sec = Number(String(t.match(/:\d*/i)).slice(1));
-      const time = min * 60 + sec;
+      // const sec = Number(String(t.match(/:\d*/i)).slice(1));
+      const second =  Number(t.match(/:(\d{2}\.\d{3})/)![1])
+      // const time = min * 60 + sec;
+      const newTime = Math.round(min * 60 * 1000 + second * 1000);
       if (content !== '') {
-        lrcObj.push({ time: time, content });
+        lrcObj.push({ time: newTime, content, });
       }
     }
   }
@@ -57,6 +62,7 @@ export interface LineItem{
   time:number;
   content:string;
   translateContent?:string;
+  // newTime:number;
 }
 export interface RangeLyricItem extends LineItem{
   index:number;

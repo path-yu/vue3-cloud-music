@@ -167,7 +167,7 @@ const updatePlayTime = async (time: number, triggerPlay = false) => {
       audioRef.value!.currentTime = time;
     }
   }
-  obverser.emit('timeUpdate', Math.round(time));
+  obverser.emit('timeUpdate', Math.round(time * 1000));
 };
 // 媒体的第一帧加载完成
 const handleLoadeddata = () => {
@@ -210,7 +210,7 @@ const handleSliderDone = () => {
   audioRef.value!.currentTime = currentTime / 1000;
   slideValueChange = false;
   obverser.emit(
-    'slideValueChange', Math.round(currentTime / 1000), true
+    'slideValueChange', Math.round(currentTime), true
   );
 };
 const handleSliderChange = () => {
