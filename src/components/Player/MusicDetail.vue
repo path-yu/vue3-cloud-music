@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { ref, type Ref, watch, reactive, nextTick, type CSSProperties } from 'vue';
+import { ref, type Ref, watch, reactive, nextTick, type CSSProperties, onMounted } from 'vue';
 // @ts-ignore
 import analyze from 'rgbaster';
 import { BackToTop, Edit } from '@vicons/carbon';
 import { formateSongsAuthor, getArrLast } from '@/utils';
-import { KeyboardArrowDownOutlined } from '@vicons/material';
+import { KeyboardArrowDownOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@vicons/material';
 import color from 'color';
 import { useMainStore } from '@/stores/main';
 import useThemeStyle from '@/hook/useThemeStyle';
@@ -37,6 +37,7 @@ const titleRef = ref<HTMLElement>();
 const isShowTag = ref(false);
 const showTopLyric = ref(false);
 const tagPositionStyle = ref<CSSProperties>();
+const fullScreen = ref(false);
 const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: executeGetSimiPlayList } = useAsyncState(
   (id) => {
     return getSimilarPlaylist(id).then(res => res.data.playlists);
@@ -215,15 +216,34 @@ watch(pageParams, () => {
     fetchMusicComment(mainStore.currentPlaySong.id);
   }
 });
-
+const toggleFullScreen = () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    fullScreen.value = true;
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+    fullScreen.value = false;
+  }
+}
+onMounted(() => {
+  document.addEventListener("fullscreenchange", (event) => {
+    fullScreen.value = !!document.fullscreenElement
+  });
+})
 </script>
 
 <template>
   <transition name="bottom-slide-transform" @after-enter="handleTransitionAfterEnter">
     <div v-show="mainStore.showMusicDetail" class="fixed inset-x-0 m-auto music-detail">
       <div class="box-border flex items-center p-4" style="height:77px;">
-        <n-icon size="35" :component="KeyboardArrowDownOutlined" class="ml-4"
-          @click="mainStore.setShowMusicDetail(false)" />
+        <div class="ml-4 cursor-pointer">
+          <n-icon size="35" :component="KeyboardArrowDownOutlined" @click="mainStore.setShowMusicDetail(false)" />
+        </div>
+        <div class="ml-4 cursor-pointer">
+          <n-icon size="35" :component="fullScreen ? FullscreenExitOutlined : FullscreenOutlined"
+            class="ml-4 cursor-pointer" @click="toggleFullScreen" />
+        </div>
+
         <div class="flex items-center ml-20">
           <layout-header-search />
         </div>

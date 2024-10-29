@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { useThemeVars } from 'naive-ui';
 import obverser from '@/utils/obverser';
-import { PlayArrowSharp, SleddingFilled } from '@vicons/material';
+import { PlayArrowSharp } from '@vicons/material';
 import { computed, nextTick, onMounted, toRaw, watch, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
@@ -136,6 +136,7 @@ const handlePlayIconClick = () => {
   obverser.emit('selectLyricPlay', time / 1000);
 };
 const handleWheel = (event: WheelEvent) => {
+  // disabled default scroll 
   event.preventDefault();
   triggerScroll = true;
   // getting the scrolling speed.

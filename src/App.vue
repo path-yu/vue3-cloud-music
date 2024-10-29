@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import LayOut from '@/components/Layout/Layout.vue';
-import { zhCN, useDialog } from 'naive-ui';
+import { zhCN } from 'naive-ui';
 import { onMounted } from 'vue';
 import { useMainStore } from './stores/main';
 const mainStore = useMainStore();
@@ -10,8 +10,8 @@ onMounted(() => {
   let media = window.matchMedia('(prefers-color-scheme: dark)');
   media.addEventListener('change', (e) => {
     mainStore.changeTheme(e.matches
-      ?'dark'
-      :'light');
+      ? 'dark'
+      : 'light');
   });
 });
 </script>
@@ -31,12 +31,14 @@ onMounted(() => {
 
 <style>
 @import "@/assets/base.css";
+
 ::-webkit-scrollbar {
   width: 5px;
   height: 5px;
   background-color: transparent;
 }
-::-webkit-scrollbar-thumb{
+
+::-webkit-scrollbar-thumb {
   width: 5px;
   @apply bg-gray-400/40;
   border-radius: 10px;

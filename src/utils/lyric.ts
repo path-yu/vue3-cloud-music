@@ -15,9 +15,14 @@ export function parseLyric(lrc:string): LineItem[] {
       
       const min = Number(String(t.match(/\[\d*/i)).slice(1));
       // const sec = Number(String(t.match(/:\d*/i)).slice(1));
-      const second =  Number(t.match(/:(\d{2}\.\d{3})/)![1])
-      // const time = min * 60 + sec;
-      const newTime = Math.round(min * 60 * 1000 + second * 1000);
+      let sec:number;
+      const secondMatch =  t.match(/:(\d{2}\.\d*)/);
+      if(secondMatch){
+        sec = +secondMatch[1];
+      }else{
+        sec = 0;
+      }
+      const newTime = Math.round(min * 60 * 1000 + sec * 1000);
       if (content !== '') {
         lrcObj.push({ time: newTime, content, });
       }

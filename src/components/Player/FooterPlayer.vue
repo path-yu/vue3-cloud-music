@@ -205,12 +205,14 @@ const handleError = async () => {
 // 处理鼠标在进度条上抬起或者按下操作
 const handleSliderDone = () => {
   triggerOriginalAudioTimeUpdate = false;
-  let currentTime = (currentSong.value?.dt * percentage.value) / 100;
-  currentPlayTime.value = dayjs(currentTime).format('mm:ss');
-  audioRef.value!.currentTime = currentTime / 1000;
+  let currentClickTime = Math.round((currentSong.value?.dt * percentage.value) / 100);
+  currentPlayTime.value = dayjs(currentClickTime).format('mm:ss');
+  console.log(currentClickTime, currentSong.value?.dt, percentage.value);
+
+  audioRef.value!.currentTime = currentClickTime / 1000;
   slideValueChange = false;
   obverser.emit(
-    'slideValueChange', Math.round(currentTime), true
+    'slideValueChange', Math.round(currentClickTime), true
   );
 };
 const handleSliderChange = () => {
@@ -281,15 +283,15 @@ onUnmounted(() => {
 </script>
 <template>
 
-  <div class="footer-player" style="">
-    <slider-bar style="position: fixed;bottom: 54px;width: 75vw;z-index: 999;overflow: hidden;"
-      v-if="mainStore.showMusicDetail" width="75vw" v-model="percentage" :load-value="progressValue"
-      @on-done="handleSliderDone" @change="handleSliderChange" />
+  <div class="footer-player overflow-hidden" style="">
+    <slider-bar v-show="mainStore.showMusicDetail"
+      style="position: fixed;bottom: 54px;width: 75vw;z-index: 999;overflow: hidden;" width="75vw" v-model="percentage"
+      :load-value="progressValue" @on-done="handleSliderDone" @change="handleSliderChange" />
     <div class="flex items-center p-2" :style="{
-      transform: mainStore.showMusicDetail ? 'translateY(18px)' : 'translateY(0px)', padding: mainStore.showMusicDetail ? '0px' : '4px '
+      transform: mainStore.showMusicDetail ? 'translateY(14px)' : 'translateY(0px)', padding: mainStore.showMusicDetail ? '0px' : '4px '
     }">
       <div v-if="isShow" :class="['overflow-hidden h-12',]">
-        <div :style="activeStyle" class="open-detail-control-wrap">
+        <div :style="activeStyle" class="transition-ease">
           <div class="flex items-center h-full">
             <div ref="triggerRef" class="relative" @click="handleArrowClick">
               <n-image class="w-12 h-12" :src="currentSong?.al?.picUrl" :preview-disabled="true"
@@ -325,7 +327,7 @@ onUnmounted(() => {
             <div class="ml-4 circleContainer" @click="subscribeModalRef?.show()">
               <n-icon :component="AddBoxOutlined" :size="20" />
             </div>
-            <div v-if="isShow && mainStore.showMusicDetail" class="pl-4">
+            <div class="pl-4">
               <span class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
               <span>/</span>
               <span class="ml-2 text-xs opacity-50">
@@ -335,7 +337,9 @@ onUnmounted(() => {
           </div>
         </div>
       </div>
-      <div :style="{ opacity: isShow ? '1' : '0.6' }" class="flex flex-col flex-1 items-center control">
+      <div
+        :style="{ opacity: isShow ? '1' : '0.6', transform: mainStore.showMusicDetail ? 'translateY(12px)' : 'translateY(0px)' }"
+        class="flex flex-col flex-1 items-center transition">
         <div v-if="!isShow" class="absolute z-50 w-full footer-player" />
         <div style="width:25%" class="flex justify-evenly items-center">
           <n-icon class="custom-icon" :size="22" :component="currentPlayModeIcon" @click="handlePlayModeClick" />
@@ -348,12 +352,13 @@ onUnmounted(() => {
           <n-icon class="next custom-icon" :size="22" :component="SkipNextSharp" @click="handleNextClick" />
         </div>
         <div class="flex items-center mt-1">
-          <span v-if="isShow && !mainStore.showMusicDetail" class="mr-2 text-xs opacity-50">{{ currentPlayTime }}</span>
+          <span v-show="isShow" class="mr-2 text-xs opacity-50">{{ currentPlayTime
+            }}</span>
           <div class="flex flex-1 items-center" :style="{ width: progressWidth + 'px' }">
-            <slider-bar v-if="!mainStore.showMusicDetail" v-model="percentage" :load-value="progressValue"
-              @on-done="handleSliderDone" @change="handleSliderChange" />
+            <slider-bar v-model="percentage" :load-value="progressValue" @on-done="handleSliderDone"
+              @change="handleSliderChange" />
           </div>
-          <span v-if="isShow && !mainStore.showMusicDetail" class="ml-2 text-xs opacity-50">
+          <span v-show="isShow" class="ml-2 text-xs opacity-50">
             <n-time format="mm:ss" :time="currentSong?.dt" />
           </span>
         </div>
@@ -393,7 +398,7 @@ onUnmounted(() => {
   cursor: pointer;
 }
 
-.open-detail-control-wrap {
+.transition-ease {
   transition: transform .6s ease;
 }
 
