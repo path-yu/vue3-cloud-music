@@ -159,6 +159,7 @@ const updatePlayTime = async (time: number, triggerPlay = false) => {
   if (!slideValueChange) {
     currentPlayTime.value = dayjs(time * 1000).format('mm:ss');
     percentage.value = Math.round(((time * 1000) / currentSong.value?.dt) * 100);
+
   }
   if (triggerPlay) {
     tryPlay();
@@ -207,8 +208,6 @@ const handleSliderDone = () => {
   triggerOriginalAudioTimeUpdate = false;
   let currentClickTime = Math.round((currentSong.value?.dt * percentage.value) / 100);
   currentPlayTime.value = dayjs(currentClickTime).format('mm:ss');
-  console.log(currentClickTime, currentSong.value?.dt, percentage.value);
-
   audioRef.value!.currentTime = currentClickTime / 1000;
   slideValueChange = false;
   obverser.emit(

@@ -82,7 +82,7 @@ const fillBackground = async (updateMask = true) => {
   } else {
     primary = mainStore.currentPlaySong.primaryColor;
   }
-  let bgColor = color(baseColor).mix(color(primary), 0.3)
+  let bgColor = color(baseColor).mix(color(primary), 0.2)
     .hex();
   myCanvas.value!.width = width;
   myCanvas.value!.height = height;

@@ -3,6 +3,7 @@ import { useMainStore } from '@/stores/main';
 import { useElementHover } from '@vueuse/core';
 import { isString } from 'lodash';
 import { useThemeVars } from 'naive-ui';
+import { nextTick } from 'vue';
 import { onMounted, onUnmounted, ref } from 'vue';
 const props = withDefaults(defineProps<{
   modelValue: number;
@@ -28,11 +29,18 @@ const emit = defineEmits(['update:modelValue', 'change', 'onDone']);
 const calcPercentage = (value: number) => {
   return Math.round((value / width) * 100);
 };
-const handleSliderMouseDown = (e: MouseEvent) => {
-  let target = e.target as HTMLElement;
-  if (target.classList.contains('dot') && isTargetClick) return;
+const handleSliderMouseDown = async (e: MouseEvent) => {
+  let eventTarget = e.target as HTMLElement;
+  if (eventTarget.classList.contains('dot') && isTargetClick) return;
   if (isTargetClick.value) return;
   let { offsetX } = e;
+  if (width === 0) {
+    await nextTick();
+    let targetEle = target.value as HTMLElement;
+    if (isWidthString) {
+      width = targetEle.clientWidth;
+    }
+  }
   let percentage = calcPercentage(offsetX);
   emit('update:modelValue', percentage);
   startWidth = getProgressWidth(percentage);
