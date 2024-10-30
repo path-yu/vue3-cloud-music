@@ -24,6 +24,7 @@ type RowData = {
   fee: number;
   isSearch?: boolean;
   index?: number;
+  rawIndex: number;
 }
 
 export default defineComponent({
@@ -53,6 +54,7 @@ export default defineComponent({
           let songList = (props.rawSongList.length
             ? props.rawSongList
             : props.songList) as any[];
+          let rawIndex = row.isSearch ? index : row.rawIndex;
           return <div class="flex items-center">
             {
               mainStore.currentPlaySong?.id === songList[index].id
@@ -62,9 +64,9 @@ export default defineComponent({
                     ? VolumeUpFilled
                     : VolumeMuteFilled} size={20} class="pr-3"></NIcon>
                 : <span class="pr-4 opacity-50">
-                  {index < 9
-                    ? '0' + (index + 1)
-                    : (index + 1)}
+                  {rawIndex < 9
+                    ? '0' + (rawIndex + 1)
+                    : (rawIndex + 1)}
                 </span>
             }
             <heart-icon
@@ -100,7 +102,7 @@ export default defineComponent({
       {
         title: '歌手',
         key: 'singer',
-        width: '140',
+        width: '120',
         render(row) {
           return <p class="text-sm truncate">
             {row.formatAuthorRichText
@@ -154,9 +156,9 @@ export default defineComponent({
           striped
           columns={columns}
           data={props.songList}
-          max-height={650}
           row-class-name={rowClassName}
           virtual-scroll
+          max-height={650}
           loading={props.loading}
           row-props={(row: any, index: number) => {
             let rawIndex = row.isSearch

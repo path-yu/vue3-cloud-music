@@ -2,7 +2,7 @@
 import { getPlaylistAllDetail, getPlaylistComment, getPlaylistDetail, sendComment, updatePlayListSubscribe, updatePlaylistTags } from '@/service';
 import type { AnyObject } from 'env';
 import { formateNumber, getArrLast } from '@/utils';
-import { computed, reactive, ref, toRaw, watch } from 'vue';
+import { computed, reactive, ref, toRaw, toRef, unref, watch } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import LoadImg from '@/components/Base/LoadImg.vue';
 import { StarOutline, Star, ShareSocialOutline, Search } from '@vicons/ionicons5';
@@ -32,6 +32,7 @@ const pageParams = reactive({
   page: 1,
   pageSize: 50
 });
+
 const imageRef = ref();
 const themeVars = useThemeVars();
 const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
@@ -64,6 +65,7 @@ const fetchSongListDetail = (id: string = route.params.id as string) => {
       res.data.playlist.isMyLike = false;
     }
     songListDetail.value = res.data.playlist;
+    fetchMusicList();
   }).finally(() => loadPlayListSuccess())
 };
 const { wrapRequest: wrapFetchPlayListComment, requestLoading: isCommentLoading, loadSuccess: loadPlayListCommentSuccess } = useMemorizeRequest(getPlaylistComment, 'getPlaylistComment');
@@ -85,33 +87,54 @@ const fetchSongListComment = (id: string = route.params.id as string) => {
   }).finally(() => { loadPlayListCommentSuccess() })
 };
 const { wrapRequest, requestLoading, loadSuccess } = useMemorizeRequest(getPlaylistAllDetail, 'getPlaylistAllDetail');
+const getMoreMusicList = async () => {
+  let trackCount = songListDetail.value!.trackCount;
+  let requestCount = Math.round((trackCount - 100) / 100);
+  for (let i = 1; i <= requestCount; i++) {
+    let offset = 100 * i;
+    const res = await getPlaylistAllDetail({ id: songListDetail.value!.id, offset: offset });
+    let data = mainStore.mapSongListAddLike(res.data.songs);
+    songList.value = songList.value.concat(data).map((item, index
+    ) => ({ ...item, rawIndex: index }));
+    rawSongList.value = cloneDeep(toRaw(songList).value);
+    rawSongList.value.forEach((item: any, index: number) => {
+      songListIndexMap.set(item.id, index);
+    });
+  }
 
+}
 const fetchMusicList = (id: string = route.params.id as string) => {
   wrapRequest({ id }).then((res: { data: { code: number; songs: any[]; }; }) => {
     if (res?.data?.code === 200) {
       let data = mainStore.mapSongListAddLike(res.data.songs);
-      rawSongList.value = cloneDeep(data);
-      songList.value = data;
+      songList.value = data.map((item, index
+      ) => ({ ...item, rawIndex: index }));
+      rawSongList.value = cloneDeep(toRaw(songList).value);
       rawSongList.value.forEach((item: any, index: number) => {
         songListIndexMap.set(item.id, index);
       });
+      if (songListDetail.value!.trackCount > 100) {
+        getMoreMusicList();
+      }
     }
   }).finally(() => loadSuccess());
 };
 const searchSongList = (keyword: string) => {
   if (!keyword) {
     songList.value = toRaw(rawSongList.value);
+  } else {
+    let result = rawSongList.value.filter((item: any) => {
+      return item.name.includes(keyword)
+        || item.ar.some((ar: any) => ar.name.includes(keyword))
+        || item.al.name.includes(keyword);
+    }).map(item => {
+      return { ...item, isSearch: true, index: songListIndexMap.get(item.id) };
+    });
+    songList.value = markSearchKeyword(
+      result, ['name', 'formatAuthor', ['al', 'name']], keyword, themeVars.value.primaryColor
+    );
   }
-  let result = rawSongList.value.filter((item: any) => {
-    return item.name.includes(keyword)
-      || item.ar.some((ar: any) => ar.name.includes(keyword))
-      || item.al.name.includes(keyword);
-  }).map(item => {
-    return { ...item, isSearch: true, index: songListIndexMap.get(item.id) };
-  });
-  songList.value = markSearchKeyword(
-    result, ['name', 'formatAuthor', ['al', 'name']], keyword, themeVars.value.primaryColor
-  );
+
 };
 watch(() => route.params, (val) => {
   let id = val.id as string;
@@ -119,7 +142,6 @@ watch(() => route.params, (val) => {
     songListId.value = id;
     fetchSongListDetail(id);
     fetchSongListComment();
-    fetchMusicList(id);
   }
 });
 watch(pageParams, () => {
@@ -137,7 +159,6 @@ watch(searchKeyword, (val) => {
 });
 fetchSongListDetail();
 fetchSongListComment();
-fetchMusicList();
 const toSongListEdit = () => {
   let id = route.params.id;
   if (songListDetail.value) {
@@ -285,7 +306,7 @@ const handleUpdateMusicListLike = (like: boolean, index: number) => {
   <div class="p-8 pb-2">
     <n-spin :show="isLoading">
       <div v-if="songListDetail" class="flex justify-between">
-        <load-img ref="imageRef" :has-hover-scale="false" class-name="w-52 h-52" :src="songListDetail.coverImgUrl" />
+        <load-img ref="imageRef" :has-hover-scale="false" class-name="w-52 h-52" :src="songListDetail?.coverImgUrl" />
         <div class="flex-1 ml-8">
           <div class="flex items-center">
             <n-tag type="primary">
@@ -363,7 +384,7 @@ const handleUpdateMusicListLike = (like: boolean, index: number) => {
       </div>
       <div v-else style="height:200px" />
       <div :value="tabsValue" class="mt-10">
-        <div class="flex justify-between">
+        <div class="flex justify-between sticky top-0 z-[999] pt-2" :style="{ background: themeVars.bodyColor }">
           <n-tabs type="line" :value="tabsValue">
             <n-tab name="musicList" @click="tabsValue = 'musicList'">
               歌曲列表
@@ -380,6 +401,7 @@ const handleUpdateMusicListLike = (like: boolean, index: number) => {
             </n-input>
           </div>
         </div>
+
         <div v-show="tabsValue === 'musicList'" class="mt-5">
           <music-list :song-list="songList" :raw-song-list="rawSongList" :loading="requestLoading"
             :play-list-id="songListId" @update-music-list-like="handleUpdateMusicListLike" />

@@ -3,8 +3,8 @@ import { useMainStore } from '@/stores/main';
 import { Play, AddOutline } from '@vicons/ionicons5';
 const mainStore = useMainStore();
 const props = withDefaults(defineProps<{
-  songList?:any[]|undefined;
-  songListId:string;
+  songList?: any[] | undefined;
+  songListId: string;
 }>(), { songList: () => [] });
 // 点击播放全部
 const handleStartPlayAllClick = () => {
@@ -12,7 +12,7 @@ const handleStartPlayAllClick = () => {
     if (mainStore.playing) {
       return window.$message.warning('正在播放中');
     } else {
-      mainStore.changePlayIndex(0);
+      mainStore.changePlayIndex(0, props.songList[0]);
     }
   } else {
     mainStore.initPlayList(

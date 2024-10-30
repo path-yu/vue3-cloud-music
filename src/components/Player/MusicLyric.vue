@@ -26,7 +26,7 @@ const footerMaskBackground = ref<CSSProperties>({});
 const topMaskBackground = ref<CSSProperties>({});
 const isHover = useElementHover(scrollContainerRef);
 let lyricChildrenValueList: { offsetTop: number, index: number, time: number }[] = [];
-const gapHeight = 175;
+const gapHeight = 157;
 let lyricContainerEle: null | HTMLDivElement = null;
 let currentScrollTop = 0;
 const lyricData = computed(() => {
@@ -105,6 +105,7 @@ const handleScroll = (event: Event) => {
   triggerScroll = true;
   let { scrollTop } = target;
   let current = eleScrollTopMap.get(scrollTop);
+
   if (!selectLyricLine.value) {
     selectLyricLine.value = current;
   } else {
@@ -342,7 +343,7 @@ onMounted(() => {
 
 .selectLyricContainer {
   position: absolute;
-  top: 175px;
+  top: 140px;
   width: 540px;
   display: flex;
   justify-content: space-between;

@@ -23,12 +23,12 @@ watch(() => mainStore.isLogin, (val) => {
     getUserProfile();
   }
 });
-onClickOutside(popoverContainerRef, (event:MouseEvent) => {
+onClickOutside(popoverContainerRef, (event: MouseEvent) => {
   let target = event.target as HTMLElement;
   // 如果点击的不是不是触发弹出选择的元素
   if (!target.classList.contains('trigger')) {
     showUserPopover.value = false;
-  } 
+  }
 });
 // 获取用户账号数据
 const getUserProfile = () => {
@@ -37,12 +37,12 @@ const getUserProfile = () => {
     getUserDetailInfo(mainStore.userProfile.profile.userId);
   } else {
     getUserInfo().then(res => {
-      getUserDetailInfo(res.data.profile.userId);
+      getUserDetailInfo(res.data.account.id);
     });
   }
 };
 // 获取用户详情数据
-const getUserDetailInfo = (uid:string) => {
+const getUserDetailInfo = (uid: string) => {
   getUserDetail(uid).then((res) => {
     if (res?.data?.code === 200) {
       mainStore.userProfile = res.data;
@@ -94,8 +94,8 @@ const handleSignInClick = () => {
 const handleThemeSwitchUpdateChange = () => {
   mainStore.toggleTheme();
 };
-const BackToDiscovery=()=>{
-    router.push('/discovery');
+const BackToDiscovery = () => {
+  router.push('/discovery');
 }
 if (mainStore.isLogin) {
   getUserProfile();
@@ -113,17 +113,10 @@ if (mainStore.isLogin) {
       <div v-if="mainStore.isLogin">
         <div v-if="mainStore.userProfile" class="flex items-center mr-2">
           <n-avatar round :size="30" :src="mainStore.userProfile?.profile?.avatarUrl" />
-          <n-popover
-            :show="showUserPopover"
-            trigger="click" style="padding:0"
-            display-directive="show"
-          >
+          <n-popover :show="showUserPopover" trigger="click" style="padding:0" display-directive="show">
             <template #trigger>
-              <p
-                class="pl-2 text-xs truncate opacity-80 hover:opacity-100 cursor-pointer w-30 trigger" 
-                @click="() => (userDetail && (showUserPopover = !showUserPopover ))
-                "
-              >
+              <p class="pl-2 text-xs truncate opacity-80 hover:opacity-100 cursor-pointer w-30 trigger" @click="() => (userDetail && (showUserPopover = !showUserPopover))
+                ">
                 {{ mainStore.userProfile?.profile?.nickname }}
               </p>
             </template>
@@ -149,14 +142,13 @@ if (mainStore.isLogin) {
                 </div>
               </div>
               <div class="flex justify-center">
-                <n-button
-                  :loading="signBtnLoading" :disabled="mainStore.userProfile.pcSign" round
-                  @click="handleSignInClick"
-                >
-                  {{ mainStore.userProfile.pcSign ? '已签到' :' 签到' }}
+                <n-button :loading="signBtnLoading" :disabled="mainStore.userProfile.pcSign" round
+                  @click="handleSignInClick">
+                  {{ mainStore.userProfile.pcSign ? '已签到' : ' 签到' }}
                 </n-button>
               </div>
-              <div class="mt-3 hover:bg-neutral-200/20 border-0 border-b border-gray-200  dark:border-gray-200/20 border-solid">
+              <div
+                class="mt-3 hover:bg-neutral-200/20 border-0 border-b border-gray-200  dark:border-gray-200/20 border-solid">
                 <!-- 个人信息设置 -->
                 <div class="flex justify-between items-center py-2 px-4 cursor-pointer" @click="handleInfoEditClick">
                   <div class="flex items-center text-base">
@@ -166,10 +158,9 @@ if (mainStore.isLogin) {
                   <n-icon :component="ArrowForwardIosRound" />
                 </div>
               </div>
-              <div class="hover:bg-neutral-200/20 border-0 border-b border-gray-200  dark:border-gray-200/20 border-solid">
-                <n-popconfirm
-                  @positive-click="handlePositiveClick"
-                >
+              <div
+                class="hover:bg-neutral-200/20 border-0 border-b border-gray-200  dark:border-gray-200/20 border-solid">
+                <n-popconfirm @positive-click="handlePositiveClick">
                   <template #trigger>
                     <!-- 个人信息设置 -->
                     <div class="flex justify-between items-center py-2 px-4 cursor-pointer">
@@ -206,7 +197,7 @@ if (mainStore.isLogin) {
   </n-layout-header>
 </template>
 <style scoped>
-:deep(.n-popover:not(.n-popover--raw):not(.n-popover--show-header)){
+:deep(.n-popover:not(.n-popover--raw):not(.n-popover--show-header)) {
   padding: 0 !important;
 }
 </style>

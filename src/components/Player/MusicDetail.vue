@@ -262,8 +262,13 @@ onMounted(() => {
         <div class="ml-10">
           <div style="width:550px">
             <div class="relative">
-              <div class="text-3xl text-center">
-                <span ref="titleRef"> {{ mainStore.currentPlaySong.name }}</span>
+              <div class=" text-center">
+                <div ref="titleRef" style="display:inline-block">
+                  <span class="text-3xl"> {{ mainStore.currentPlaySong.name }}</span>
+                  <span class="tex-base opacity-50 pl-1" v-if="mainStore.currentPlaySong.tns">( {{
+                    mainStore.currentPlaySong.tns[0]
+                  }} )</span>
+                </div>
                 <div class="absolute" :style="tagPositionStyle">
                   <n-tag v-if="mainStore.currentPlaySong.mv !== 0" size="small" :color="tagColor"
                     @click="handleMvTagClick">

@@ -12,7 +12,7 @@ const playListTitle = ref('');
 const showModal = ref(false);
 const btnLoading = ref(false);
 const props = defineProps<{
-  tracks:number;
+  tracks: number;
 }>();
 const modalStyle = computed(() => {
   return {
@@ -21,16 +21,16 @@ const modalStyle = computed(() => {
     height: showCreatePlayList.value
       ? '250px'
       : '450px',
-    overflow: 'hidden' 
+    overflow: 'hidden'
   };
 });
-const handleItemClick = (item:any, index:number) => {
+const handleItemClick = (item: any, index: number) => {
   if (!mainStore.isLogin) {
     return window.$message.error('请先登录');
   }
   if (isLoad) return undefined;
   isLoad = true;
-  let params:{tracks:number, op:'add'|'del', pid:number} = {
+  let params: { tracks: number, op: 'add' | 'del', pid: number } = {
     tracks: props.tracks,
     op: 'add',
     pid: item.id
@@ -51,7 +51,7 @@ const handleCreateClick = () => {
   if (!mainStore.isLogin) {
     return window.$message.error('请先登录');
   }
-  let params:{name:string, privacy?:string} = { name: playListTitle.value };
+  let params: { name: string, privacy?: string } = { name: playListTitle.value };
   if (isPrivate.value) {
     params.privacy = '10';
   }
@@ -64,7 +64,7 @@ const handleCreateClick = () => {
       mainStore.mySubscribeSongList.push(res.data.playlist);
       obverser.emit('updateMyCreatePlayList', res.data.playlist);
       btnLoading.value = false;
-    } 
+    }
   });
 };
 defineExpose({
@@ -82,15 +82,8 @@ watch(showModal, (val) => {
 </script>
 
 <template>
-  <n-modal
-    v-model:show="showModal"
-    preset="dialog"
-    transform-origin="center"
-    :show-icon="false"
-    :mask-closable="false"
-    class="transition-all duration-300"
-    :style="modalStyle"
-  >
+  <n-modal v-model:show="showModal" preset="dialog" transform-origin="center" :show-icon="false" :mask-closable="true"
+    class="transition-all duration-300" :style="modalStyle">
     <div class="my-4">
       <transition name="fade" mode="out-in">
         <div v-if="!showCreatePlayList">
@@ -103,12 +96,9 @@ watch(showModal, (val) => {
           </div>
           <base-empty v-if="!mainStore.mySubscribeSongList.length" description="您还未创建歌单" />
           <n-scrollbar style="max-height: 300px">
-            <div
-              v-for="(item,index) in mainStore.mySubscribeSongList"
-              :key="item.id"
+            <div v-for="(item, index) in mainStore.mySubscribeSongList" :key="item.id"
               class="flex items-center py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-200/20 transition-all cursor-pointer"
-              @click="handleItemClick(item,index)"
-            >
+              @click="handleItemClick(item, index)">
               <n-image class="w-14 h-14 rounded-lg" :src="item.coverImgUrl" />
               <div class="ml-2">
                 <n-ellipsis>
@@ -128,10 +118,7 @@ watch(showModal, (val) => {
             <n-checkbox v-model:checked="isPrivate" size="small" label="设置为隐私歌单" />
           </n-space>
           <div class="flex justify-center mt-4">
-            <n-button
-              :loading="btnLoading" :disabled="!playListTitle" type="primary"
-              @click="handleCreateClick"
-            >
+            <n-button :loading="btnLoading" :disabled="!playListTitle" type="primary" @click="handleCreateClick">
               创建
             </n-button>
           </div>
@@ -140,11 +127,8 @@ watch(showModal, (val) => {
     </div>
     <template #header>
       <div class="flex flex-1 items-center">
-        <n-icon
-          v-if="showCreatePlayList"
-          :size="20" class="ml-4 cursor-pointer" :component="ArrowBackIosSharp"
-          @click="showCreatePlayList = false"
-        />
+        <n-icon v-if="showCreatePlayList" :size="20" class="ml-4 cursor-pointer" :component="ArrowBackIosSharp"
+          @click="showCreatePlayList = false" />
         <h4 class="flex-1 my-5 text-center">
           {{ showCreatePlayList ? '新建歌单' : '收藏到歌单' }}
         </h4>
@@ -154,19 +138,21 @@ watch(showModal, (val) => {
 </template>
 
 <style lang="less" scoped>
-.add{
-  width:30px;
-  height:30px;
+.add {
+  width: 30px;
+  height: 30px;
   display: flex;
   align-items: center;
-  padding:10px;
+  padding: 10px;
   justify-content: center;
-  .line{
-    width:1px;
-    height:25px;
+
+  .line {
+    width: 1px;
+    height: 25px;
     background-color: var(--n-icon-color);
   }
-  >div:nth-child(2){
+
+  >div:nth-child(2) {
     background-color: var(--n-icon-color);
     transform: rotate(90deg);
   }
