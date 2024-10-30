@@ -338,7 +338,7 @@ onUnmounted(() => {
         </div>
       </div>
       <div
-        :style="{ opacity: isShow ? '1' : '0.6', transform: mainStore.showMusicDetail ? 'translateY(12px)' : 'translateY(0px)' }"
+        :style="{ opacity: isShow ? '1' : '0.6', transform: mainStore.showMusicDetail ? 'translateY(14px)' : 'translateY(0px)' }"
         class="flex flex-col flex-1 items-center transition">
         <div v-if="!isShow" class="absolute z-50 w-full footer-player" />
         <div style="width:25%" class="flex justify-evenly items-center">
