@@ -96,9 +96,15 @@ export const useMainStore = defineStore({
         return item;
       });
     },
+    updatePlayList(  data: any[]){
+      this.playList = data.filter(item => item.fee !== 0);
+      this.initPlayListPrevAndNextIndex();
+       localStorage.rawPlayList = JSON.stringify(cloneDeep(this.playList));
+      localStorage.playList = JSON.stringify(this.playList);
+    },
     // 初始化播放 列表
     async initPlayList(
-      data: any[], index = 0, playListId: string, message = '亲爱的, 暂无版权'
+      data: any[], index = 0, playListId: string,message?:string
     ) {
       // 如果没有获取url, 则获取歌曲url
       if (!data[index].url) {
@@ -141,6 +147,7 @@ export const useMainStore = defineStore({
     async changePlayIndex(index: number, target?: any) {
       // 无音源 跳过
       if (target['fee'] === 0) return;
+      
       // 如果没有获取url, 则获取歌曲url
       if (target && !target.url) {
         const res = await this.setMusicData({ data: this.playList, id: target.id, index, });
@@ -211,7 +218,7 @@ export const useMainStore = defineStore({
     },
     // 插入播放
     async insertPlay(value: any) {
-      const index = this.playList.findIndex(item => item.id === value.id);
+      const index = this.playList.findIndex(item => item?.id === value.id);
       value.like = this.hasLikeSong(value.id);
       // 未添加则插入
       if (index === -1) {
@@ -256,6 +263,7 @@ export const useMainStore = defineStore({
           // 服务器响应的状态码不在 2xx 范围内
           console.log('错误状态码:', error.response.status);
           console.log('错误数据:', error.response.data);
+          
           showMessage && window.$message.info(error.response.data.message);
         } else if (error.request) {
           // 请求已发出，但没有收到响应
@@ -288,6 +296,7 @@ export const useMainStore = defineStore({
         result.tlyric = lyricRes.data?.tlyric?.lyric;
       } else {
         console.log('获取歌词失败');
+        window.$message.error('获取歌词失败!');
       }
       result.isLoading = false;
       window.$message.destroyAll();

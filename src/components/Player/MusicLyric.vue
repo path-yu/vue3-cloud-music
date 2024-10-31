@@ -52,6 +52,7 @@ const lyricData = computed(() => {
   }
 });
 
+
 const rangeLyricList = computed(() => {
   return parseRangeLyric(toRaw(lyricData.value));
 });
@@ -153,6 +154,7 @@ const handleWheel = (event: WheelEvent) => {
 };
 const initEleScrollTopMap = () => {
   if (!lyricContainer.value) return;
+  if (!lyricData.value.length) return;
   eleScrollTopMap.clear();
   let children = Array.from(lyricContainer.value.children) as HTMLElement[];
   lyricChildrenValueList = children.map((child, index) => {

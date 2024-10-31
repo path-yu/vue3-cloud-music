@@ -27,6 +27,7 @@ const rawSongList = ref<any[]>([]);
 const tabsValue = ref('musicList');
 const commentValue = ref('');
 const songListComment = ref<AnyObject>({});
+const hasLoadAllSongsFished = ref(false);
 const pageParams = reactive({
   pageCount: 10,
   page: 1,
@@ -87,21 +88,32 @@ const fetchSongListComment = (id: string = route.params.id as string) => {
   }).finally(() => { loadPlayListCommentSuccess() })
 };
 const { wrapRequest, requestLoading, loadSuccess } = useMemorizeRequest(getPlaylistAllDetail, 'getPlaylistAllDetail');
+
 const getMoreMusicList = async () => {
   let trackCount = songListDetail.value!.trackCount;
-  let requestCount = Math.round((trackCount - 100) / 100);
+  let requestCount = Math.round((trackCount - 300) / 300);
+  let requestList = [];
   for (let i = 1; i <= requestCount; i++) {
-    let offset = 100 * i;
-    const res = await getPlaylistAllDetail({ id: songListDetail.value!.id, offset: offset });
-    let data = mainStore.mapSongListAddLike(res.data.songs);
+    let offset = 300 * i;
+    requestList.push(getPlaylistAllDetail({ id: songListDetail.value!.id, offset: offset }));
+  }
+  Promise.allSettled(requestList).then((results) => {
+    let allData = results.reduce((total, item) => {
+      if (item.status === 'fulfilled') {
+        total = [...total, ...item.value.data.songs]
+      }
+      return total;
+    }, [])
+    let data = mainStore.mapSongListAddLike(allData);
     songList.value = songList.value.concat(data).map((item, index
     ) => ({ ...item, rawIndex: index }));
     rawSongList.value = cloneDeep(toRaw(songList).value);
     rawSongList.value.forEach((item: any, index: number) => {
       songListIndexMap.set(item.id, index);
     });
-  }
-
+    mainStore.updatePlayList(toRaw(songList.value))
+    hasLoadAllSongsFished.value = true;
+  });
 }
 const fetchMusicList = (id: string = route.params.id as string) => {
   wrapRequest({ id }).then((res: { data: { code: number; songs: any[]; }; }) => {
@@ -115,6 +127,8 @@ const fetchMusicList = (id: string = route.params.id as string) => {
       });
       if (songListDetail.value!.trackCount > 100) {
         getMoreMusicList();
+      } else {
+        hasLoadAllSongsFished.value = true;
       }
     }
   }).finally(() => loadSuccess());
@@ -384,7 +398,7 @@ const handleUpdateMusicListLike = (like: boolean, index: number) => {
       </div>
       <div v-else style="height:200px" />
       <div :value="tabsValue" class="mt-10">
-        <div class="flex justify-between sticky top-0 z-[999] pt-2" :style="{ background: themeVars.bodyColor }">
+        <div class="flex justify-between sticky top-0 z-[999] pt-2">
           <n-tabs type="line" :value="tabsValue">
             <n-tab name="musicList" @click="tabsValue = 'musicList'">
               歌曲列表
@@ -393,7 +407,7 @@ const handleUpdateMusicListLike = (like: boolean, index: number) => {
               评论 <span class="pl-1 text-sm">({{ songListComment?.total }})</span>
             </n-tab>
           </n-tabs>
-          <div class="w-60">
+          <div class="w-60" v-if="hasLoadAllSongsFished">
             <n-input v-model:value="searchKeyword" clearable size="small" placeholder="搜索歌单歌曲" round>
               <template #prefix>
                 <n-icon class="cursor-pointer" :component="Search" />

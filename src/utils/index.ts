@@ -174,3 +174,9 @@ export function isEven(num:number) {
 export function isEmptyObject(obj:any) {
   return Object.keys(obj).length === 0;
 }
+// sleep function with promise
+export function sleep(ms:number) {
+  return new Promise((resolve) => {
+    setTimeout(resolve, ms);
+  });
+}

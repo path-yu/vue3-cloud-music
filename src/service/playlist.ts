@@ -29,7 +29,7 @@ export function getPlaylistAllDetail(data:{
   const query = qs.stringify({
     ...data,
     timestamp: Date.now(),
-    limit:data.limit ? data.limit : 100,
+    limit:data.limit ? data.limit : 300,
     offset:data.offset ? data.offset : 0,
   });
   return service.get('/playlist/track/all?'+query);

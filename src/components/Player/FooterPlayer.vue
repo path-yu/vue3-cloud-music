@@ -78,6 +78,17 @@ const loadCurrentPrevAndNext = async (val: any) => {
   }
   localStorage.playList = JSON.stringify(mainStore.playList);
 };
+const requestSongData = async () => {
+  const res = await mainStore.setMusicData({ data: mainStore.playList, id: mainStore.currentPlaySong.id, index: mainStore.currentPlayIndex });
+  if (res.success) {
+    audioRef.value?.load();
+    localStorage.playList = JSON.stringify(mainStore.playList);
+    resetState();
+    if (mainStore.playing) {
+      audioRef.value?.play();
+    }
+  }
+}
 watch(
   () => mainStore.currentPlaySong, (val, oldVal) => {
     loadCurrentPrevAndNext(val);
@@ -86,6 +97,10 @@ watch(
       audioRef.value?.load();
       resetState();
       tryPlay();
+    }
+    // 如果url 没有加载重新获取
+    if (!val.url) {
+      requestSongData();
     }
   }, { immediate: true }
 );
@@ -203,6 +218,7 @@ const handleError = async () => {
     }
   }
 };
+
 // 处理鼠标在进度条上抬起或者按下操作
 const handleSliderDone = () => {
   triggerOriginalAudioTimeUpdate = false;

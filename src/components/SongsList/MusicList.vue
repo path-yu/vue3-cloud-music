@@ -161,15 +161,16 @@ export default defineComponent({
           max-height={650}
           loading={props.loading}
           row-props={(row: any, index: number) => {
-            let rawIndex = row.isSearch
-              ? row.index
-              : index;
+            let rawIndex = row.isSearch ? index : row.rawIndex;
             return {
-              ondblclick: () => handleClick(
-                props.rawSongList.length
-                  ? props.rawSongList
-                  : props.songList, props.playListId, row, rawIndex
-              )
+              ondblclick: () => {
+                let findIndex = mainStore.playList.findIndex(item => item.id === row.id)
+                handleClick(
+                  props.rawSongList.length
+                    ? props.rawSongList
+                    : props.songList, props.playListId, row, rawIndex
+                )
+              }
             };
           }}
         />
