@@ -98,6 +98,7 @@ watch(
       resetState();
       tryPlay();
     }
+    document.title = val.name;
     // 如果url 没有加载重新获取
     if (!val.url) {
       requestSongData();
