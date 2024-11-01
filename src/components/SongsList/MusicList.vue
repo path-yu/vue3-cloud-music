@@ -168,7 +168,7 @@ export default defineComponent({
                 handleClick(
                   props.rawSongList.length
                     ? props.rawSongList
-                    : props.songList, props.playListId, row, rawIndex
+                    : props.songList, props.playListId, row, findIndex
                 )
               }
             };

@@ -97,8 +97,8 @@ const getMoreMusicList = async () => {
     let offset = 300 * i;
     requestList.push(getPlaylistAllDetail({ id: songListDetail.value!.id, offset: offset }));
   }
-  Promise.allSettled(requestList).then((results) => {
-    let allData = results.reduce((total, item) => {
+  Promise.allSettled(requestList).then((results: any[]) => {
+    let allData = results.reduce((total: any[], item: { status: string; value: { data: { songs: any; }; }; }) => {
       if (item.status === 'fulfilled') {
         total = [...total, ...item.value.data.songs]
       }

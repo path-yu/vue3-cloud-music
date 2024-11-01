@@ -91,6 +91,7 @@ const requestSongData = async () => {
 }
 watch(
   () => mainStore.currentPlaySong, (val, oldVal) => {
+    if (!val) return;
     loadCurrentPrevAndNext(val);
     if (oldVal && val.id !== oldVal.id) {
       // 重新加载媒体资源
