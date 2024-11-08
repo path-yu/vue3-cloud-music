@@ -7,6 +7,7 @@ import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
 import { parseLyric, parseRangeLyric, type LineItem, type RangeLyricItem } from '@/utils/lyric';
 import { useElementHover } from '@vueuse/core';
+import { isEven } from '@/utils';
 let timeId: any;// 回退滚动位置延时器
 let clearTriggerScrollTimer: any;// 设置滚动是否触发延时器
 let triggerScroll = true;
@@ -26,9 +27,10 @@ const footerMaskBackground = ref<CSSProperties>({});
 const topMaskBackground = ref<CSSProperties>({});
 const isHover = useElementHover(scrollContainerRef);
 let lyricChildrenValueList: { offsetTop: number, index: number, time: number }[] = [];
-const gapHeight = 157;
+const gapHeight = 140;
 let lyricContainerEle: null | HTMLDivElement = null;
 let currentScrollTop = 0;
+let lyricItemHeight = 35;
 const lyricData = computed(() => {
   let tlyricData: LineItem[] | undefined;
   if (mainStore.currentPlaySong?.tlyric) {
@@ -141,12 +143,12 @@ const handleWheel = (event: WheelEvent) => {
   // disabled default scroll 
   event.preventDefault();
   triggerScroll = true;
-  // getting the scrolling speed.
-  let deltaY = event.deltaY;
-  // decreasing the scrolling speed by 3
-  let speed = deltaY / 3;
-  // scrolling the content of the div element
-  lyricContainerEle!.scrollTop += speed;
+  console.log(event);
+  if (event.deltaY > 0) {
+    lyricContainerEle!.scrollTop += lyricItemHeight;
+  } else {
+    lyricContainerEle!.scrollTop -= lyricItemHeight;
+  }
   clearTimeout(clearTriggerScrollTimer);
   clearTriggerScrollTimer = setTimeout(() => {
     triggerScroll = false;
@@ -269,6 +271,7 @@ watch(
 obverser.on('updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
   footerMaskBackground.value = footerMaskStyle;
   topMaskBackground.value = topMaskStyle;
+
 });
 onMounted(() => {
   obverser.on('timeUpdate', handlePlayLyric);
@@ -285,7 +288,7 @@ onMounted(() => {
 
 <template>
   <div ref="scrollContainerRef" class="relative mt-10 scrollContainer">
-    <n-scrollbar ref="scrollBarRef" style="height: 350px;width:550px" :on-scroll="handleScroll" @wheel="handleWheel">
+    <n-scrollbar ref="scrollBarRef" style="height: 315px;width:550px" :on-scroll="handleScroll" @wheel="handleWheel">
       <div :style="{ height: gapHeight + 'px' }" />
       <div v-if="!mainStore.currentPlaySong?.isNotLyric" ref="lyricContainer">
         <div v-for="(item, index) in lyricData" :id="'time' + item.time" :key="index" class="text-center lyric-item"
@@ -309,9 +312,13 @@ onMounted(() => {
         <n-time v-if="selectLyricLine" format="mm:ss" :time="selectLyricLine.time" />
         <div class="ml-2  bg-gradient-to-r from-gray-300 dark:from-gray-500 line" />
       </div>
+
       <div class="flex items-center">
         <div class="mr-2 bg-gradient-to-l  from-gray-300 dark:from-gray-500 line" />
-        <n-icon :component="PlayArrowSharp" :size="20" @click="handlePlayIconClick" />
+        <n-button style="font-size: 24px">
+          <n-icon :component="PlayArrowSharp" :size="20" @click="handlePlayIconClick" />
+        </n-button>
+
       </div>
     </div>
     <div class="top-mask" :style="topMaskBackground" />
@@ -332,15 +339,15 @@ onMounted(() => {
 .footer-mask {
   position: absolute;
   width: 500px;
-  height: 50px;
+  height: 35px;
   bottom: 0px;
 }
 
 .top-mask {
   position: absolute;
   width: 500px;
-  height: 50px;
-  bottom: 300px;
+  height: 35px;
+  top: 0px;
 }
 
 .selectLyricContainer {

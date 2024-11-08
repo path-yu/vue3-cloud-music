@@ -7,7 +7,7 @@ export function useBlurLineGradient() {
   let lyricTopMaskElement:HTMLElement;
   let footerMaskStyle:CSSProperties;
   let topMaskStyle:CSSProperties;
-  const eleHeight = 50;
+  const eleHeight = 35;
   const updateFooterMaskColor = async (context:CanvasRenderingContext2D) => {
     await nextTick();
     if (!lyricFooterMaskELement) {
