@@ -107,7 +107,7 @@ export const useMainStore = defineStore({
       data: any[], index = 0, playListId: string,message?:string
     ) {
       // 如果没有获取url, 则获取歌曲url
-      if (!data[index].url) {
+      if (!data[index]?.url) {
         const res = await this.setMusicData({ data, id: data[index].id, index: index });
         if (!res.success) return;
       }
