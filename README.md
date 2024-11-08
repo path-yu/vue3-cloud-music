@@ -88,8 +88,6 @@
 
 ![loading-ag-609](https://upload-images.jianshu.io/upload_images/24914540-6e666b06fa902d43.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
-![](https://upload-images.jianshu.io/upload_images/20032554-f94a8e8f127d22bf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
-
 ![](https://upload-images.jianshu.io/upload_images/24914540-1d77d01057781aaf.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![](https://upload-images.jianshu.io/upload_images/20032554-89d3aae105f66885.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 
