@@ -311,7 +311,7 @@ onUnmounted(() => {
         <div :style="activeStyle" class="transition-ease">
           <div class="flex items-center h-full">
             <div ref="triggerRef" class="relative" @click="handleArrowClick">
-              <n-image class="w-12 h-12" :src="currentSong?.al?.picUrl" :preview-disabled="true"
+              <n-image class="w-12 h-12 overflow-hidden" :src="currentSong?.al?.picUrl" :preview-disabled="true"
                 :style="{ filter: isHover ? 'blur(1px)' : 'none' }" />
               <transition v-show="isHover" name="fade">
                 <div class="absolute top-0 left-0 z-10 w-12  h-12 bg-black/60 flex-items-justify-center">
