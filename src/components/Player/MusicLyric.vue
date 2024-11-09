@@ -27,7 +27,9 @@ const footerMaskBackground = ref<CSSProperties>({});
 const topMaskBackground = ref<CSSProperties>({});
 const isHover = useElementHover(scrollContainerRef);
 let lyricChildrenValueList: { offsetTop: number, index: number, time: number }[] = [];
-const gapHeight = 140;
+const gapHeight = computed(() => {
+  return mainStore.currentPlaySong?.tlyric ? 175 : 140
+});
 let lyricContainerEle: null | HTMLDivElement = null;
 let currentScrollTop = 0;
 let lyricItemHeight = 35;
@@ -101,6 +103,7 @@ const triggerLyricChange = (time: number, listenScroll = false) => {
     setScroll(currentLyric.time, listenScroll);
   }
 };
+
 const handleScroll = (event: Event) => {
   if (!triggerScroll) return;
   if (mainStore.currentPlaySong.isNotLyric) return;
@@ -143,12 +146,19 @@ const handleWheel = (event: WheelEvent) => {
   // disabled default scroll 
   event.preventDefault();
   triggerScroll = true;
-  console.log(event);
+  // 移动距离
+  let moveDistance = mainStore.currentPlaySong?.tlyric ? lyricItemHeight * 2 : lyricItemHeight;
+  let scrollTop: number = 0;
   if (event.deltaY > 0) {
-    lyricContainerEle!.scrollTop += lyricItemHeight;
+    scrollTop = lyricContainerEle!.scrollTop + moveDistance;
   } else {
-    lyricContainerEle!.scrollTop -= lyricItemHeight;
+    scrollTop = lyricContainerEle!.scrollTop - moveDistance;
   }
+  let current = eleScrollTopMap.get(scrollTop);
+  if (!current) {
+    return;
+  }
+  lyricContainerEle!.scrollTop = scrollTop;
   clearTimeout(clearTriggerScrollTimer);
   clearTriggerScrollTimer = setTimeout(() => {
     triggerScroll = false;
@@ -161,7 +171,7 @@ const initEleScrollTopMap = () => {
   let children = Array.from(lyricContainer.value.children) as HTMLElement[];
   lyricChildrenValueList = children.map((child, index) => {
     return {
-      offsetTop: child.offsetTop - gapHeight,
+      offsetTop: child.offsetTop - gapHeight.value,
       index,
       time: +child.getAttribute('data-time')!
     };
@@ -183,7 +193,8 @@ const initEleScrollTopMap = () => {
       nextIndex++;
     }
     if (currentIndex === lyricChildrenValueList.length - 1) {
-      eleScrollTopMap.set(next.offsetTop, {
+      let offsetTop = mainStore.currentPlaySong?.tlyric ? next.offsetTop + lyricItemHeight : next.offsetTop;
+      eleScrollTopMap.set(offsetTop, {
         index: next.index,
         time: next.time
       });
@@ -192,9 +203,13 @@ const initEleScrollTopMap = () => {
 };
 const setScroll = (time: number, listen = false) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
+  let top = targetELe!.offsetTop - gapHeight.value;
+  if (mainStore.currentPlaySong?.tlyric) {
+    top += lyricItemHeight;
+  }
   if (targetELe) {
-    currentScrollTop = targetELe!.offsetTop - gapHeight
-      ;
+    currentScrollTop = top;
+    ;
     scrollTo(currentScrollTop, listen);
 
   }
@@ -288,7 +303,9 @@ onMounted(() => {
 
 <template>
   <div ref="scrollContainerRef" class="relative mt-10 scrollContainer">
-    <n-scrollbar ref="scrollBarRef" style="height: 315px;width:550px" :on-scroll="handleScroll" @wheel="handleWheel">
+    <n-scrollbar ref="scrollBarRef"
+      :style="{ height: mainStore.currentPlaySong?.tlyric ? '350px' : '315px', width: '550px' }"
+      :on-scroll="handleScroll" @wheel="handleWheel">
       <div :style="{ height: gapHeight + 'px' }" />
       <div v-if="!mainStore.currentPlaySong?.isNotLyric" ref="lyricContainer">
         <div v-for="(item, index) in lyricData" :id="'time' + item.time" :key="index" class="text-center lyric-item"
@@ -307,7 +324,8 @@ onMounted(() => {
       <div :style="{ height: gapHeight + 'px' }" />
     </n-scrollbar>
     <!-- 歌词滚动选择 -->
-    <div v-show="showSelectLyric" class="selectLyricContainer">
+    <div v-show="showSelectLyric" class="selectLyricContainer"
+      :style="{ top: mainStore.currentPlaySong?.tlyric ? '157.5px' : '140px' }">
       <div class="flex items-center">
         <n-time v-if="selectLyricLine" format="mm:ss" :time="selectLyricLine.time" />
         <div class="ml-2  bg-gradient-to-r from-gray-300 dark:from-gray-500 line" />
@@ -352,7 +370,6 @@ onMounted(() => {
 
 .selectLyricContainer {
   position: absolute;
-  top: 140px;
   width: 540px;
   display: flex;
   justify-content: space-between;
