@@ -205,9 +205,6 @@ const handleError = async () => {
   // 媒体资源过期,重新获取数据
   if (audioRef.value?.error!.code === 4 || audioRef.value?.error!.code === 2) {
     window.$message.warning('歌曲资源过期,准备尝试重新获取');
-    if (mainStore.playing) {
-      mainStore.playing = false;
-    }
     if (isLoad) return;
     isLoad = true;
     const res = await mainStore.setMusicData({ data: mainStore.playList, id: mainStore.currentPlaySong.id, index: mainStore.currentPlayIndex });

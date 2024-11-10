@@ -5,7 +5,7 @@ import { PlayArrowSharp } from '@vicons/material';
 import { computed, nextTick, onMounted, toRaw, watch, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
-import { parseLyric, parseRangeLyric, type LyricItem, type RangeLyricItem } from '@/utils/lyric';
+import { parseLyric, parseRangeLyric, type LyricItem, parseBaseLyric, type RangeLyricItem } from '@/utils/lyric';
 import { useElementHover } from '@vueuse/core';
 import { isEven } from '@/utils';
 let timeId: any;// 回退滚动位置延时器
@@ -45,39 +45,42 @@ let lyricContainerEle: null | HTMLDivElement = null;
 let currentScrollTop = 0;
 let lyricItemHeight = 35;
 
-
 const lyricData = computed(() => {
   let tlyricData: LyricItem[] | undefined;
   if (mainStore.currentPlaySong?.tlyric) {
-    tlyricData = parseLyric(mainStore.currentPlaySong?.tlyric, mainStore.currentPlaySong?.yrcLyric);
+    tlyricData = parseBaseLyric(mainStore.currentPlaySong?.tlyric);
   }
   if (!mainStore.currentPlaySong?.lyric) {
     return [];
   } else {
     let lyric = parseLyric(mainStore.currentPlaySong?.lyric, mainStore.currentPlaySong?.yrcLyric);
+    console.log(lyric.filter((item) => !/^\[[^\d\]]+\]$/.test(item.content) || item.index != undefined));
+
     if (tlyricData) {
-      return lyric.map((item) => {
-        let target = tlyricData!.find(val => val.time === item.time);
-        if (target) {
-          item.translateContent = target.content;
+      // 过滤掉歌词中的[]部分
+      lyric.filter((item) => !/^\[[^\d\]]+\]$/.test(item.content) && item.index != undefined).forEach((item, index) => {
+        if (tlyricData[index]) {
+          item.translateContent = tlyricData[index].content;
         }
         return item;
       });
+      return lyric;
     } else {
       return lyric;
     }
   }
 });
+console.log(lyricData);
 
 
 const rangeLyricList = computed(() => {
   return parseRangeLyric(toRaw(lyricData.value));
 });
-
+// mainStore.currentPlaySong?.yrcLyric && lyricData.value[index].words ? {} : 
 const currentLyricStyle = computed(() => {
   return (index: number) => {
     let isCurrent = index === currentPlayLine.value;
-    return mainStore.currentPlaySong?.yrcLyric && lyricData.value[index].words ? {} : {
+    return {
       color: isCurrent
         ? themeVars.value.primaryColor
         : selectLyricLine.value?.index === index
@@ -110,6 +113,13 @@ const triggerLyricChange = (time: number, listenScroll = false) => {
   if (mainStore.currentPlaySong.isNotLyric) return;
   if (!lyricData.value.length) return;
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
+  //匹配最后一个歌词
+  if (time > lyricData.value[lyricData.value.length - 1].time) {
+    let currentLyric = lyricData.value[lyricData.value.length - 1];
+    currentPlayLine.value = lyricData.value.length - 1;
+    mainStore.currentPlayLyric = currentLyric.content;
+    setScroll(currentLyric.time, listenScroll);
+  }
   if (currentLyric) {
     currentPlayLine.value = currentLyric.index;
     mainStore.currentPlayLyric = currentLyric.content;
@@ -290,10 +300,11 @@ watch(
     }
   }, { immediate: true }
 );
+
 const loopMatchLyric = () => {
   let time = Math.round(audioEle!.currentTime * 1000);
   let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
-  if (mainStore.currentPlaySong?.yrcLyric && currentLyric.words?.length) {
+  if (mainStore.currentPlaySong?.yrcLyric && currentLyric?.words?.length) {
     let j = 1
     const children = currentLyric.words;
     while (j < children.length) {
@@ -305,14 +316,15 @@ const loopMatchLyric = () => {
     }
     j = j - 1;
     const percent = j / children.length;
+    console.log('load');
+
     const wordPercent = ((time) - children[j].startTime) / (children[j].duration) * (1 / children.length)
     const keyStyle = `-webkit-linear-gradient(left, ${themeVars.value.primaryColor} ${percent * 100 + wordPercent * 100}%, rgb(100,100,99) 0%)`
     activeLyricStyle.value.backgroundImage = keyStyle;
   }
-  requestAnimationFrame(loopMatchLyric)
+  animatingId = requestAnimationFrame(loopMatchLyric)
 }
 watch(() => mainStore.playing, (val) => {
-
   if (val) {
     animatingId = requestAnimationFrame(loopMatchLyric)
   } else {

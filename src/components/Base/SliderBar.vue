@@ -116,7 +116,7 @@ onUnmounted(() => {
       <div class="absolute top-0 h-full bg-gray-300 dark:bg-gray-300/50 rounded-md transition-all"
         :style="{ width: loadValue + '%' }" />
       <!-- 播放进度条 -->
-      <div class="absolute top-0 h-full rounded-md transition-transform"
+      <div class="absolute top-0 h-full rounded-md  transition-all"
         :style="{ background: mainStore.showMusicDetail ? `linear-gradient(to right,${themeVars.bodyColor}, ${themeVars.primaryColor})` : `${themeVars.primaryColor}`, width: modelValue + '%' }" />
       <!-- 小圆点 -->
       <div v-show="isHover || isTargetClick" class="dot"

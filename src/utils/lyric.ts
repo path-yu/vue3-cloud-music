@@ -12,6 +12,7 @@ function paseMetaData(lyric:string){
     const time = Number(metaMatch[1]); // 提取时间戳
     const contentJson = metaMatch[2]; // 提取元数据内容
 
+    
     try {
       // 解析元数据 JSON
       const metaItem = {
@@ -26,18 +27,42 @@ function paseMetaData(lyric:string){
   return metadata
 }
 export function parseLyric(lrc:string,yrcLyric?:string): LyricItem[] {
-  const lyrics = lrc.split('\n');
+ 
   let lrcObj:LyricItem[] = [];
   let yrcLyricResult: string | any[] = [];
+ 
+  const metadata = paseMetaData(yrcLyric ? yrcLyric :lrc);
+  let metaResult =  metadata.map(item => {
+    const { t, c } = item;
+    let content:string='';
+    c.forEach(item =>{
+       content += item.tx
+    });
+    return {
+      time:t,
+      content,
+      translateContent:''
+    }
+  });
+  
   if(yrcLyric){
-     yrcLyricResult =  parseLyricWithWords(yrcLyric); 
-  }
-  const metadata = paseMetaData(lrc);
+    yrcLyricResult =  parseLyricWithWords(yrcLyric); 
+    return [...metaResult,...yrcLyricResult];
+ }else{
+  lrcObj = parseBaseLyric(lrc);
+  return [...metaResult,...lrcObj];
+ }
+
+ 
+}
+
+export function parseBaseLyric(lyric:string){
+  const lyrics = lyric.split('\n');
+  let lrcObj:LyricItem[] = [];
   for (let i = 0; i < lyrics.length; i++) {
     const lyric = decodeURIComponent(lyrics[i]);
     const timeReg = /\[\d*:\d*((\.|:)\d*)*\]/g;
     const timeRegExpArr = lyric.match(timeReg);
-;
     
     if (!timeRegExpArr) continue;
     const content = lyric.replace(timeReg, '');
@@ -54,35 +79,15 @@ export function parseLyric(lrc:string,yrcLyric?:string): LyricItem[] {
       }
       const newTime = Math.round(min * 60 * 1000 + sec * 1000);
       if (content !== '') {
-        lrcObj.push({ time: newTime, content, });
+        lrcObj.push({
+          time: newTime, content,
+        });
       }
     }
-  }
-
-  if(yrcLyricResult.length){
-    lrcObj = lrcObj.map((item,index) =>{
-      return {
-        ...item,
-        ...yrcLyricResult[index]
-      };
-    })
-  }
- let metaResult =  metadata.map(item => {
-    const { t, c } = item;
-    let content:string='';
-    c.forEach(item =>{
-       content += item.tx
-    });
-    return {
-      time:t,
-      content,
-      translateContent:content
-    }
-  });
-
-  
-  return [...metaResult,...lrcObj];
+  }  
+  return lrcObj.map((item,index)=>({...item,index:index}))
 }
+
 export function parseRangeLyric(lyricList:LyricItem[]) {
   const map = new Map<number, RangeLyricItem>();
   let currentIndex = 0;
@@ -121,7 +126,8 @@ export interface LyricItem {
   content:string;
   translateContent?:string;
   // newTime:number;
-  lineStartTime?: number, lineDuration?: number, words?: WordData[]
+  lineStartTime?: number, lineDuration?: number, words?: WordData[],
+  index?:number,
 }
 export interface RangeLyricItem extends LyricItem{
   index:number;
@@ -133,34 +139,38 @@ interface WordData {
   duration: number;
 }
 
-export function parseLyricWithWords(input: string): { lineStartTime: number, lineDuration: number, words: WordData[] }[] {
-  const result: { lineStartTime: number, lineDuration: number, words: WordData[] }[] = [];
+export function parseLyricWithWords(input: string): { lineStartTime: number, lineDuration: number, words: WordData[],index:number }[] {
+  const result: { lineStartTime: number, lineDuration: number, words: WordData[],content:string,time:number,index:number }[] = [];
 
-  // 正则表达式匹配歌词行的时间范围 [start, duration]
+  // 正则表达式匹配歌词行的时间范围 [start, duration]，排除换行符
   const lineRegex = /\[(\d+),(\d+)\]/g;
-  
-  // 正则表达式匹配逐字的时间信息 (startTime, duration, 0) + 字符
-  const wordTimeRegex = /\((\d+),(\d+),\d+\)(\S)/g;
+
+  // 正则表达式：匹配时间戳 (startTime, duration, 0) 后面跟着一个完整的单词或空格
+  const wordTimeRegex = /\((\d+),(\d+),\d+\)([^\(\)\n]+)/g;
 
   let lineMatch;
   let lastIndex = 0;
-
+  let index=0;
   // 使用 lineRegex 匹配每一行的开始和持续时间
   while ((lineMatch = lineRegex.exec(input)) !== null) {
     // 解析每一行的起始时间和持续时间
     const lineStartTime = parseInt(lineMatch[1]);
     const lineDuration = parseInt(lineMatch[2]);
 
+    // 获取该行的歌词内容（确保只提取当前行的内容，排除换行符）
+    const lineContent = input.slice(lineRegex.lastIndex, input.indexOf('\n', lineRegex.lastIndex) !== -1 ? input.indexOf('\n', lineRegex.lastIndex) : undefined).trim();
+
     // 提取这一行的所有字
     const words: WordData[] = [];
     let wordMatch;
+
     // 使用 wordTimeRegex 提取逐字的时间和字
-    while ((wordMatch = wordTimeRegex.exec(input.slice(lineRegex.lastIndex))) !== null) {
+    while ((wordMatch = wordTimeRegex.exec(lineContent)) !== null) {
       const wordStartTime = parseInt(wordMatch[1]);
       const wordDuration = parseInt(wordMatch[2]);
       const wordContent = wordMatch[3];
 
-      // 确保每个单字属于当前行
+      // 确保每个字属于当前行的时间范围
       if (wordStartTime >= lineStartTime && wordStartTime < (lineStartTime + lineDuration)) {
         words.push({ content: wordContent, startTime: wordStartTime, duration: wordDuration });
       }
@@ -170,9 +180,12 @@ export function parseLyricWithWords(input: string): { lineStartTime: number, lin
     result.push({
       lineStartTime,
       lineDuration,
-      words
+      words,
+      time:lineStartTime,
+      index,
+      content: words.map(item => item.content).join('') // 拼接该行的文字内容
     });
-
+    index++;
     // 更新 lineRegex 的 lastIndex，用于匹配下一个行
     lastIndex = lineRegex.lastIndex;
   }
