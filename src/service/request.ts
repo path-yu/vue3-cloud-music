@@ -1,10 +1,11 @@
 import axios from 'axios';
 // create axios instance
 const instance = axios.create({
-  baseURL: 'https://netease-cloud-music-api-three-phi.vercel.app',
+  baseURL: 'https://musicapi-flax.vercel.app/',
   // baseURL:"http://localhost:3000",
   method: 'get',
-  withCredentials: true
+  withCredentials: true,
+  
 });
 
 //add request interceptor

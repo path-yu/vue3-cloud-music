@@ -1,5 +1,5 @@
 /* eslint-disable consistent-return */
-import { checkMusic, getLyric, getMusicUrl } from '@/service';
+import { checkMusic, getMusicUrl, getNewLyric } from '@/service';
 import { formateSongsAuthor, getNextIndex, getPrevIndex } from '@/utils';
 import type { AnyObject } from 'env';
 import { cloneDeep, isUndefined, shuffle } from 'lodash';
@@ -108,7 +108,7 @@ export const useMainStore = defineStore({
     ) {
       // 如果没有获取url, 则获取歌曲url
       if (!data[index]?.url) {
-        const res = await this.setMusicData({ data, id: data[index].id, index: index });
+        const res = await this.setMusicData({ data, id: data[index]?.id, index: index });
         if (!res.success) return;
       }
       // 过滤掉无音源歌曲
@@ -285,7 +285,7 @@ export const useMainStore = defineStore({
         return { success: false };
       }
       // 获取歌曲歌词
-      const lyricRes = await getLyric(id);
+      const lyricRes = await getNewLyric(id);
       if (res.data.code === 200) {
         result.lyric = lyricRes.data?.lrc?.lyric;
         if (result.lyric.includes('纯音乐，请欣赏') || !result.lyric) {
@@ -294,6 +294,9 @@ export const useMainStore = defineStore({
           result.isNotLyric = false;
         }
         result.tlyric = lyricRes.data?.tlyric?.lyric;
+        if(lyricRes.data?.yrc?.lyric){
+          result.yrcLyric = lyricRes.data?.yrc?.lyric;
+        }
       } else {
         console.log('获取歌词失败');
         window.$message.error('获取歌词失败!');

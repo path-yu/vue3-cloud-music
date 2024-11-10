@@ -5,7 +5,7 @@ import { PlayArrowSharp } from '@vicons/material';
 import { computed, nextTick, onMounted, toRaw, watch, type CSSProperties } from 'vue';
 import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
-import { parseLyric, parseRangeLyric, type LineItem, type RangeLyricItem } from '@/utils/lyric';
+import { parseLyric, parseRangeLyric, type LyricItem, type RangeLyricItem } from '@/utils/lyric';
 import { useElementHover } from '@vueuse/core';
 import { isEven } from '@/utils';
 let timeId: any;// 回退滚动位置延时器
@@ -26,22 +26,35 @@ const scrollContainerRef = ref();
 const footerMaskBackground = ref<CSSProperties>({});
 const topMaskBackground = ref<CSSProperties>({});
 const isHover = useElementHover(scrollContainerRef);
+let audioEle: HTMLAudioElement | null = null;
+let animatingId: number;
+const activeLyricStyle = ref({
+  backgroundImage: '',
+  WebkitTextFillColor: 'transparent',
+  fontWeight: 'bold',
+  fontSize: '16px'
+} as CSSProperties);
+
+
 let lyricChildrenValueList: { offsetTop: number, index: number, time: number }[] = [];
 const gapHeight = computed(() => {
   return mainStore.currentPlaySong?.tlyric ? 175 : 140
 });
+
 let lyricContainerEle: null | HTMLDivElement = null;
 let currentScrollTop = 0;
 let lyricItemHeight = 35;
+
+
 const lyricData = computed(() => {
-  let tlyricData: LineItem[] | undefined;
+  let tlyricData: LyricItem[] | undefined;
   if (mainStore.currentPlaySong?.tlyric) {
-    tlyricData = parseLyric(mainStore.currentPlaySong?.tlyric);
+    tlyricData = parseLyric(mainStore.currentPlaySong?.tlyric, mainStore.currentPlaySong?.yrcLyric);
   }
   if (!mainStore.currentPlaySong?.lyric) {
     return [];
   } else {
-    let lyric = parseLyric(mainStore.currentPlaySong?.lyric);
+    let lyric = parseLyric(mainStore.currentPlaySong?.lyric, mainStore.currentPlaySong?.yrcLyric);
     if (tlyricData) {
       return lyric.map((item) => {
         let target = tlyricData!.find(val => val.time === item.time);
@@ -60,10 +73,11 @@ const lyricData = computed(() => {
 const rangeLyricList = computed(() => {
   return parseRangeLyric(toRaw(lyricData.value));
 });
+
 const currentLyricStyle = computed(() => {
   return (index: number) => {
     let isCurrent = index === currentPlayLine.value;
-    return {
+    return mainStore.currentPlaySong?.yrcLyric && lyricData.value[index].words ? {} : {
       color: isCurrent
         ? themeVars.value.primaryColor
         : selectLyricLine.value?.index === index
@@ -79,7 +93,6 @@ const currentLyricStyle = computed(() => {
 
   };
 });
-
 function handlePlayLyric(time: number, listenScroll = false) {
   // 如果当前鼠标正在滚动歌词
   if (selectLyricLine.value) return;
@@ -203,6 +216,8 @@ const initEleScrollTopMap = () => {
 };
 const setScroll = (time: number, listen = false) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
+  if (!targetELe) return;
+
   let top = targetELe!.offsetTop - gapHeight.value;
   if (mainStore.currentPlaySong?.tlyric) {
     top += lyricItemHeight;
@@ -211,7 +226,6 @@ const setScroll = (time: number, listen = false) => {
     currentScrollTop = top;
     ;
     scrollTo(currentScrollTop, listen);
-
   }
 };
 const scrollTo = (top: number, listen = false) => {
@@ -276,6 +290,39 @@ watch(
     }
   }, { immediate: true }
 );
+const loopMatchLyric = () => {
+  let time = Math.round(audioEle!.currentTime * 1000);
+  let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
+  if (mainStore.currentPlaySong?.yrcLyric && currentLyric.words?.length) {
+    let j = 1
+    const children = currentLyric.words;
+    while (j < children.length) {
+      if (time < children[j].startTime) {
+        break
+      } else {
+        j++
+      }
+    }
+    // 聚焦到小于开始时间的前一个字
+    j = j - 1;
+    // 计算当前字应该走到的百分比
+    const precent = j / children.length;
+
+    // 计算时间差值在当前字的持续时间占比，求出字的百分比
+    const wordPrecent = ((time) - children[j].startTime) / (children[j].duration) * (1 / children.length)
+    const keyStyle = `-webkit-linear-gradient(left, ${themeVars.value.primaryColor} ${precent * 100 + wordPrecent * 100}%, rgb(100,100,99) 0%)`
+    activeLyricStyle.value.backgroundImage = keyStyle;
+  }
+  requestAnimationFrame(loopMatchLyric)
+}
+watch(() => mainStore.playing, (val) => {
+
+  if (val) {
+    animatingId = requestAnimationFrame(loopMatchLyric)
+  } else {
+    cancelAnimationFrame(animatingId)
+  }
+})
 watch(
   lyricData, (val) => {
     if (val.length) {
@@ -291,6 +338,7 @@ obverser.on('updateLyricMaskStyle', ({ footerMaskStyle, topMaskStyle }) => {
 onMounted(() => {
   obverser.on('timeUpdate', handlePlayLyric);
   obverser.on('slideValueChange', handleSliderChange);
+  audioEle = document.querySelector('#audioEle')
   lyricContainerEle = document.querySelector('.scrollContainer > .n-scrollbar > .n-scrollbar-container')
   obverser.on('ended', () => {
     currentScrollTop = 0;
@@ -310,12 +358,15 @@ onMounted(() => {
       <div v-if="!mainStore.currentPlaySong?.isNotLyric" ref="lyricContainer">
         <div v-for="(item, index) in lyricData" :id="'time' + item.time" :key="index" class="text-center lyric-item"
           :data-time="item.time">
-          <p :style="currentLyricStyle(index)" class="transition-color">
-            {{ item.content }}
-          </p>
-          <p v-if="item.translateContent" :style="currentLyricStyle(index)" class="transition-color">
-            {{ item.translateContent }}
-          </p>
+          <div class="cur-lrc"
+            :style="mainStore.currentPlaySong?.yrcLyric && lyricData[index].words ? currentPlayLine == index ? activeLyricStyle : {} : currentLyricStyle(index)">
+            <p :style="currentLyricStyle(index)" class="transition-color">
+              {{ item.content }}
+            </p>
+            <p v-if="item.translateContent" :style="currentLyricStyle(index)" class="transition-color">
+              {{ item.translateContent }}
+            </p>
+          </div>
         </div>
       </div>
       <div v-else class="text-center opacity-40">
@@ -379,5 +430,11 @@ onMounted(() => {
 .line {
   width: 60px;
   height: 1px;
+}
+
+.cur-lrc {
+  display: inline-block;
+  background-clip: text;
+  -webkit-background-clip: text;
 }
 </style>

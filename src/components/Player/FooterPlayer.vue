@@ -205,6 +205,9 @@ const handleError = async () => {
   // 媒体资源过期,重新获取数据
   if (audioRef.value?.error!.code === 4 || audioRef.value?.error!.code === 2) {
     window.$message.warning('歌曲资源过期,准备尝试重新获取');
+    if (mainStore.playing) {
+      mainStore.playing = false;
+    }
     if (isLoad) return;
     isLoad = true;
     const res = await mainStore.setMusicData({ data: mainStore.playList, id: mainStore.currentPlaySong.id, index: mainStore.currentPlayIndex });
@@ -390,9 +393,9 @@ onUnmounted(() => {
         </n-popover>
         <n-icon :component="List" :size="25" class="mr-2 custom-icon" @click="playListRef?.show()" />
       </div>
-      <audio ref="audioRef" :src="currentSong?.url" preload="auto" @timeupdate="handleTimeupdate" @ended="handleEnded"
-        @playing="handlePlaying" @progress="updateBuffer" @loadeddata="handleLoadeddata" @error="handleError"
-        @waiting="handleWaiting" />
+      <audio ref="audioRef" id="audioEle" :src="currentSong?.url" preload="auto" @timeupdate="handleTimeupdate"
+        @ended="handleEnded" @playing="handlePlaying" @progress="updateBuffer" @loadeddata="handleLoadeddata"
+        @error="handleError" @waiting="handleWaiting" />
     </div>
   </div>
   <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />
