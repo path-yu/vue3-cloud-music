@@ -303,14 +303,10 @@ const loopMatchLyric = () => {
         j++
       }
     }
-    // 聚焦到小于开始时间的前一个字
     j = j - 1;
-    // 计算当前字应该走到的百分比
-    const precent = j / children.length;
-
-    // 计算时间差值在当前字的持续时间占比，求出字的百分比
-    const wordPrecent = ((time) - children[j].startTime) / (children[j].duration) * (1 / children.length)
-    const keyStyle = `-webkit-linear-gradient(left, ${themeVars.value.primaryColor} ${precent * 100 + wordPrecent * 100}%, rgb(100,100,99) 0%)`
+    const percent = j / children.length;
+    const wordPercent = ((time) - children[j].startTime) / (children[j].duration) * (1 / children.length)
+    const keyStyle = `-webkit-linear-gradient(left, ${themeVars.value.primaryColor} ${percent * 100 + wordPercent * 100}%, rgb(100,100,99) 0%)`
     activeLyricStyle.value.backgroundImage = keyStyle;
   }
   requestAnimationFrame(loopMatchLyric)

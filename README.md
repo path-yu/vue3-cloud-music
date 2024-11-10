@@ -55,7 +55,7 @@
 
 20. 自定义封装歌曲进度条,可点击拖拽切换到指定播放时间, 添加buffer加载进度显示.
 
-21. 歌词自动同步滚动高亮,滚动选择歌词切换播放时间.
+21. 歌词自动同步滚动高亮,滚动选择歌词切换播放时间, 歌词逐字播放.
 
 22. 歌词底部头部基于当前所在滚动位置背景色添加虚化渐变遮罩.
 
@@ -82,6 +82,7 @@
 33. 评论列表,点击评论,回复评论,添加评论.发表评论
 
 ## 项目预览
+![](https://upload-images.jianshu.io/upload_images/24914540-3610a62506e089c7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![](https://upload-images.jianshu.io/upload_images/24914540-f75bd93f493a0630.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![](https://upload-images.jianshu.io/upload_images/24914540-3037f3b2061af382.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
 ![](https://upload-images.jianshu.io/upload_images/24914540-33da12dc895b574a.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
