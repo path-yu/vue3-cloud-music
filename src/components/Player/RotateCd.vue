@@ -42,21 +42,31 @@ const loopSetRotate = (timestamp: number) => {
 
 <template>
   <div class="wrapContainer">
-    <div class="playerBarContainer" :style="{ transform: mainStore.playing ? 'rotate(0deg)' : 'rotate(-40deg)' }">
+    <div class="elementC"></div>
+    <div class="elementA"></div>
+    <div class="stick">
+      <div class="turn-element" :style="{ transform: mainStore.playing ? 'rotate(15deg)' : 'rotate(-25deg)' }">
+        <div class="element1"></div>
+        <div class="element2"></div>
+        <!-- <div class="elementB"></div> -->
+      </div>
+    </div>
+    <!-- <div class="playerBarContainer" :style="{ transform: mainStore.playing ? 'rotate(0deg)' : 'rotate(-40deg)' }">
       <img :src="playBar" class="playBar">
       <div class="playBarSupport">
         <div class="center">
           <div class="dot" />
         </div>
       </div>
-    </div>
-    <div class="cd" :style="{ background: mainStore.isDark ? '#373636' : '#DBDCDA' }">
+    </div> -->
+    <div class="cd" :style="{ background: mainStore.isDark ? 'rgb(34,34,39)' : '#DBDCDA' }">
       <div class="transition-all  blackCenter" :style="{ transform: `rotate(${rotate}deg)` }">
         <div v-for="item in maxCircleLine" :key="item" class="rounded-full circleItem"
           :style="computedCircleStyle(item)" />
         <div class="imgBg">
           <n-image :width="imgSize" :height="imgSize" :src="mainStore.currentPlaySong.al.picUrl" />
         </div>
+
       </div>
     </div>
   </div>
@@ -195,5 +205,128 @@ const loopSetRotate = (timestamp: number) => {
       left: 0%;
     }
   }
+}
+
+.stick {
+  position: absolute;
+  top: 55px;
+  right: 33.5px;
+  filter: drop-shadow(-2px 2px 3px rgba(0, 0, 0, 0.8));
+  z-index: 4;
+}
+
+.stick::after {
+  content: '';
+  display: block;
+  width: 55px;
+  height: 55px;
+  border-radius: 50%;
+  position: absolute;
+  background-color: #8C8C8C;
+  top: -31px;
+  right: -31px;
+}
+
+.elementC {
+  width: 100px;
+  height: 100px;
+  z-index: 0;
+  position: absolute;
+  right: -20px;
+  top: 0;
+  background-color: #eee;
+  background-image: repeating-conic-gradient(from 0deg, rgba(212, 212, 212, 0.2),
+      rgba(12, 12, 12, 0.1), rgba(12, 12, 12, 0.21), rgba(212, 212, 212, 0.2) 90deg);
+  border-radius: 50%;
+  border: 2px solid #242424;
+  box-shadow: inset 0px -1px 2px 2px rgba(78, 77, 77, 0.9),
+    inset 0px 2px 1px 3px rgba(243, 239, 239, 0.9), 0px 2px 9px 0.2px rgba(0, 0, 0, 0.6);
+}
+
+.elementA {
+
+  transform: rotate(5deg);
+  position: absolute;
+  z-index: 5;
+  right: 2.5px;
+  top: 22.5px;
+  border-radius: 50%;
+  width: 55px;
+  height: 55px;
+  border: 1px solid #8C8C8C;
+  transition: transform 0.5s linear;
+  background-image: -webkit-radial-gradient(50% 0%, 10% 60%, rgba(255, 255, 255, 0.8) 0%, rgba(255, 255, 255, 0.1) 100%),
+    -webkit-radial-gradient(50% 100%, 12% 50%, rgba(255, 255, 255, 0.7) 0%, rgba(255, 255, 255, 0.1)100%),
+    -webkit-radial-gradient(0% 50%, 50% 10%, rgba(255, 255, 255, 0.5) 0%, rgba(255, 255, 255, 0) 100%),
+    -webkit-radial-gradient(50% 50%, 200% 50%, rgb(230, 230, 230) 10%, rgb(217, 217, 217)30%, rgb(153, 153, 153) 100%);
+}
+
+.elementA::before,
+.elementA::after {
+  content: '';
+  top: 0;
+  left: 0;
+  position: absolute;
+  width: 100%;
+  height: 100%;
+  border-radius: 50%;
+  background-image: -webkit-radial-gradient(50% 0%, 10% 50%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0) 100%),
+    -webkit-radial-gradient(50% 100%, 10% 50%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0)100%),
+    -webkit-radial-gradient(0% 50%, 50% 10%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0)100%),
+    -webkit-radial-gradient(100% 50%, 50% 10%, rgba(0, 0, 0, 0.1) 0%, rgba(0, 0, 0, 0)100%);
+}
+
+.elementA:before {
+  transform: rotate(67deg);
+}
+
+.elementA:after {
+  transform: rotate(-67deg);
+}
+
+.element1 {
+  box-sizing: content-box;
+  z-index: 3;
+  transform: rotate(120deg);
+  position: absolute;
+  top: 244px;
+  right: -10px;
+  width: 75px;
+  height: 2px;
+  background-color: #383838;
+  background-image: linear-gradient(black 36%, #FBFBFB 55%);
+  box-shadow: 0px 5px 0px #212121, 0px -5px 0px #212121;
+  border: 8px solid #383838;
+  border-right: none;
+  border-left: none;
+}
+
+.element2 {
+  width: 17px;
+  height: 230px;
+  z-index: 2;
+  background: linear-gradient(90deg, rgb(117, 117, 117) 0%, rgb(201, 197, 197) 25%, rgb(255, 255, 255) 50%, rgb(207, 205, 205) 75%, rgb(145, 143, 143) 100%);
+  position: absolute;
+  top: 85px;
+  left: 0;
+  transform: translate(-50%, -50%);
+}
+
+.element2:after {
+  z-index: 2;
+  content: '';
+  position: absolute;
+  transform: skew(-25deg);
+  height: 26px;
+  width: 17px;
+  background: linear-gradient(90deg, rgb(117, 117, 117) 0%, rgb(201, 197, 197) 25%, rgb(255, 255, 255) 50%, rgb(207, 205, 205) 75%, rgb(145, 143, 143) 100%);
+  bottom: -25px;
+  right: 6px;
+}
+
+.turn-element {
+  position: relative;
+  z-index: 2;
+  transition: transform 0.5s linear;
 }
 </style>
