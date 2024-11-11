@@ -397,7 +397,7 @@ const handleUpdateMusicListLike = (like: boolean, index: number) => {
         </div>
       </div>
       <div v-else style="height:200px" />
-      <div :value="tabsValue" class="mt-10">
+      <div :value="tabsValue" class="mt-5">
         <div class="flex justify-between sticky top-0 z-[999] pt-2">
           <n-tabs type="line" :value="tabsValue">
             <n-tab name="musicList" @click="tabsValue = 'musicList'">

@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type Ref, watch, reactive, nextTick, type CSSProperties, onMounted } from 'vue';
+import { ref, type Ref, watch, reactive, nextTick, type CSSProperties, onMounted, onUnmounted } from 'vue';
 // @ts-ignore
 import analyze from 'rgbaster';
 import { BackToTop, Edit } from '@vicons/carbon';
@@ -75,12 +75,13 @@ const fillBackground = async (updateMask = true) => {
     0, 0, width, height
   );
   let primary;
-  if (!mainStore.currentPlaySong.primaryColor) {
+  let resultColor = mainStore.primaryColorMap[mainStore.currentPlaySong.id];
+  if (!resultColor) {
     const result = await analyze(mainStore.currentPlaySong.al.picUrl);
-    mainStore.currentPlaySong.primaryColor = result[1].color;
+    mainStore.updatePrimaryColorMap(mainStore.currentPlaySong.id, result[1].color);
     primary = result[1].color;
   } else {
-    primary = mainStore.currentPlaySong.primaryColor;
+    primary = resultColor;
   }
   let bgColor = color(baseColor).mix(color(primary), 0.2)
     .hex();
@@ -176,9 +177,18 @@ const setTagPositionStyle = async () => {
   tagPositionStyle.value = { left: left + 'px', top: '-15px' };
   isShowTag.value = true;
 };
+const toggleFullScreen = () => {
+  if (!document.fullscreenElement) {
+    document.documentElement.requestFullscreen();
+    fullScreen.value = true;
+  } else if (document.exitFullscreen) {
+    document.exitFullscreen();
+    fullScreen.value = false;
+  }
+}
 watch(() => mainStore.theme, () => {
   resetBackground();
-  fillBackground(false);
+  fillBackground(mainStore.showMusicDetail);
 });
 watch(() => mainStore.showMusicDetail, async (val) => {
   if (!val) {
@@ -215,32 +225,28 @@ watch(pageParams, () => {
     fetchMusicComment(mainStore.currentPlaySong.id);
   }
 });
-const toggleFullScreen = () => {
-  if (!document.fullscreenElement) {
-    document.documentElement.requestFullscreen();
-    fullScreen.value = true;
-  } else if (document.exitFullscreen) {
-    document.exitFullscreen();
-    fullScreen.value = false;
-  }
-}
 onMounted(() => {
   document.addEventListener("fullscreenchange", (event) => {
     fullScreen.value = !!document.fullscreenElement
   });
+
 })
+
 </script>
 
 <template>
   <transition name="bottom-slide-transform" @after-enter="handleTransitionAfterEnter">
     <div v-show="mainStore.showMusicDetail" class="fixed inset-x-0 m-auto music-detail">
       <div class="box-border flex items-center p-4" style="height:77px;">
-        <div class="ml-4 cursor-pointer">
-          <n-icon size="35" :component="KeyboardArrowDownOutlined" @click="mainStore.setShowMusicDetail(false)" />
-        </div>
-        <div class="ml-4 cursor-pointer">
-          <n-icon size="35" :component="fullScreen ? FullscreenExitOutlined : FullscreenOutlined"
-            class="ml-4 cursor-pointer" @click="toggleFullScreen" />
+        <div class="flex items-center">
+          <div class="ml-4 cursor-pointer">
+            <n-icon size="35" :component="KeyboardArrowDownOutlined" @click="mainStore.setShowMusicDetail(false)" />
+          </div>
+          <div class="ml-4 cursor-pointer">
+            <n-icon size="35" :component="fullScreen ? FullscreenExitOutlined : FullscreenOutlined"
+              class="ml-4 cursor-pointer" @click="toggleFullScreen" />
+          </div>
+          <div class="ml-4"><change-theme></change-theme></div>
         </div>
 
         <div class="flex items-center ml-20">
@@ -270,8 +276,8 @@ onMounted(() => {
                   }} )</span>
                 </div>
                 <div class="absolute" :style="tagPositionStyle">
-                  <n-tag v-if="mainStore.currentPlaySong.mv !== 0" size="small" :color="tagColor"
-                    @click="handleMvTagClick">
+                  <n-tag v-if="mainStore.currentPlaySong.mv !== 0 && mainStore.currentPlaySong.mvid !== 0" size="small"
+                    :color="tagColor" @click="handleMvTagClick">
                     MV
                   </n-tag>
                 </div>

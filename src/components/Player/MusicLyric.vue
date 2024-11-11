@@ -54,8 +54,6 @@ const lyricData = computed(() => {
     return [];
   } else {
     let lyric = parseLyric(mainStore.currentPlaySong?.lyric, mainStore.currentPlaySong?.yrcLyric);
-    console.log(lyric.filter((item) => !/^\[[^\d\]]+\]$/.test(item.content) || item.index != undefined));
-
     if (tlyricData) {
       // 过滤掉歌词中的[]部分
       lyric.filter((item) => !/^\[[^\d\]]+\]$/.test(item.content) && item.index != undefined).forEach((item, index) => {
@@ -70,7 +68,6 @@ const lyricData = computed(() => {
     }
   }
 });
-console.log(lyricData);
 
 
 const rangeLyricList = computed(() => {
@@ -109,22 +106,27 @@ const handleSliderChange = (time: number, listenScroll = false) => {
     pendingSetScrollFn = () => triggerLyricChange(time, listenScroll);
   }
 };
+console.log(lyricData.value[lyricData.value.length - 1], '344');
+
 const triggerLyricChange = (time: number, listenScroll = false) => {
   if (mainStore.currentPlaySong.isNotLyric) return;
   if (!lyricData.value.length) return;
-  let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
+
   //匹配最后一个歌词
   if (time > lyricData.value[lyricData.value.length - 1].time) {
     let currentLyric = lyricData.value[lyricData.value.length - 1];
     currentPlayLine.value = lyricData.value.length - 1;
     mainStore.currentPlayLyric = currentLyric.content;
     setScroll(currentLyric.time, listenScroll);
+  } else {
+    let currentLyric = rangeLyricList.value.get(time) as RangeLyricItem;
+    if (currentLyric) {
+      currentPlayLine.value = currentLyric.index;
+      mainStore.currentPlayLyric = currentLyric.content;
+      setScroll(currentLyric.time, listenScroll);
+    }
   }
-  if (currentLyric) {
-    currentPlayLine.value = currentLyric.index;
-    mainStore.currentPlayLyric = currentLyric.content;
-    setScroll(currentLyric.time, listenScroll);
-  }
+
 };
 
 const handleScroll = (event: Event) => {
@@ -145,7 +147,9 @@ const handleScroll = (event: Event) => {
   if (!mainStore.currentPlaySong?.isNotLyric) {
     showSelectLyric.value = true;
   }
-  selectLyricLineIndex = selectLyricLine.value!.index;
+  if (selectLyricLine.value?.index != undefined) {
+    selectLyricLineIndex = selectLyricLine.value.index;
+  }
   clearTimeout(timeId);
   timeId = setTimeout(() => {
     if (selectLyricLineIndex && selectLyricLineIndex !== currentPlayLine.value) {
@@ -316,14 +320,13 @@ const loopMatchLyric = () => {
     }
     j = j - 1;
     const percent = j / children.length;
-    console.log('load');
-
     const wordPercent = ((time) - children[j].startTime) / (children[j].duration) * (1 / children.length)
     const keyStyle = `-webkit-linear-gradient(left, ${themeVars.value.primaryColor} ${percent * 100 + wordPercent * 100}%, rgb(100,100,99) 0%)`
     activeLyricStyle.value.backgroundImage = keyStyle;
   }
   animatingId = requestAnimationFrame(loopMatchLyric)
 }
+
 watch(() => mainStore.playing, (val) => {
   if (val) {
     animatingId = requestAnimationFrame(loopMatchLyric)
@@ -358,8 +361,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <div ref="scrollContainerRef" class="relative mt-10 scrollContainer">
-    <n-scrollbar ref="scrollBarRef"
+  <div ref="scrollContainerRef" class="relative mt-10 scrollContainer"> <n-scrollbar ref="scrollBarRef"
       :style="{ height: mainStore.currentPlaySong?.tlyric ? '350px' : '315px', width: '550px' }"
       :on-scroll="handleScroll" @wheel="handleWheel">
       <div :style="{ height: gapHeight + 'px' }" />
@@ -418,6 +420,7 @@ onMounted(() => {
   width: 500px;
   height: 35px;
   bottom: 0px;
+  pointer-events: none;
 }
 
 .top-mask {
@@ -425,6 +428,7 @@ onMounted(() => {
   width: 500px;
   height: 35px;
   top: 0px;
+  pointer-events: none;
 }
 
 .selectLyricContainer {

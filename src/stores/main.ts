@@ -83,6 +83,10 @@ export const useMainStore = defineStore({
     hasLikeSong(id: number) {
       return !!this.likeSongs[this.likeSongsIndexMap[id]];
     },
+    updatePrimaryColorMap(id:string,color:string){
+      this.primaryColorMap[id] = color;
+      localStorage.primaryColorMap = JSON.stringify(this.primaryColorMap);
+    },
     mapSongListAddLike(data: any[]) {
       return data.map((item, index) => {
         if (this.likeSongs) {
@@ -98,7 +102,6 @@ export const useMainStore = defineStore({
     },
     updatePlayList(  data: any[]){
       this.playList = data.filter(item => item.fee !== 0);
-      this.initPlayListPrevAndNextIndex();
        localStorage.rawPlayList = JSON.stringify(cloneDeep(this.playList));
       localStorage.playList = JSON.stringify(this.playList);
     },

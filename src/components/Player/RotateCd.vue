@@ -1,6 +1,6 @@
 <script setup lang="ts">
 import { useMainStore } from '@/stores/main';
-import playBar from '@/assets/img/play-bar.png';
+// import playBar from '@/assets/img/play-bar.png';
 import { ref, watch } from 'vue';
 import useThemeStyle from '@/hook/useThemeStyle';
 
@@ -45,7 +45,7 @@ const loopSetRotate = (timestamp: number) => {
     <div class="elementC"></div>
     <div class="elementA"></div>
     <div class="stick">
-      <div class="turn-element" :style="{ transform: mainStore.playing ? 'rotate(15deg)' : 'rotate(-25deg)' }">
+      <div class="turn-element" :style="{ transform: mainStore.playing ? 'rotate(15deg)' : 'rotate(-16deg)' }">
         <div class="element1"></div>
         <div class="element2"></div>
         <!-- <div class="elementB"></div> -->
@@ -136,7 +136,7 @@ const loopSetRotate = (timestamp: number) => {
   >.cd {
     position: absolute;
     top: 100px;
-    left: 0;
+    left: -20px;
     right: 0;
     bottom: 0;
     margin: auto;
@@ -166,6 +166,7 @@ const loopSetRotate = (timestamp: number) => {
         display: flex;
         justify-content: center;
         align-items: center;
+        z-index: 6;
 
         .n-image {
           border-radius: 50%;

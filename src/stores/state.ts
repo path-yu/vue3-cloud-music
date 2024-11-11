@@ -18,6 +18,7 @@ export interface StoreState{
   searchKeyword:string;
   currentPlayLyric:string;
   canvasBackground?:string;
+  primaryColorMap:AnyObject;
 }
 export type playMode = 'order' | 'random' | 'singleLoop';
 const initState = (
@@ -57,7 +58,8 @@ const state:StoreState = {
   playWaiting: true,
   playing: false,
   showMusicDetail: false,
-  currentPlayLyric: ''
+  currentPlayLyric: '',
+  primaryColorMap: initState('primaryColorMap', {}),
 };
 
 export default state;

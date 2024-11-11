@@ -5,15 +5,15 @@
 import { useThemeVars } from 'naive-ui';
 import { computed, ref, watch, onUnmounted } from 'vue';
 import Player from 'xgplayer';
-export interface VideoPlayProps{
-  url?:string;
-  poster?:string;
+export interface VideoPlayProps {
+  url?: string;
+  poster?: string;
 }
-export interface VideoPlayerExpose{
-  initPlayer:() => void;
-  stop:() => void;
+export interface VideoPlayerExpose {
+  initPlayer: () => void;
+  stop: () => void;
 }
-let player:Player;
+let player: Player;
 const playerRef = ref<HTMLElement>();
 const props = defineProps<VideoPlayProps>();
 const themVars = useThemeVars();
@@ -38,7 +38,7 @@ const initPlayer = () => {
 defineExpose({
   initPlayer, stop() {
     player.pause();
-  } 
+  }
 });
 
 watch(() => props.url, (url, oldUrl) => {
@@ -52,7 +52,7 @@ watch(() => props.url, (url, oldUrl) => {
   }
 });
 onUnmounted(() => {
-  player.destroy();
+  player?.destroy();
 });
 </script>
 
@@ -60,13 +60,16 @@ onUnmounted(() => {
 .xgplayer-error {
   display: none;
 }
-.xgplayer-skin-default .xgplayer-progress-played{
+
+.xgplayer-skin-default .xgplayer-progress-played {
   background: v-bind(primaryColor) !important;
 }
-.xgplayer-skin-default .xgplayer-drag{
+
+.xgplayer-skin-default .xgplayer-drag {
   background: v-bind(primaryColor) !important;
 }
-.xgplayer-skin-default .xgplayer-error .xgplayer-error-refresh{
+
+.xgplayer-skin-default .xgplayer-error .xgplayer-error-refresh {
   color: v-bind(primaryColor) !important;
 }
 </style>
