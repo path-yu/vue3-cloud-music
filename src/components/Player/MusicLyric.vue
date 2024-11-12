@@ -106,7 +106,6 @@ const handleSliderChange = (time: number, listenScroll = false) => {
     pendingSetScrollFn = () => triggerLyricChange(time, listenScroll);
   }
 };
-console.log(lyricData.value[lyricData.value.length - 1], '344');
 
 const triggerLyricChange = (time: number, listenScroll = false) => {
   if (mainStore.currentPlaySong.isNotLyric) return;

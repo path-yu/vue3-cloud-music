@@ -1,6 +1,7 @@
 import 'normalize.css';
 import { createPinia } from 'pinia';
 import VueVirtualScroller from 'vue-virtual-scroller';
+import './utils/initIndexDb';
 import { createApp } from 'vue';
 import App from './App.vue';
 import './assets/css/common.css';
