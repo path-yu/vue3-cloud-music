@@ -7,6 +7,8 @@
 为了探索最前沿的前端技术栈, 一切为了好玩, 肝代码不易,觉得喜欢的可以点个star,本项目仅供参考学习.
 谢谢大家star.
 
+### 常见问题
+由于网易云服务器限制,加上ffmpeg需要设置COOP和COEP 导致获取媒体资源和图片会存在跨域问题, 可以使用Allow CORS: Access-Control-Allow-Origin 这个插件来解决, 使用项目部署在vercel,导致需要使用vpn访问, 导致图片和音频可能无法加载, 在clash添加一条规则 将music.126.net, 类型选择DOMAIN-KEYWORD 域名设置成直连.
 ### 项目部署
 
 本项目预览地址采用vercel部署, 推荐大家使用vercel部署, 部署步骤非常简单, fork本仓库,在vercel中导入该仓库,按照提示点击部署即可.
