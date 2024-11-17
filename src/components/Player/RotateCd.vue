@@ -64,7 +64,7 @@ const loopSetRotate = (timestamp: number) => {
         <div v-for="item in maxCircleLine" :key="item" class="rounded-full circleItem"
           :style="computedCircleStyle(item)" />
         <div class="imgBg">
-          <n-image :width="imgSize" :height="imgSize" :src="mainStore.currentPlaySong.al.picUrl" />
+          <img crossorigin="anonymous" :width="imgSize" :height="imgSize" :src="mainStore.currentPlaySong.al.picUrl" />
         </div>
 
       </div>
@@ -168,7 +168,7 @@ const loopSetRotate = (timestamp: number) => {
         align-items: center;
         z-index: 6;
 
-        .n-image {
+        img {
           border-radius: 50%;
           background: v-bind(baseColor);
         }

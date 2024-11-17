@@ -3,6 +3,23 @@
 // 打开或创建 IndexedDB 数据库
 let request = indexedDB.open('audioDB', 1);
 const baseUrl = `https://musicapi-flax.vercel.app`;
+const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
+import { FFmpeg } from '@ffmpeg/ffmpeg'
+import type { LogEvent } from '@ffmpeg/ffmpeg/dist/esm/types'
+import { fetchFile, toBlobURL } from '@ffmpeg/util'
+const ffmpeg = new FFmpeg();
+// 保存当前需要操作的回调函数
+let currentResolve: () => void;
+// 是否初始化
+let isInit = false;
+
+ffmpeg.on('log', ({ message: msg }: LogEvent) => {
+  console.log('ffmpeg-message:' + msg);
+})
+ffmpeg.on('progress', (e) => {
+  console.log('ffmpeg-progress:' + e);
+});
+
 let dbInstance: IDBDatabase | null = null;
 
 export function openDatabase(): Promise<IDBDatabase> {
@@ -10,7 +27,7 @@ export function openDatabase(): Promise<IDBDatabase> {
     if (dbInstance) {
       resolve(dbInstance);
     } else {
-      const request =  indexedDB.open('audioDB', 1);
+      const request = indexedDB.open('audioDB', 1);
       request.onsuccess = (event) => {
         dbInstance = (event.target as IDBRequest).result as IDBDatabase;
         resolve(dbInstance);
@@ -22,11 +39,7 @@ export function openDatabase(): Promise<IDBDatabase> {
   });
 }
 
-// 使用时
-openDatabase().then((db) => {
-  // 直接使用 db 对象
-  console.log("数据库已打开", db);
-});
+
 request.onupgradeneeded = function (event) {
   const db = (event.target! as IDBRequest).result as IDBDatabase;
 
@@ -37,25 +50,34 @@ request.onupgradeneeded = function (event) {
   // 可选：为 ObjectStore 添加索引（比如按文件名索引）
   store.createIndex('name', 'name', { unique: false });
 };
-
-export function saveSong(data:{id:number,name:string,url:string}){
-  fetch(`${baseUrl}/convert-to-opus?url=${encodeURIComponent(`${data.url}`)}`)
-    .then(response => response.blob())
-    .then(blob => {
-      storeOpusBlobData({
-        blob,
-        id: data.id,
-        name: data.name
-      });
-    })
-    .catch(err => {
-      console.error('Error downloading audio:', err);
-    });
+export async function saveSong(data: { id: number, name: string, url: string }) {
+  if (!isInit) {
+    currentResolve = () => callback(data)
+    return;
+  };
+  callback(data)
 }
-
-request.onsuccess = function (event) {
-
-  console.log('success open db');
+async function callback(data: { id: number, name: string, url: string }) {
+ const resultFile =  await ffmpeg.writeFile(`${data.name}.mp3`, await fetchFile(data.url));
+ console.log(resultFile);
+  await ffmpeg.exec(['-i', `${data.name}.mp3`,'-strict','-2', '-c:a', 'opus', '-b:a', '48k', `${data.name}.opus`])
+  const result = await ffmpeg.readFile(`${data.name}.opus`) as Uint8Array;
+  storeOpusBlobData({
+    blob: result,
+    id: data.id,
+    name: data.name,
+  })
+}
+request.onsuccess = async function () {
+  // 直接使用 db 对象
+  await ffmpeg.load({
+    coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
+    wasmURL: await toBlobURL(`${baseURL}/ffmpeg-core.wasm`, 'application/wasm'),
+    workerURL: await toBlobURL(`${baseURL}/ffmpeg-core.worker.js`, 'text/javascript')
+  });
+  isInit = true;
+  console.log('ffmpeg init succeed');
+  currentResolve && currentResolve();
 };
 
 request.onerror = function (event) {
@@ -64,7 +86,7 @@ request.onerror = function (event) {
 };
 
 // 存储 OPUS 格式的 Blob 数据
-function storeOpusBlobData(data: { blob: Blob, id: number, name: string }) {
+function storeOpusBlobData(data: { blob: Uint8Array, id: number, name: string }) {
   const transaction = dbInstance!.transaction(['audioFiles'], 'readwrite');
   const store = transaction.objectStore('audioFiles');
 
@@ -91,24 +113,24 @@ function storeOpusBlobData(data: { blob: Blob, id: number, name: string }) {
 export function getOpusBlobDataByIdUsingIndex(id: number) {
   return new Promise((resolve, reject) => {
     if (id == undefined) return resolve(null);
-    if(!dbInstance) return resolve(null);
-      const transaction = dbInstance!.transaction(['audioFiles'], 'readonly');
-      const store = transaction.objectStore('audioFiles');
-      const index = store.index('idIndex');
-      const requestResult = index.get(id);
+    if (!dbInstance) return resolve(null);
+    const transaction = dbInstance!.transaction(['audioFiles'], 'readonly');
+    const store = transaction.objectStore('audioFiles');
+    const index = store.index('idIndex');
+    const requestResult = index.get(id);
 
-      requestResult.onsuccess = function (event) {
-        const result = (event.target! as IDBRequest).result as IDBDatabase;
-        if (result) {
-          resolve(result);
-        } else {
-          resolve(null);
-        }
-      };
+    requestResult.onsuccess = function (event) {
+      const result = (event.target! as IDBRequest).result as IDBDatabase;
+      if (result) {
+        resolve(result);
+      } else {
+        resolve(null);
+      }
+    };
 
-      requestResult.onerror = function (event) {
-        const target = event.target as IDBRequest
-        reject(target.error);
-      };
+    requestResult.onerror = function (event) {
+      const target = event.target as IDBRequest
+      reject(target.error);
+    };
   });
 }

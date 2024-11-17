@@ -111,7 +111,7 @@ const getMoreMusicList = async () => {
     rawSongList.value.forEach((item: any, index: number) => {
       songListIndexMap.set(item.id, index);
     });
-    mainStore.updatePlayList(toRaw(songList.value))
+    // mainStore.updatePlayList(toRaw(songList.value))
     hasLoadAllSongsFished.value = true;
   });
 }
@@ -334,7 +334,8 @@ const handleUpdateMusicListLike = (like: boolean, index: number) => {
             </div>
           </div>
           <div class="mt-3 text-sm flex-items-center">
-            <n-avatar round :size="30" :src="songListDetail.creator.avatarUrl" />
+            <n-avatar :img-props="{ crossorigin: 'anonymous' }" round :size="30"
+              :src="songListDetail.creator.avatarUrl" />
             <span class="pl-4 text-primary">{{ songListDetail.creator.nickname }}</span>
             <div class="ml-3 text-gray-600">
               <n-time :time="songListDetail.createTime" type="date" />

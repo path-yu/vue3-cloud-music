@@ -100,11 +100,11 @@ export const useMainStore = defineStore({
         return item;
       });
     },
-    updatePlayList(  data: any[]){
-      this.playList = data.filter(item => item.fee !== 0);
-       localStorage.rawPlayList = JSON.stringify(cloneDeep(this.playList));
-      localStorage.playList = JSON.stringify(this.playList);
-    },
+    // updatePlayList(  data: any[]){
+    //   // this.playList = data.filter(item => item.fee !== 0);
+    //   //  localStorage.rawPlayList = JSON.stringify(cloneDeep(this.playList));
+    //   // localStorage.playList = JSON.stringify(this.playList);
+    // },
     // 初始化播放 列表
     async initPlayList(
       data: any[], index = 0, playListId: string,message?:string

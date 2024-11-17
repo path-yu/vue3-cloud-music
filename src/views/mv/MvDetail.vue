@@ -189,7 +189,7 @@ onUnmounted(() => {
           <div v-if="!loadingMaps.authorInfoLoading">
             <!-- 歌手信息 -->
             <div class="flex items-center mt-5">
-              <n-avatar round :size="75" :src="authorInfo.picUrl" />
+              <n-avatar :img-props="{ crossorigin: 'anonymous' }" round :size="75" :src="authorInfo.picUrl" />
               <div class="ml-4">
                 <p class=" text-lg">
                   {{ authorInfo.name }}

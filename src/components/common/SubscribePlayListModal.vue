@@ -99,7 +99,7 @@ watch(showModal, (val) => {
             <div v-for="(item, index) in mainStore.mySubscribeSongList" :key="item.id"
               class="flex items-center py-2 px-4 hover:bg-gray-200 dark:hover:bg-gray-200/20 transition-all cursor-pointer"
               @click="handleItemClick(item, index)">
-              <n-image class="w-14 h-14 rounded-lg" :src="item.coverImgUrl" />
+              <img class="w-14 h-14 rounded-lg" :src="item.coverImgUrl" crossorigin="anonymous" />
               <div class="ml-2">
                 <n-ellipsis>
                   <p>{{ item.name }}</p>

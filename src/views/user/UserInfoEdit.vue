@@ -3,29 +3,18 @@
     <h2>编辑个人信息</h2>
 
     <div class="flex">
-      <n-form
-        ref="formRef"
-        :model="model"
-        :rules="rules"
-        label-placement="left"
-        label-width="auto"
-        require-mark-placement="right-hanging"
-        :style="{
+      <n-form ref="formRef" :model="model" :rules="rules" label-placement="left" label-width="auto"
+        require-mark-placement="right-hanging" :style="{
           width: '640px'
-        }"
-      >
+        }">
         <n-form-item label="昵称：" required path="nickname">
           <n-input v-model:value="model.nickname" placeholder="请输入昵称" />
         </n-form-item>
         <n-form-item label="介绍：" path="textareaValue">
-          <n-input
-            v-model:value="model.signature"
-            type="textarea"
-            :autosize="{
-              minRows: 3,
-              maxRows: 5
-            }"
-          />
+          <n-input v-model:value="model.signature" type="textarea" :autosize="{
+            minRows: 3,
+            maxRows: 5
+          }" />
         </n-form-item>
 
         <n-form-item label="性别：" path="radioGroupValue">
@@ -44,70 +33,40 @@
           </n-radio-group>
         </n-form-item>
         <n-form-item label="生日：" path="selectValue">
-          <n-select
-            v-model:value="birthday.year"
-            :options="yearOption"
-          />
+          <n-select v-model:value="birthday.year" :options="yearOption" />
           <div class="ml-4 w-full">
-            <n-select
-              v-model:value="birthday.month"
-              :options="monthOption"
-            />
+            <n-select v-model:value="birthday.month" :options="monthOption" />
           </div>
           <div class="ml-4 w-full">
-            <n-select
-              v-model:value="birthday.day"
-              :options="dayOption"
-            />
+            <n-select v-model:value="birthday.day" :options="dayOption" />
           </div>
         </n-form-item>
         <n-form-item label="地区：" path="selectValue">
           <div class="flex" style="width:66%">
-            <n-select
-              v-model:value="model.province"
-              :options="provinceOption"
-            />
+            <n-select v-model:value="model.province" :options="provinceOption" />
             <div class="ml-4 w-full">
-              <n-select
-                v-model:value="model.city"
-                :options="cityOption"
-              />
+              <n-select v-model:value="model.city" :options="cityOption" />
             </div>
           </div>
         </n-form-item>
         <n-form-item label="提交：" class="submitFormItem">
           <div style="display: flex; justify-content: flex-end">
-            <n-button
-              size="large" round type="primary"
-              :loading="btnSaveLoading"
-              :disabled="btnSaveDisabled"
-              @click="handleValidateButtonClick"
-            >
+            <n-button size="large" round type="primary" :loading="btnSaveLoading" :disabled="btnSaveDisabled"
+              @click="handleValidateButtonClick">
               保存
             </n-button>
-            <n-button
-              size="large" class="ml-4" round
-              @click="router.back()"
-            >
+            <n-button size="large" class="ml-4" round @click="router.back()">
               取消
             </n-button>
           </div>
         </n-form-item>
       </n-form>
       <div class="flex flex-col items-center ml-40">
-        <n-image
-          width="200"
-          class="rounded-md"
-          :src="avatarUrl"
-        />
+        <img width="200" crossorigin="anonymous" class="rounded-md" :src="avatarUrl" />
         <n-button :loading="updateAvatarLoading" class="mt-8" @click="handleAvatarButtonClick">
           修改头像
         </n-button>
-        <input
-          id="file" ref="fileRef" class="opacity-0"
-          type="file"
-          @change="handleFileChange"
-        >
+        <input id="file" ref="fileRef" class="opacity-0" type="file" @change="handleFileChange">
       </div>
     </div>
   </div>
@@ -128,7 +87,7 @@ const rules = {
     required: true,
     trigger: ['blur', 'input'],
     message: '请输入昵称'
-  
+
   }
 };
 const indexMap = new Map();
@@ -151,7 +110,7 @@ const yearOption = generalTimeOptions(
 );
 const monthOption = generalTimeOptions(
   1, 12, '月'
-); 
+);
 let isInit = false;
 const formRef = ref<FormInst | null>(null);
 const mainStore = useMainStore();
@@ -165,10 +124,10 @@ const avatarUrl = ref(profile?.avatarUrl);
 const model = ref<{
   nickname: string,
   signature: string,
-  gender:number;
-  birthday: number|string,
-  province: number|string,
-  city: number|string,
+  gender: number;
+  birthday: number | string,
+  province: number | string,
+  city: number | string,
 }>({
   nickname: profile.nickname,
   signature: profile.signature,
@@ -180,9 +139,9 @@ const model = ref<{
 let rawModel: { nickname: string; signature: string; gender: number; birthday: string | number; province: string | number; city: string | number; };
 
 const birthday = ref<{
-  year:string|number,
-  month: string|number,
-  day: string|number
+  year: string | number,
+  month: string | number,
+  day: string | number
 }>({
   year: '',
   month: '',
@@ -233,7 +192,7 @@ const initData = () => {
   };
   model.value.birthday = profile.birthday;
   let province = regionList[indexMap.get(profile.province)];
-  
+
   model.value.province = province.value;
   cityOption.value = province.cityList;
 
@@ -252,10 +211,10 @@ const changeModelBirthday = () => {
   model.value.birthday = timestamp;
 };
 initData();
-      
+
 const handleValidateButtonClick = (e: MouseEvent) => {
   e.preventDefault();
-  formRef.value?.validate((errors:any) => {
+  formRef.value?.validate((errors: any) => {
     if (!errors) {
       let params = { ...toRaw(model.value) };
       // 如果为直辖市或者特别行政区
@@ -281,7 +240,7 @@ const handleValidateButtonClick = (e: MouseEvent) => {
           btnSaveLoading.value = false;
         }
       });
-      
+
     } else {
       window.$message.error('验证失败');
     }
@@ -311,7 +270,7 @@ const handleFileChange = async (event: Event) => {
 };
 </script>
 <style scoped>
-:deep(.submitFormItem>.n-form-item-label){
+:deep(.submitFormItem>.n-form-item-label) {
   opacity: 0;
 }
 </style>

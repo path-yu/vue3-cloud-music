@@ -37,7 +37,7 @@ const getUserProfile = () => {
     getUserDetailInfo(mainStore.userProfile.profile.userId);
   } else {
     getUserInfo().then(res => {
-      getUserDetailInfo(res.data.account.id);
+      getUserDetailInfo(res.data.account?.id);
     });
   }
 };
@@ -112,7 +112,8 @@ if (mainStore.isLogin) {
       <!-- 用户信息入口 -->
       <div v-if="mainStore.isLogin">
         <div v-if="mainStore.userProfile" class="flex items-center mr-2">
-          <n-avatar round :size="30" :src="mainStore.userProfile?.profile?.avatarUrl" />
+          <n-avatar :img-props="{ crossorigin: 'anonymous' }" round :size="30"
+            :src="mainStore.userProfile?.profile?.avatarUrl" />
           <n-popover :show="showUserPopover" trigger="click" style="padding:0" display-directive="show">
             <template #trigger>
               <p class="pl-2 text-xs truncate opacity-80 hover:opacity-100 cursor-pointer w-30 trigger" @click="() => (userDetail && (showUserPopover = !showUserPopover))

@@ -106,11 +106,16 @@ watch(
     if (!val.url) {
       requestSongData();
     }
+    console.log(mainStore.currentPlaySong?.id);
+
     // // 读取缓存数据
     getOpusBlobDataByIdUsingIndex(mainStore.currentPlaySong?.id).then(res => {
+      console.log('result', res);
+
       // 创建一个指向 Blob 数据的临时 URL
       if (res) {
         const url = window.URL.createObjectURL(res.blob);
+
         if (res.id === mainStore.currentPlaySong.id) {
           mainStore.currentPlaySong.url = url;
         }
@@ -227,6 +232,8 @@ const handleWaiting = () => {
 const handlePlaying = () => {
   mainStore.playWaiting = false;
 };
+const MAX_RETRY_COUNT = 3; // 最大重试次数 
+let retryCount = 0; // 当前重试次数
 const handleError = () => {
   // 媒体资源过期,重新获取数据
   // 判断url 是否为blob格式 blob 
@@ -242,13 +249,19 @@ const handleError = () => {
       } else {
         requestSongData();
       }
-    })
+    });
     return;
   }
-  if (audioRef.value?.error!.code === 4 || audioRef.value?.error!.code === 2) {
+  if (audioRef.value?.error?.code === 4 || audioRef.value?.error?.code === 2) {
+    if (retryCount >= MAX_RETRY_COUNT) {
+      window.$message.error('重试次数已达上限，无法获取歌曲资源。');
+      return;
+    }
     window.$message.warning('歌曲资源过期,准备尝试重新获取');
+
     if (isLoad) return;
     isLoad = true;
+
     mainStore.setMusicData({ data: mainStore.playList, id: mainStore.currentPlaySong.id, index: mainStore.currentPlayIndex }).then(res => {
       localStorage.playList = JSON.stringify(mainStore.playList);
       isLoad = false;
@@ -260,10 +273,14 @@ const handleError = () => {
           audioRef.value?.play();
         }
       }
-    })
+    }).catch((error) => {
+      console.error('Error while setting music data:', error);
+    });
 
+    retryCount++; // 增加重试次数
   }
 };
+
 
 // 处理鼠标在进度条上抬起或者按下操作
 const handleSliderDone = () => {
@@ -356,8 +373,8 @@ onUnmounted(() => {
         <div :style="activeStyle" class="transition-ease">
           <div class="flex items-center h-full">
             <div ref="triggerRef" class="relative" @click="handleArrowClick">
-              <n-image class="w-12 h-12 overflow-hidden" :src="currentSong?.al?.picUrl" :preview-disabled="true"
-                :style="{ filter: isHover ? 'blur(1px)' : 'none' }" />
+              <img crossorigin="anonymous" class="w-12 h-12 overflow-hidden" :src="currentSong?.al?.picUrl"
+                :preview-disabled="true" :style="{ filter: isHover ? 'blur(1px)' : 'none' }" />
               <transition v-show="isHover" name="fade">
                 <div class="absolute top-0 left-0 z-10 w-12  h-12 bg-black/60 flex-items-justify-center">
                   <n-icon :component="KeyboardArrowUpOutlined" size="35" color="white" />
@@ -435,9 +452,9 @@ onUnmounted(() => {
         </n-popover>
         <n-icon :component="List" :size="25" class="mr-2 custom-icon" @click="playListRef?.show()" />
       </div>
-      <audio ref="audioRef" id="audioEle" :src="currentSong?.url" preload="auto" @timeupdate="handleTimeupdate"
-        @ended="handleEnded" @playing="handlePlaying" @progress="updateBuffer" @loadeddata="handleLoadeddata"
-        @error="handleError" @waiting="handleWaiting" />
+      <audio crossorigin="anonymous" ref="audioRef" id="audioEle" :src="currentSong?.url" preload="auto"
+        @timeupdate="handleTimeupdate" @ended="handleEnded" @playing="handlePlaying" @progress="updateBuffer"
+        @loadeddata="handleLoadeddata" @error="handleError" @waiting="handleWaiting" />
     </div>
   </div>
   <music-detail v-if="mainStore.currentPlaySong?.id" ref="musicDetailRef" />

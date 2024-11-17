@@ -330,7 +330,7 @@ onMounted(() => {
                 <div v-for="item in similarPlaylist" v-show="!fetchSimiPlayListLoading" :key="item.id"
                   class="flex items-center p-2 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
                   @click="handleSimiPlayListItem(item.id)">
-                  <n-image width="45" height="45" class="rounded-md" :src="item.coverImgUrl" />
+                  <img crossorigin="anonymous" width="45" height="45" class="rounded-md" :src="item.coverImgUrl" />
                   <div class="ml-4">
                     <p class="w-60 text-sm text-left truncate">
                       {{ item.name }}
@@ -353,7 +353,7 @@ onMounted(() => {
                 <div v-for="item in similarMusicList" v-show="!fetchSimilarSongIsLoading" :key="item.id"
                   class="flex items-center p-1 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
                   @click="mainStore.insertPlay(item)">
-                  <n-image width="45" height="45" class="rounded-md" :src="item.album.picUrl" />
+                  <img crossorigin="anonymous" width="45" height="45" class="rounded-md" :src="item.album.picUrl" />
                   <div class="ml-4">
                     <p class="w-60 text-sm text-left truncate">
                       {{ item.name }}

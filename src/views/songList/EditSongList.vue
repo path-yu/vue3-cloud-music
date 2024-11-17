@@ -9,10 +9,10 @@ import { useRoute, useRouter } from 'vue-router';
 const route = useRoute();
 const router = useRouter();
 const query = route.query as {
-  tags:string;
-  songListName:string;
-  desc:string;
-  coverUrl:string;
+  tags: string;
+  songListName: string;
+  desc: string;
+  coverUrl: string;
 };
 const desc = ref(query.desc || '');
 const selectSongListTagRef = ref<SelectSongListTagModalExpose>();
@@ -25,14 +25,14 @@ const selectTags = ref(query.tags
   ? query.tags.split(',')
   : [] || []);
 
-const rules:FormRules = {
+const rules: FormRules = {
   songListName: {
     required: true,
     message: '表单名不能为空',
     trigger: ['input', 'blur']
   }
 };
-const handleCompleteClick = (tags:any[]) => {
+const handleCompleteClick = (tags: any[]) => {
   if (tags.length === 0) {
     return window.$message.warning('请选择标签');
   }
@@ -55,13 +55,13 @@ const handleSaveClick = () => {
           saveBtnLoading.value = false;
         }
       });
-    } 
+    }
   });
 };
 const handleChangCoverClick = () => {
   fileRef.value?.click();
 };
-const handleFileChange = async (event:Event) => {
+const handleFileChange = async (event: Event) => {
   let target = event.target as HTMLInputElement;
   if (target.files) {
     let file = target.files[0];
@@ -84,26 +84,16 @@ const handleFileChange = async (event:Event) => {
   <div class="p-8">
     <h2>编辑歌单信息</h2>
     <div class="flex">
-      <n-form
-        ref="formRef"
-        :rules="rules"
-        :model="modelRef"
-        label-placement="left"
-        label-width="auto"
-        require-mark-placement="right-hanging"
-        :style="{
+      <n-form ref="formRef" :rules="rules" :model="modelRef" label-placement="left" label-width="auto"
+        require-mark-placement="right-hanging" :style="{
           width: '640px'
-        }"
-      >
+        }">
         <n-form-item label="歌单名：" path="songListName">
           <n-input v-model:value="modelRef.songListName" placeholder="请输入歌单名" />
         </n-form-item>
         <n-form-item label="标签：">
           <n-space>
-            <n-tag
-              v-for="(item,index) in selectTags" :key="index" round
-              size="small"
-            >
+            <n-tag v-for="(item, index) in selectTags" :key="index" round size="small">
               {{ item }}
             </n-tag>
             <n-button text @click="selectSongListTagRef?.show()">
@@ -112,18 +102,11 @@ const handleFileChange = async (event:Event) => {
           </n-space>
         </n-form-item>
         <n-form-item label="简介：">
-          <n-input
-            v-model:value="desc" maxlength="1000" type="textarea"
-            :show-count="true"
-            placeholder="请输入歌单简介"
-          />
+          <n-input v-model:value="desc" maxlength="1000" type="textarea" :show-count="true" placeholder="请输入歌单简介" />
         </n-form-item>
         <n-form-item label="提交：" class="submitFormItem">
           <n-space>
-            <n-button
-              :loading="saveBtnLoading" round size="medium"
-              type="primary" @click="handleSaveClick"
-            >
+            <n-button :loading="saveBtnLoading" round size="medium" type="primary" @click="handleSaveClick">
               保存
             </n-button>
             <n-button round size="medium" @click="router.back()">
@@ -133,30 +116,19 @@ const handleFileChange = async (event:Event) => {
         </n-form-item>
       </n-form>
       <div class="flex flex-col items-center ml-40">
-        <n-image
-          width="200"
-          class="rounded-md"
-          :src="coverUrl"
-        />
+        <img width="200" class="rounded-md" crossorigin="anonymous" :src="coverUrl" />
         <n-button class="mt-8" @click="handleChangCoverClick">
           修改封面
         </n-button>
-        <input
-          id="file" ref="fileRef" class="opacity-0"
-          type="file"
-          @change="handleFileChange"
-        >
+        <input id="file" ref="fileRef" class="opacity-0" type="file" @change="handleFileChange">
       </div>
     </div>
   </div>
   <!-- 标签选择弹窗 -->
-  <select-song-list-tag-modal
-    ref="selectSongListTagRef"
-    :handle-complete-click="handleCompleteClick" 
-  />
+  <select-song-list-tag-modal ref="selectSongListTagRef" :handle-complete-click="handleCompleteClick" />
 </template>
 <style scoped>
-:deep(.submitFormItem>.n-form-item-label){
+:deep(.submitFormItem>.n-form-item-label) {
   opacity: 0;
 }
 </style>

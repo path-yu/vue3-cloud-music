@@ -69,7 +69,8 @@ export default defineComponent({
     let imageProps = {
       previewDisabled: props.previewDisabled,
       fallbackSrc: props.fallbackSrc,
-      class: props.className
+      class: props.className,
+      crossorigin: "anonymous"
     };
     const { imageRef } = useLazyLoad(props.src);
 
@@ -90,7 +91,7 @@ export default defineComponent({
                 ? 999
                 : 0
           }}>
-          <n-image
+          <img
             {...imageProps}
             class={imageClasses}
             on-load={handleLoad}
@@ -98,9 +99,7 @@ export default defineComponent({
             on-error={handleError}
             preview-disabled={myPreviewDisabled.value}
             style={{
-              opacity: isLoading.value
-                ? 0
-                : 1,
+
               borderRadius: props.borderRadius
             }} />
           <div
