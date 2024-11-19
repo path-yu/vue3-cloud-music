@@ -26,11 +26,18 @@ const initPlayer = () => {
       poster: props.poster,
       videoInit: true,
       lang: 'zh-cn',
+
       width: '100%',
       height: '440px',
       playbackRate: [
         0.5, 0.75, 1, 1.5, 2
       ]
+    });
+    player.crossOrigin = 'anonymous';
+    // on error
+    player.on('error', (event) => {
+      console.log('error', event);
+
     });
   }
 };

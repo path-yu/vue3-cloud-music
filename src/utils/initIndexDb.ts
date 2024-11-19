@@ -69,6 +69,8 @@ async function callback(data: { id: number, name: string, url: string }) {
   })
 }
 request.onsuccess = async function () {
+  console.log('open db succeed');
+  
   // 直接使用 db 对象
   await ffmpeg.load({
     coreURL: await toBlobURL(`${baseURL}/ffmpeg-core.js`, 'text/javascript'),
