@@ -7,5 +7,6 @@
         { "key":"Cross-Origin-Opener-Policy", "value": "same-origin" }
       ]
     }
-  ]
+  ],
+  "builds": [ { "src": "src", "use": "@vercel/static-build", "env": { "DEBUG": "true" } } ]
 }
