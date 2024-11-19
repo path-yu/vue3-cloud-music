@@ -254,7 +254,7 @@ const handleError = () => {
   }
   if (audioRef.value?.error?.code === 4 || audioRef.value?.error?.code === 2) {
     if (retryCount >= MAX_RETRY_COUNT) {
-      window.$message.error('重试次数已达上限，无法获取歌曲资源。');
+      // window.$message.error('重试次数已达上限，无法获取歌曲资源。');
       return;
     }
     window.$message.warning('歌曲资源过期,准备尝试重新获取');
