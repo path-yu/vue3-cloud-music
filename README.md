@@ -84,7 +84,7 @@
 
 33. 评论列表,点击评论,回复评论,添加评论.发表评论
 
-34. 基于ffmpeg-wsam和indexdb缓存压缩歌曲数据到本地,实现离线播放.
+34. 基于ffmpeg-wasm和IndexedDB缓存压缩歌曲数据到本地,实现离线播放.
 
 ## 项目预览
 ![](https://upload-images.jianshu.io/upload_images/24914540-3610a62506e089c7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
