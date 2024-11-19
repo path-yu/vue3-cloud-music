@@ -8,5 +8,5 @@
       ]
     }
   ],
-  "builds": [ { "src": "src", "use": "@vercel/static-build", "env": { "DEBUG": "true" } } ]
+  "builds": [ { "src": "src", "use": "@vercel/static-build" } ]
 }
