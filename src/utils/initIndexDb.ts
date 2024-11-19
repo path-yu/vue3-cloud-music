@@ -69,7 +69,8 @@ async function callback(data: { id: number, name: string, url: string }) {
   })
 }
 request.onsuccess = async function () {
-  console.log('open db succeed');
+  try {
+    console.log('open db succeed');
   
   // 直接使用 db 对象
   await ffmpeg.load({
@@ -80,6 +81,9 @@ request.onsuccess = async function () {
   isInit = true;
   console.log('ffmpeg init succeed');
   currentResolve && currentResolve();
+  } catch (error) {
+    console.log('ffmpeg load error',error);
+  }
 };
 
 request.onerror = function (event) {
