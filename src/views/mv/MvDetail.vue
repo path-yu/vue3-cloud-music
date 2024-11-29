@@ -95,7 +95,7 @@ const handleImgClick = async (id: number) => {
   videoPlayRef.value?.stop();
   router.push(`/mv/${id}`);
 };
-watch(() => route.path, (val: string) => {
+watch(() => route.path, () => {
   if (route.path.includes('mv')) {
     reloadMvData();
   }

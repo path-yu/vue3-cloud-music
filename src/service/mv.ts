@@ -21,7 +21,7 @@ export function getVideoUrl(id: number) {
 }
 // 推荐 mv
 export function getRecommendMv() {
-  return service.get('/personalized/mv?limit=3');
+  return service.get('/personalized/mv');
 }
 // mv评论
 export function getMvComment({ id='', limit = 20, offset = 0, before='' }) {

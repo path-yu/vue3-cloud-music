@@ -1,5 +1,5 @@
 <script setup lang="ts">
-import { ref, type Ref, watch, reactive, nextTick, type CSSProperties, onMounted, onUnmounted } from 'vue';
+import { ref, type Ref, watch, reactive, nextTick, type CSSProperties, onMounted } from 'vue';
 // @ts-ignore
 import analyze from 'rgbaster';
 import { BackToTop, Edit } from '@vicons/carbon';
@@ -39,14 +39,14 @@ const showTopLyric = ref(false);
 const tagPositionStyle = ref<CSSProperties>();
 const fullScreen = ref(false);
 const { isLoading: fetchSimiPlayListLoading, state: similarPlaylist, execute: executeGetSimiPlayList } = useAsyncState(
-  (id) => {
+  (id: string) => {
     return getSimilarPlaylist(id).then(res => res.data.playlists);
   }, [],
   { resetOnExecute: false, immediate: false }
 );
 // 相似歌曲数据
 const { isLoading: fetchSimilarSongIsLoading, state: similarMusicList, execute: executeGetSimiSong } = useAsyncState(
-  (id) => {
+  (id: string) => {
     return getSimilarSong(id).then(res => {
       return mapSongs(res.data.songs);
     });
@@ -63,7 +63,7 @@ const target = () => scrollContainerRef.value;
 
 const fillBackground = async (updateMask = true) => {
   await nextTick();
-  let ctx = myCanvas.value!.getContext('2d') as CanvasRenderingContext2D;
+  let ctx = myCanvas.value!.getContext('2d', { willReadFrequently: true }) as CanvasRenderingContext2D;
   let width = (window.innerWidth * 0.85);
   let height = window.innerHeight - 73;
   if (!mainStore.currentPlaySong) return;
@@ -226,8 +226,11 @@ watch(pageParams, () => {
   }
 });
 onMounted(() => {
-  document.addEventListener("fullscreenchange", (event) => {
-    fullScreen.value = !!document.fullscreenElement
+  document.addEventListener("fullscreenchange", () => {
+    fullScreen.value = !!document.fullscreenElement;
+    setTimeout(() => {
+      fillBackground(true);
+    });
   });
 
 })

@@ -2,9 +2,11 @@ import { getPixelColor } from '@/utils/getPixelColor';
 import obverser from '@/utils/obverser';
 import { nextTick, type CSSProperties } from 'vue';
 
+let lyricFooterMaskELement:HTMLElement;
+let lyricTopMaskElement:HTMLElement;
+
 export function useBlurLineGradient() {
-  let lyricFooterMaskELement:HTMLElement;
-  let lyricTopMaskElement:HTMLElement;
+
   let footerMaskStyle:CSSProperties;
   let topMaskStyle:CSSProperties;
   const eleHeight = 35;
@@ -16,6 +18,8 @@ export function useBlurLineGradient() {
     if (!lyricTopMaskElement) {
       lyricTopMaskElement = document.querySelector('.top-mask') as HTMLElement;
     }
+    console.log('update');
+    
     // dom 还未在页面显示 可能为0
     let { top: footerEleTop } = lyricFooterMaskELement.getBoundingClientRect();
     let { top: topEleTop } = lyricTopMaskElement.getBoundingClientRect(); 

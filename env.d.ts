@@ -35,3 +35,9 @@ declare module 'rgbaster' {
   }[]>;
   export { };
 };
+// audio data
+export type AudioIndexedData = {
+  id: number;
+  name: string;
+  blob:Blob;
+}

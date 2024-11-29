@@ -1,10 +1,10 @@
 <script setup lang="ts">
-import { search } from '@/service';
+import { search, SearchParams } from '@/service';
 import { PlayCircleOutlined } from '@vicons/antd';
 import { useMainStore } from '@/stores/main';
 import { useAsyncState } from '@vueuse/core';
 import { formateNumber } from '@/utils';
-import { watch, reactive, ref, type CSSProperties, nextTick } from 'vue';
+import { watch, reactive, ref, type CSSProperties } from 'vue';
 import { useRoute, useRouter } from 'vue-router';
 import useThemeStyle from '@/hook/useThemeStyle';
 import { useNanoid } from '@/hook/useNanoid';
@@ -29,7 +29,7 @@ const mainStore = useMainStore();
 const { set, currentId } = useNanoid();
 const { themeVars, stripedClass, primaryColor } = useThemeStyle();
 const { state: songsSearchResult, isLoading: songListIsLoading, execute: getSearchSongList } = useAsyncState(
-  (val) => search(val).then(async res => {
+  (val: SearchParams) => search(val).then(async res => {
     let result = res.data.result;
     res.data.result.songs = mainStore.mapSongListAddLike(result.songs).map((item, index) => ({ ...item, rawIndex: index }));
     res.data.result.songs = markSearchKeyword(
@@ -40,7 +40,7 @@ const { state: songsSearchResult, isLoading: songListIsLoading, execute: getSear
   }), {}, { resetOnExecute: true, immediate: false }
 );
 const { state: playListSearchResult, isLoading: playListIsLoading, execute: getSearchPlayList } = useAsyncState(
-  (val) => search(val).then(async res => {
+  (val: SearchParams) => search(val).then(async res => {
     let result = res.data.result;
     let keyword = route.query.keyword as string;
     res.data.result.playlists = markSearchKeyword(

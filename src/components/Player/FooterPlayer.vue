@@ -21,6 +21,7 @@ import obverser from '@/utils/obverser';
 import type { HeartIconExpose } from '../common/HeartIcon.vue';
 import { useAudioLoadProgress } from './hook/useAudioLoadProgress';
 import { getOpusBlobDataByIdUsingIndex, openDatabase, saveSong } from '@/utils/initIndexDb'
+import { AudioIndexedData } from 'env';
 
 let slideValueChange = false;// 记录slider值是否手动发生了改变
 let triggerOriginalAudioTimeUpdate = true;
@@ -96,6 +97,10 @@ watch(
     if (!val) return;
     loadCurrentPrevAndNext(val);
     if (oldVal && val.id !== oldVal.id) {
+      // 检测当前是否正在播放
+      if (!audioRef.value?.paused) {
+        mainStore.playing = false;
+      }
       // 重新加载媒体资源
       audioRef.value?.load();
       resetState();
@@ -109,7 +114,7 @@ watch(
     console.log(mainStore.currentPlaySong?.id);
 
     // // 读取缓存数据
-    getOpusBlobDataByIdUsingIndex(mainStore.currentPlaySong?.id).then(res => {
+    getOpusBlobDataByIdUsingIndex(mainStore.currentPlaySong?.id).then((res: AudioIndexedData) => {
       console.log('result', res);
 
       // 创建一个指向 Blob 数据的临时 URL
@@ -117,7 +122,14 @@ watch(
         const url = window.URL.createObjectURL(res.blob);
 
         if (res.id === mainStore.currentPlaySong.id) {
+          // 检测当前是否正在播放
+          if (!audioRef.value?.paused) {
+            mainStore.playing = false;
+          }
           mainStore.currentPlaySong.url = url;
+          setTimeout(() => {
+            mainStore.playing = true;
+          });
         }
       }
     })
@@ -235,11 +247,10 @@ const handlePlaying = () => {
 const MAX_RETRY_COUNT = 3; // 最大重试次数 
 let retryCount = 0; // 当前重试次数
 const handleError = () => {
-  // 媒体资源过期,重新获取数据
   // 判断url 是否为blob格式 blob 
   if (mainStore.currentPlaySong.url?.startsWith('blob:')) {
     // 读取缓存数据
-    getOpusBlobDataByIdUsingIndex(mainStore.currentPlaySong?.id).then(res => {
+    getOpusBlobDataByIdUsingIndex(mainStore.currentPlaySong?.id).then((res: AudioIndexedData) => {
       // 创建一个指向 Blob 数据的临时 URL
       if (res) {
         const url = window.URL.createObjectURL(res.blob);
@@ -346,6 +357,7 @@ const likeSuccess = (like: boolean) => {
 const handleLikeHeartClick = () => {
   heardLikeRef.value?.triggerLike();
 };
+
 onMounted(() => {
   document.body.addEventListener('keypress', handlePressSpace);
   obverser.on('selectLyricPlay', (time) => {

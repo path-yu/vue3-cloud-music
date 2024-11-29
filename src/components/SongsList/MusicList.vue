@@ -6,7 +6,7 @@ import { formateSongsAuthor } from '@/utils';
 import { VolumeMuteFilled, VolumeUpFilled } from '@vicons/material';
 import { useThemeVars, type DataTableColumns } from 'naive-ui';
 import { NIcon, NTime, NTag } from 'naive-ui';
-import { computed, defineComponent, ref } from 'vue';
+import { computed, defineComponent } from 'vue';
 import { useRouter } from 'vue-router';
 
 type RowData = {
