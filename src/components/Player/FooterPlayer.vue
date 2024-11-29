@@ -32,7 +32,6 @@ const mainStore = useMainStore();
 const triggerRef = ref();
 const isHover = useElementHover(triggerRef);
 const heardLikeRef = ref<HeartIconExpose>();
-const currentPlaySongUrl = ref<string>();
 const subscribeModalRef = ref<{ show: () => void }>();
 let isLoad = false;
 // audio元素
@@ -166,6 +165,7 @@ const resetState = () => {
   percentage.value = 0;
   progressValue.value = 0;
   audioRef.value!.currentTime = 0;
+  mainStore.playWaiting = true;
 };
 // 切换播放状态
 const togglePlayStatus = async () => {

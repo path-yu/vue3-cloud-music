@@ -256,7 +256,7 @@ onMounted(() => {
           <layout-header-search />
         </div>
         <transition v-show="showTopLyric" name="slide">
-          <div class="ml-10 text-center" style="width:550px">
+          <div class="ml-20 text-left" style="width:550px">
             <p>
               {{ mainStore.currentPlaySong.name }}
             </p>
