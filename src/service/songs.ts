@@ -49,7 +49,8 @@ export function getMusicComment(data:{
   offset?:number;
   before?:string;}) {
   const query = qs.stringify({
-    ...data
+    ...data,
+    timestamp:Date.now()
   });
   return service.get('/comment/music?'+query);
 }

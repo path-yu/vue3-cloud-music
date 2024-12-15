@@ -92,7 +92,10 @@ export function getPlaylistComment(data:{
   offset?:number;
   before?:string;
 }) {
-  const query = qs.stringify(data);
+  const query = qs.stringify({
+    ...data,
+    timestamp:Date.now()
+  });
   return service.get('/comment/playlist?'+query);
 }
 // 相似歌单

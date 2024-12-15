@@ -298,13 +298,13 @@ const updateCommentLiked = (data: { liked: boolean, index: number }, isHot: bool
   if (isHot) {
     songListComment.value.hotComments[index].liked = liked;
     liked
-      ? songListComment.value.hotComments[index].likedCount + 1
-      : songListComment.value.hotComments[index].likedCount - 1;
+      ? songListComment.value.hotComments[index].likedCount += 1
+      : songListComment.value.hotComments[index].likedCount -= 1;
   } else {
     songListComment.value.comments[index].liked = liked;
     liked
-      ? songListComment.value.comments[index].likedCount + 1
-      : songListComment.value.comments[index].likedCount - 1;
+      ? songListComment.value.comments[index].likedCount += 1
+      : songListComment.value.comments[index].likedCount -= 1;
   }
 };
 const handleUpdateMusicListLike = (like: boolean, index: number) => {

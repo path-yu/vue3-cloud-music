@@ -25,7 +25,7 @@ export function getRecommendMv() {
 }
 // mv评论
 export function getMvComment({ id='', limit = 20, offset = 0, before='' }) {
-  let qs = `id=${id}&limit=${limit}&offset=${offset}`;
+  let qs = `id=${id}&limit=${limit}&offset=${offset}&timestamp=${Date.now()}`;
   if (before) {
     qs+=`&before=${before}`;
   }

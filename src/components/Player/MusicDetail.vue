@@ -140,18 +140,18 @@ const updateCommentList = (value: any) => {
   musicComment.value.total += 1;
   musicComment.value.comments.unshift(value);
 };
-const updateCommentLiked = (data: { liked: boolean, index: number }, isHot: boolean) => {
+const updateCommentLiked = (data: { liked: number, index: number }, isHot: boolean) => {
   let { index, liked } = data;
   if (isHot) {
-    musicComment.value.hotComments[index].liked = liked;
+    musicComment.value.hotComments[index].liked = !!liked;
     liked
-      ? musicComment.value.hotComments[index].likedCount + 1
-      : musicComment.value.hotComments[index].likedCount - 1;
+      ? musicComment.value.hotComments[index].likedCount += 1
+      : musicComment.value.hotComments[index].likedCount -= 1;
   } else {
-    musicComment.value.comments[index].liked = liked;
+    musicComment.value.comments[index].liked = !!liked;
     liked
-      ? musicComment.value.comments[index].likedCount + 1
-      : musicComment.value.comments[index].likedCount - 1;
+      ? musicComment.value.comments[index].likedCount += 1
+      : musicComment.value.comments[index].likedCount -= 1;
   }
 };
 const handleUpdateShow = (value: boolean) => {
