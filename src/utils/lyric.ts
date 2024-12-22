@@ -2,79 +2,82 @@ interface MetaItem {
   t: number;
   c: { tx: string }[];
 }
-function paseMetaData(lyric:string){
+function paseMetaData(lyric: string) {
   // 正则匹配元数据 {"t": 0, "c": [...]}
-  const metaReg = /{.*?"t":\s*(\d+).*?"c":\s*(\[\{.*?\}\])/g;
+  const metaReg = /{.*?"t":\s*(\d+)(?!.*?"tx":\s*"").*?"c":\s*(\[\{.*?\}\])/g;
   // 解析元数据
   const metadata: MetaItem[] = [];
   let metaMatch;
   while ((metaMatch = metaReg.exec(lyric)) !== null) {
     const time = Number(metaMatch[1]); // 提取时间戳
     const contentJson = metaMatch[2]; // 提取元数据内容
-
-    
     try {
       // 解析元数据 JSON
       const metaItem = {
         t: time,
         c: JSON.parse(contentJson)
       };
-      metadata.push(metaItem);
+      console.log(contentJson);
+      
+      if (contentJson) {
+        metadata.push(metaItem);
+      }
     } catch (error) {
       console.error('Error parsing meta data:', error);
     }
   }
   return metadata
 }
-export function parseLyric(lrc:string,yrcLyric?:string): LyricItem[] {
- 
-  let lrcObj:LyricItem[] = [];
+export function parseLyric(lrc: string, yrcLyric?: string): LyricItem[] {
+
+  let lrcObj: LyricItem[] = [];
   let yrcLyricResult: string | any[] = [];
- 
-  const metadata = paseMetaData(yrcLyric ? yrcLyric :lrc);
-  let metaResult =  metadata.map(item => {
+  const metadata = paseMetaData(yrcLyric ? yrcLyric : lrc);
+  console.log(metadata);
+
+  let metaResult = metadata.map(item => {
     const { t, c } = item;
-    let content:string='';
-    c.forEach(item =>{
-       content += item.tx
+    let content: string = '';
+    c.forEach(item => {
+      content += item.tx
     });
     return {
-      time:t,
+      time: t,
       content,
-      translateContent:''
+      translateContent: ''
     }
   });
-  
-  if(yrcLyric){
-    yrcLyricResult =  parseLyricWithWords(yrcLyric); 
-    return [...metaResult,...yrcLyricResult];
- }else{
-  lrcObj = parseBaseLyric(lrc);
-  return [...metaResult,...lrcObj];
- }
 
- 
+  if (yrcLyric) {
+    yrcLyricResult = parseLyricWithWords(yrcLyric);
+    return [...metaResult, ...yrcLyricResult];
+  } else {
+    lrcObj = parseBaseLyric(lrc);
+    return [...metaResult, ...lrcObj];
+  }
+
+
 }
 
-export function parseBaseLyric(lyric:string){
+export function parseBaseLyric(lyric: string) {
   const lyrics = lyric.split('\n');
-  let lrcObj:LyricItem[] = [];
+  let lrcObj: LyricItem[] = [];
   for (let i = 0; i < lyrics.length; i++) {
     const lyric = decodeURIComponent(lyrics[i]);
     const timeReg = /\[\d*:\d*((\.|:)\d*)*\]/g;
     const timeRegExpArr = lyric.match(timeReg);
-    
+
     if (!timeRegExpArr) continue;
     const content = lyric.replace(timeReg, '');
     for (let k = 0, h = timeRegExpArr.length; k < h; k++) {
       const t = timeRegExpArr[k];
-      
+
       const min = Number(String(t.match(/\[\d*/i)).slice(1));
-      let sec:number;
-      const secondMatch =  t.match(/:(\d{2}\.\d*)/);
-      if(secondMatch){
+      let sec: number;
+      const secondMatch = t.match(/:(\d{2}\.\d*)/);
+      if (secondMatch) {
         sec = +secondMatch[1];
-      }else{
+      } else {
         sec = 0;
       }
       const newTime = Math.round(min * 60 * 1000 + sec * 1000);
@@ -84,15 +87,15 @@ export function parseBaseLyric(lyric:string){
         });
       }
     }
-  }  
-  return lrcObj.map((item,index)=>({...item,index:index}))
+  }
+  return lrcObj.map((item, index) => ({ ...item, index: index }))
 }
 
-export function parseRangeLyric(lyricList:LyricItem[]) {
+export function parseRangeLyric(lyricList: LyricItem[]) {
   const map = new Map<number, RangeLyricItem>();
   let currentIndex = 0;
   let nextIndex = 1;
-  
+
   // 如果第一项播放时间不为0，则手动插入一个
   if (lyricList[currentIndex]?.time !== 0 && lyricList[currentIndex]?.content !== '纯音乐，请欣赏') {
     lyricList.unshift({
@@ -123,15 +126,15 @@ export function parseRangeLyric(lyricList:LyricItem[]) {
   return map;
 }
 export interface LyricItem {
-  time:number;
-  content:string;
-  translateContent?:string;
+  time: number;
+  content: string;
+  translateContent?: string;
   // newTime:number;
   lineStartTime?: number, lineDuration?: number, words?: WordData[],
-  index?:number,
+  index?: number,
 }
-export interface RangeLyricItem extends LyricItem{
-  index:number;
+export interface RangeLyricItem extends LyricItem {
+  index: number;
 }
 
 interface WordData {
@@ -140,8 +143,8 @@ interface WordData {
   duration: number;
 }
 
-export function parseLyricWithWords(input: string): { lineStartTime: number, lineDuration: number, words: WordData[],index:number }[] {
-  const result: { lineStartTime: number, lineDuration: number, words: WordData[],content:string,time:number,index:number }[] = [];
+export function parseLyricWithWords(input: string): { lineStartTime: number, lineDuration: number, words: WordData[], index: number }[] {
+  const result: { lineStartTime: number, lineDuration: number, words: WordData[], content: string, time: number, index: number }[] = [];
 
   // 正则表达式匹配歌词行的时间范围 [start, duration]，排除换行符
   const lineRegex = /\[(\d+),(\d+)\]/g;
@@ -151,7 +154,7 @@ export function parseLyricWithWords(input: string): { lineStartTime: number, lin
 
   let lineMatch;
   let lastIndex = 0;
-  let index=0;
+  let index = 0;
   // 使用 lineRegex 匹配每一行的开始和持续时间
   while ((lineMatch = lineRegex.exec(input)) !== null) {
     // 解析每一行的起始时间和持续时间
@@ -182,7 +185,7 @@ export function parseLyricWithWords(input: string): { lineStartTime: number, lin
       lineStartTime,
       lineDuration,
       words,
-      time:lineStartTime,
+      time: lineStartTime,
       index,
       content: words.map(item => item.content).join('') // 拼接该行的文字内容
     });
