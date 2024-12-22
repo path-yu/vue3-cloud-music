@@ -1,7 +1,7 @@
 <script setup lang="ts">
 import { ref, type Ref, watch, reactive, nextTick, type CSSProperties, onMounted } from 'vue';
 // @ts-ignore
-import analyze from 'rgbaster';
+// import analyze from 'rgbaster';
 import { BackToTop, Edit } from '@vicons/carbon';
 import { formateSongsAuthor, getArrLast } from '@/utils';
 import { KeyboardArrowDownOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@vicons/material';
@@ -15,6 +15,9 @@ import { getSimilarPlaylist, getSimilarSong } from '@/service/playlist';
 import { useAsyncState } from '@vueuse/core';
 import { mapSongs } from '@/utils/arr-map';
 import { useBlurLineGradient } from './hook/useBlurLineGradient';
+import ColorThief from 'colorthief';
+import { analyze } from '@/utils/image';
+const colorThief = new ColorThief();
 
 export interface MusicDetailExpose {
   show: () => void;
@@ -78,8 +81,8 @@ const fillBackground = async (updateMask = true) => {
   let resultColor = mainStore.primaryColorMap[mainStore.currentPlaySong.id];
   if (!resultColor) {
     const result = await analyze(mainStore.currentPlaySong.al.picUrl);
-    mainStore.updatePrimaryColorMap(mainStore.currentPlaySong.id, result[1].color);
-    primary = result[1].color;
+    mainStore.updatePrimaryColorMap(mainStore.currentPlaySong.id, result);
+    primary = result;
   } else {
     primary = resultColor;
   }
