@@ -460,7 +460,7 @@ onUnmounted(() => {
             <n-icon :component="volume === 0 ? VolumeOffRound : VolumeUpRound" :size="25" class="mr-2 custom-icon"
               @click="handleVolumeClick" />
           </template>
-          <n-slider :value="volume" vertical style="height:100px" @update-value="handleVolumeChange" />
+          <n-slider :value="volume" :tooltip="false" vertical style="height:100px" @update-value="handleVolumeChange" />
         </n-popover>
         <n-icon :component="List" :size="25" class="mr-2 custom-icon" @click="playListRef?.show()" />
       </div>

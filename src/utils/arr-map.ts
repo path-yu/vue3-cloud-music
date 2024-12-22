@@ -5,11 +5,10 @@ export function mapSongs(songs:any[]) {
     const target = item.song
       ? item.song
       : item;
-   
-    item.dt = target.duration;
-    item.al = target.album;
-    item.ar = target.artists;
-    item.formatAuthor = formateSongsAuthor(target.artists);
+    item.dt = target.dt ? target.dt : target.duration;
+    item.al = target.al ? target.al: target.album;
+    item.ar = target.ar ? target.ar : target.artists;
+    item.formatAuthor = formateSongsAuthor( item.ar );
     return item;
   });
 } 

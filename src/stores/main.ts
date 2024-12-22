@@ -95,7 +95,7 @@ export const useMainStore = defineStore({
         } else {
           item.like = false;
         }
-        item.formatAuthor = formateSongsAuthor(item.ar);
+        item.formatAuthor = item.ar ? formateSongsAuthor(item.ar) :'';
         item.key = index;
         return item;
       });

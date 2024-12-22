@@ -1,8 +1,8 @@
 import qs from 'qs';
 import service from './request';
-// 推荐新音乐
-export function getNewSong() {
-  return service.get('/personalized/newsong?limit=20');
+// 推荐歌曲
+export function getRecommendSong() {
+  return service.get('/recommend/songs');
 }
 // 新歌速递
 export function getTopSong(type: 0 | 7 | 96 |8 | 16=0) {

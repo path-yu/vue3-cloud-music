@@ -2,7 +2,7 @@
 import { useMemoryScrollTop } from '@/hook/useMemoryScrollTop';
 import {
   getBanner,
-  getNewSong,
+  getRecommendSong,
   getPersonalized,
   getRecommendMv
 } from '@/service';
@@ -25,13 +25,14 @@ const {
   isLoading: SongsListIsLoading
 } = useAsyncState(getPersonalized().then(res => res.data.result), []);
 const {
-  state: newSongList,
-  isLoading: newSongListIsLoading
-} = useAsyncState(getNewSong().then(res => {
-  return mainStore.mapSongListAddLike(mapSongs(res.data.result));
+  state: recommendSongList,
+  isLoading: recommendSongListIsLoading
+} = useAsyncState(getRecommendSong().then(res => {
+  console.log(mapSongs(res.data.data.dailySongs), 2121);
+  return mainStore.mapSongListAddLike(mapSongs(res.data.data.dailySongs)).slice(0, 9);
 }), []);
 const { state: MVList, isLoading: MVIsLoading }
-  = useAsyncState(getRecommendMv().then(res => res.data.result), []);
+  = useAsyncState(getRecommendMv().then(res => res.data.data), []);
 const onlyId = nanoid();
 const isHovered = useElementHover(hoverRef);
 const mainStore = useMainStore();
@@ -53,7 +54,9 @@ const handleArrowClick = (type: 'next' | 'prev') => {
       : --index;
   }
 };
+fetch('https://musicapi-git-main-pathyus-projects.vercel.app/homepage/block/page').then(res => {
 
+})
 </script>
 
 <template>
@@ -94,12 +97,12 @@ const handleArrowClick = (type: 'next' | 'prev') => {
     </p>
     <SongListSkeleton v-if="SongsListIsLoading" />
     <SongList v-else :songs="SongsList" />
-    <!-- 最新音乐 -->
+    <!-- 推荐音乐 -->
     <p class="py-4 text-xl">
-      最新音乐
+      推荐音乐
     </p>
-    <n-grid v-if="newSongListIsLoading" cols="3" x-gap="20" :y-gap="20">
-      <n-grid-item v-for="(, index) in 12" :key="index">
+    <n-grid v-if="recommendSongListIsLoading" cols="3" x-gap="20" :y-gap="20">
+      <n-grid-item v-for="(, index) in recommendSongList" :key="index">
         <div class="flex justify-between h-16">
           <n-skeleton height="64px" width="64px" :sharp="false" />
           <div class="flex-1 ml-2">
@@ -109,12 +112,12 @@ const handleArrowClick = (type: 'next' | 'prev') => {
       </n-grid-item>
     </n-grid>
     <n-grid v-else x-gap="20" :y-gap="20" cols="2 s:2 m:3 l:3 xl:3 2xl:4" responsive="screen">
-      <n-grid-item v-for="(item, index) in newSongList" :key="item.id" class="hover:bg-zinc-300/40
+      <n-grid-item v-for="(item, index) in recommendSongList" :key="item.id" class="hover:bg-zinc-300/40
          dark:hover:bg-gray-700/30 rounded-md 
-         transition-colors cursor-pointer" @dblclick="handleDBClick(newSongList, onlyId, item, index)">
+         transition-colors cursor-pointer" @dblclick="handleDBClick(recommendSongList, onlyId, item, index)">
         <div class="flex justify-between h-16">
           <div class="relative">
-            <load-img loading-height="64px" class-name="w-16 h-16 rounded-md" :src="item.picUrl"
+            <load-img loading-height="64px" class-name="w-16 h-16 rounded-md" :src="item.al.picUrl"
               :show-message="false" />
             <play-icon :size="15" class="cursor-pointer position-center" style="opacity: 1;width: 25px;height: 25px;" />
           </div>
@@ -123,14 +126,14 @@ const handleArrowClick = (type: 'next' | 'prev') => {
               <n-ellipsis>{{ item.name }}</n-ellipsis>
             </p>
             <p class="mt-2 w-full text-sm opacity-60">
-              <n-ellipsis>{{ formateSongsAuthor(item.song.artists) }}</n-ellipsis>
+              <n-ellipsis>{{ item.formatAuthor }}</n-ellipsis>
             </p>
           </div>
         </div>
       </n-grid-item>
     </n-grid>
     <p class="py-4 text-xl">
-      推荐MV
+      最新MV
     </p>
     <MvListSkeleton v-if="MVIsLoading" :count="4" />
     <mv-list v-else :list="MVList" />

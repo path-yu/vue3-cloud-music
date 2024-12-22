@@ -48,6 +48,8 @@ export default defineComponent({
       ? true
       : false);
     const handleLoad = () => {
+      console.log('load success');
+
       isLoading.value = false;
     };
     const handleError = () => {
@@ -94,12 +96,11 @@ export default defineComponent({
           <img
             {...imageProps}
             class={imageClasses}
-            on-load={handleLoad}
+            onload={handleLoad}
             src={props.src}
-            on-error={handleError}
+            onerror={handleError}
             preview-disabled={myPreviewDisabled.value}
             style={{
-
               borderRadius: props.borderRadius
             }} />
           <div
