@@ -18,8 +18,6 @@ export function useBlurLineGradient() {
     if (!lyricTopMaskElement) {
       lyricTopMaskElement = document.querySelector('.top-mask') as HTMLElement;
     }
-    console.log('update');
-    
     // dom 还未在页面显示 可能为0
     let { top: footerEleTop } = lyricFooterMaskELement.getBoundingClientRect();
     let { top: topEleTop } = lyricTopMaskElement.getBoundingClientRect(); 

@@ -48,8 +48,6 @@ export default defineComponent({
       ? true
       : false);
     const handleLoad = () => {
-      console.log('load success');
-
       isLoading.value = false;
     };
     const handleError = () => {

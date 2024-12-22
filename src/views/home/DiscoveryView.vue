@@ -28,7 +28,6 @@ const {
   state: recommendSongList,
   isLoading: recommendSongListIsLoading
 } = useAsyncState(getRecommendSong().then(res => {
-  console.log(mapSongs(res.data.data.dailySongs), 2121);
   return mainStore.mapSongListAddLike(mapSongs(res.data.data.dailySongs)).slice(0, 9);
 }), []);
 const { state: MVList, isLoading: MVIsLoading }

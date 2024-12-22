@@ -110,12 +110,9 @@ watch(
     if (!val.url) {
       requestSongData();
     }
-    console.log(mainStore.currentPlaySong?.id);
 
     // // 读取缓存数据
     getOpusBlobDataByIdUsingIndex(mainStore.currentPlaySong?.id).then((res: AudioIndexedData) => {
-      console.log('result', res);
-
       // 创建一个指向 Blob 数据的临时 URL
       if (res) {
         const url = window.URL.createObjectURL(res.blob);
