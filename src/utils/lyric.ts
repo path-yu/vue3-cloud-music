@@ -17,8 +17,6 @@ function paseMetaData(lyric: string) {
         t: time,
         c: JSON.parse(contentJson)
       };
-      console.log(contentJson);
-      
       if (contentJson) {
         metadata.push(metaItem);
       }
@@ -33,8 +31,6 @@ export function parseLyric(lrc: string, yrcLyric?: string): LyricItem[] {
   let lrcObj: LyricItem[] = [];
   let yrcLyricResult: string | any[] = [];
   const metadata = paseMetaData(yrcLyric ? yrcLyric : lrc);
-  console.log(metadata);
-
   let metaResult = metadata.map(item => {
     const { t, c } = item;
     let content: string = '';

@@ -2,10 +2,9 @@
 
 // 打开或创建 IndexedDB 数据库
 let request = indexedDB.open('audioDB', 1);
-const baseUrl = `https://musicapi-flax.vercel.app`;
 const baseURL = 'https://unpkg.com/@ffmpeg/core-mt@0.12.6/dist/esm'
 import { FFmpeg } from '@ffmpeg/ffmpeg'
-import type { LogEvent } from '@ffmpeg/ffmpeg/dist/esm/types'
+
 import { fetchFile, toBlobURL } from '@ffmpeg/util'
 const ffmpeg = new FFmpeg();
 // 保存当前需要操作的回调函数
@@ -13,7 +12,7 @@ let currentResolve: () => void;
 // 是否初始化
 let isInit = false;
 
-ffmpeg.on('log', ({ message: msg }: LogEvent) => {
+ffmpeg.on('log', ({ message: msg }: { message: string }) => {
   console.log('ffmpeg-message:' + msg);
 })
 ffmpeg.on('progress', (e) => {
@@ -58,8 +57,7 @@ export async function saveSong(data: { id: number, name: string, url: string }) 
   callback(data)
 }
 async function callback(data: { id: number, name: string, url: string }) {
- const resultFile =  await ffmpeg.writeFile(`${data.name}.mp3`, await fetchFile(data.url));
- console.log(resultFile);
+ await ffmpeg.writeFile(`${data.name}.mp3`, await fetchFile(data.url));
   await ffmpeg.exec(['-i', `${data.name}.mp3`,'-strict','-2', '-c:a', 'opus', '-b:a', '48k', `${data.name}.opus`])
   const result = await ffmpeg.readFile(`${data.name}.opus`) as Uint8Array;
   storeOpusBlobData({

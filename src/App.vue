@@ -2,11 +2,7 @@
 import LayOut from '@/components/Layout/Layout.vue';
 import { useMainStore } from './stores/main';
 const mainStore = useMainStore();
-import { FFmpeg } from '@ffmpeg/ffmpeg'
 import { onMounted } from 'vue';
-import type { LogEvent } from '@ffmpeg/ffmpeg/dist/esm/types'
-import { fetchFile, toBlobURL } from '@ffmpeg/util';
-const ffmpeg = new FFmpeg();
 onMounted(() => {
   mainStore.initDocumentTheme();
   let media = window.matchMedia('(prefers-color-scheme: dark)');
@@ -16,7 +12,6 @@ onMounted(() => {
       : 'light');
   });
 });
-
 </script>
 <template>
   <n-config-provider :theme="mainStore.activeTheme">

@@ -233,6 +233,7 @@ export const useMainStore = defineStore({
         // change origin data
         localStorage.rawPlayList = JSON.stringify(cloneDeep(this.playList));
         this.changePlayIndex(insertIndex, value);
+        this.initPlayListPrevAndNextIndex();
       } else {
         this.changePlayIndex(index, value);
       }
@@ -270,7 +271,7 @@ export const useMainStore = defineStore({
           showMessage && window.$message.info(error.response.data.message);
         } else if (error.request) {
           // 请求已发出，但没有收到响应
-          console.log('请求没有收到响应:', error.request);
+          console.log('请求没有收到响应:', error.request,showMessage);
           showMessage && window.$message.info('获取数据异常');
         } else {
           // 其他错误
@@ -346,6 +347,7 @@ export const useMainStore = defineStore({
         item.nextIndex = nextIndex;
         item.prevIndex = prevIndex;
       });
+      localStorage.playList = JSON.stringify(this.playList);
     },
     shufflePlayList() {
       const currentPlaySong = cloneDeep(this.currentPlaySong);
