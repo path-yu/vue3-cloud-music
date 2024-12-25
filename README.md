@@ -40,7 +40,7 @@
 
 12. [qs](https://www.npmjs.com/package/qs): 安全的用于字符串序列化的库,通常用于处理请求参数.
 
-13. [rgbaster](https://www.npmjs.com/package/rgbaster): 基于Promise的JavaScript库,用于从图像中提取主色.
+13. [colorthief](https://www.npmjs.com/package/colorthief): 可以在在浏览器和node中使用,用于从图像中提取主色.
 
 14. [vue-router4](https://router.vuejs.org/zh/introduction.html): 基于Vue3路由管理库
 
@@ -84,7 +84,7 @@
 
 33. 评论列表,点击评论,回复评论,添加评论.发表评论
 
-34. 基于ffmpeg-wasm和IndexedDB缓存压缩歌曲数据到本地,实现离线播放.
+34. 基于ffmpeg-wasm和IndexedDB缓存压缩歌曲数据到本地,实现离线快速播放.
 
 ## 项目预览
 ![](https://upload-images.jianshu.io/upload_images/24914540-3610a62506e089c7.png?imageMogr2/auto-orient/strip%7CimageView2/2/w/1240)
