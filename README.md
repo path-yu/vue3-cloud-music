@@ -40,7 +40,7 @@
 
 12. [qs](https://www.npmjs.com/package/qs): 安全的用于字符串序列化的库,通常用于处理请求参数.
 
-13. [colorthief](https://www.npmjs.com/package/colorthief): 可以在在浏览器和node中使用,用于从图像中提取主色.
+13. [colorthief](https://www.npmjs.com/package/colorthief): 可以在浏览器和node中使用,用于从图像中提取主色.
 
 14. [vue-router4](https://router.vuejs.org/zh/introduction.html): 基于Vue3路由管理库
 
@@ -62,7 +62,7 @@
 
 22. 歌词底部头部基于当前所在滚动位置背景色添加虚化渐变遮罩.
 
-23. 歌曲播放或暂停时cd旋转或停止旋转.
+23. 歌曲播放或暂停时cd旋转或停止旋转, 高度拟真cd.
 
 24. 兼容夜间模式,骨架屏加载显示.
 
