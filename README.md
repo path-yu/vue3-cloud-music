@@ -1,5 +1,5 @@
 # cloud-music
-
+[<img src="https://api.gitsponsors.com/api/badge/img?id=474968846" height="20">](https://api.gitsponsors.com/api/badge/link?p=R6LRsgoOIq630LfWtT4GRLk17gpKFbF+s6a6qT6UHHGmIkw+UyKGC+QyYD3F5bjDBNyHxFC/yADUIwaxIkaKGTQmyvagYSx/rqNFedXcrpF7R6brLYBzcheCE83GExcU4QQqJSmj3VV1H1p8NKOPGA==)
 这是一个主要基于Vue3+TypeScript+Vite构建的高仿网易云pc端的音乐流媒体网站.
 
 ### 前言
@@ -134,7 +134,6 @@ pnpm dev
 ```shell
 pnpm build
 ```
-[<img src="https://api.gitsponsors.com/api/badge/img?id=474968846" height="20">](https://api.gitsponsors.com/api/badge/link?p=R6LRsgoOIq630LfWtT4GRLk17gpKFbF+s6a6qT6UHHGmIkw+UyKGC+QyYD3F5bjDBNyHxFC/yADUIwaxIkaKGTQmyvagYSx/rqNFedXcrpF7R6brLYBzcheCE83GExcU4QQqJSmj3VV1H1p8NKOPGA==)
 
 ### 预览
 
