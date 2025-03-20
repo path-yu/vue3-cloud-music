@@ -18,7 +18,7 @@ const themeVars = useThemeVars();
 const currentPlayLine = ref(0);
 const eleScrollTopMap = new Map();// 歌词元素对应的scrollTop 集合
 const selectLyricLine = ref<{ time: number; index: number } | null>();// 当前滚动选择的歌词
-const showSelectLyric = ref(true);
+const showSelectLyric = ref(false);
 const lyricContainer = ref<HTMLDivElement>();
 const scrollBarRef = ref<{ scrollTo: (data: { left?: number, top?: number, behavior: string }) => void }>();
 const scrollContainerRef = ref();
@@ -34,16 +34,24 @@ const activeLyricStyle = ref({
   fontSize: '16px'
 } as CSSProperties);
 
-
-let lyricChildrenValueList: { offsetTop: number, index: number, time: number }[] = [];
-const gapHeight = computed(() => {
-  return mainStore.currentPlaySong?.tlyric ? 175 : 140
-});
-
 let lyricContainerEle: null | HTMLDivElement = null;
 let currentScrollTop = 0;
 let lyricItemHeight = 35;
+let lyricChildrenValueList: { offsetTop: number, index: number, time: number }[] = [];
+const hasTlyric = computed(() => {
+  return mainStore.currentPlaySong?.tlyric !== '' && mainStore.currentPlaySong?.tlyric !== undefined;
+});
+const gapHeight = computed(() => {
+  return hasTlyric.value ? 175 : 140
+});
+const containerHeight = computed(() => {
+  return hasTlyric.value
+    ? 350 : 315;
+});
 
+const showLyricLineTop = computed(() => {
+  return hasTlyric.value ? (containerHeight.value - gapHeight.value) - lyricItemHeight / 2 : gapHeight.value - lyricItemHeight;
+});
 const lyricData = computed(() => {
   let tlyricData: LyricItem[] | undefined;
   if (mainStore.currentPlaySong?.tlyric) {
@@ -135,7 +143,7 @@ const handleScroll = (event: Event) => {
   let { scrollTop } = target;
   const current = findLyricByScrollTop(scrollTop);
   if (!current) return;
-  
+
   if (!selectLyricLine.value) {
     selectLyricLine.value = current;
   } else {
@@ -201,29 +209,29 @@ const initEleScrollTopMap = () => {
     };
   });
 
-  let currentIndex = 0;
-  let nextIndex = 1;
-  while (currentIndex !== lyricChildrenValueList.length - 1) {
-    const cur = lyricChildrenValueList[currentIndex];
-    const next = lyricChildrenValueList[nextIndex];
-    for (let start = cur.offsetTop; start < next.offsetTop; start++) {
-      eleScrollTopMap.set(start, {
-        index: cur.index,
-        time: cur.time
-      });
-    }
-    if (next) {
-      currentIndex++;
-      nextIndex++;
-    }
-    if (currentIndex === lyricChildrenValueList.length - 1) {
-      let offsetTop = mainStore.currentPlaySong?.tlyric ? next.offsetTop + lyricItemHeight : next.offsetTop;
-      eleScrollTopMap.set(offsetTop, {
-        index: next.index,
-        time: next.time
-      });
-    }
-  }
+  // let currentIndex = 0;
+  // let nextIndex = 1;
+  // while (currentIndex !== lyricChildrenValueList.length - 1) {
+  //   const cur = lyricChildrenValueList[currentIndex];
+  //   const next = lyricChildrenValueList[nextIndex];
+  //   for (let start = cur.offsetTop; start < next.offsetTop; start++) {
+  //     eleScrollTopMap.set(start, {
+  //       index: cur.index,
+  //       time: cur.time
+  //     });
+  //   }
+  //   if (next) {
+  //     currentIndex++;
+  //     nextIndex++;
+  //   }
+  //   if (currentIndex === lyricChildrenValueList.length - 1) {
+  //     let offsetTop = mainStore.currentPlaySong?.tlyric ? next.offsetTop + lyricItemHeight : next.offsetTop;
+  //     eleScrollTopMap.set(offsetTop, {
+  //       index: next.index,
+  //       time: next.time
+  //     });
+  //   }
+  // }
 };
 // 二分查找辅助函数
 const findLyricByScrollTop = (scrollTop: number) => {
@@ -385,8 +393,7 @@ onMounted(() => {
 
 <template>
   <div ref="scrollContainerRef" class="relative mt-10 scrollContainer"> <n-scrollbar ref="scrollBarRef"
-      :style="{ height: mainStore.currentPlaySong?.tlyric ? '350px' : '315px', width: '550px' }"
-      :on-scroll="handleScroll" @wheel="handleWheel">
+      :style="{ height: containerHeight + 'px', width: '550px' }" :on-scroll="handleScroll" @wheel="handleWheel">
       <div :style="{ height: gapHeight + 'px' }" />
       <div v-if="!mainStore.currentPlaySong?.isNotLyric" ref="lyricContainer">
         <div v-for="(item, index) in lyricData" :id="'time' + item.time" :key="index" class="text-center lyric-item"
@@ -408,8 +415,7 @@ onMounted(() => {
       <div :style="{ height: gapHeight + 'px' }" />
     </n-scrollbar>
     <!-- 歌词滚动选择 -->
-    <div v-show="showSelectLyric" class="selectLyricContainer"
-      :style="{ top: mainStore.currentPlaySong?.tlyric ? '157.5px' : '140px' }">
+    <div v-show="showSelectLyric" class="selectLyricContainer" :style="{ top: showLyricLineTop + 'px' }">
       <div class="flex items-center">
         <n-time v-if="selectLyricLine" format="mm:ss" :time="selectLyricLine.time" />
         <div class="ml-2  bg-gradient-to-r from-gray-300 dark:from-gray-500 line" />
