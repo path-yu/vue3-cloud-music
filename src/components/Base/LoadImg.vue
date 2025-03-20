@@ -99,7 +99,10 @@ export default defineComponent({
             onerror={handleError}
             preview-disabled={myPreviewDisabled.value}
             style={{
-              borderRadius: props.borderRadius
+              borderRadius: props.borderRadius,
+              opacity: isLoading.value
+                ? 0
+                : 1,
             }} />
           <div
             v-show={isLoading.value}

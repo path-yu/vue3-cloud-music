@@ -134,8 +134,8 @@ const handleScroll = (event: Event) => {
   const target = event.target as HTMLElement;
   triggerScroll = true;
   let { scrollTop } = target;
-  let current = eleScrollTopMap.get(scrollTop);
-
+  let current = eleScrollTopMap.get(Math.round(scrollTop));
+  
   if (!selectLyricLine.value) {
     selectLyricLine.value = current;
   } else {
@@ -180,7 +180,7 @@ const handleWheel = (event: WheelEvent) => {
   } else {
     scrollTop = lyricContainerEle!.scrollTop - moveDistance;
   }
-  let current = eleScrollTopMap.get(scrollTop);
+  let current = eleScrollTopMap.get(Math.round(scrollTop));
   if (!current) {
     return;
   }
