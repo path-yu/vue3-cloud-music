@@ -7,7 +7,6 @@ import { useMainStore } from '@/stores/main';
 import { ref } from 'vue';
 import { parseLyric, parseRangeLyric, type LyricItem, parseBaseLyric, type RangeLyricItem } from '@/utils/lyric';
 import { useElementHover } from '@vueuse/core';
-import { isEven } from '@/utils';
 let timeId: any;// 回退滚动位置延时器
 let clearTriggerScrollTimer: any;// 设置滚动是否触发延时器
 let triggerScroll = true;
@@ -19,7 +18,7 @@ const themeVars = useThemeVars();
 const currentPlayLine = ref(0);
 const eleScrollTopMap = new Map();// 歌词元素对应的scrollTop 集合
 const selectLyricLine = ref<{ time: number; index: number } | null>();// 当前滚动选择的歌词
-const showSelectLyric = ref(false);
+const showSelectLyric = ref(true);
 const lyricContainer = ref<HTMLDivElement>();
 const scrollBarRef = ref<{ scrollTo: (data: { left?: number, top?: number, behavior: string }) => void }>();
 const scrollContainerRef = ref();
@@ -134,7 +133,8 @@ const handleScroll = (event: Event) => {
   const target = event.target as HTMLElement;
   triggerScroll = true;
   let { scrollTop } = target;
-  let current = eleScrollTopMap.get(Math.round(scrollTop));
+  const current = findLyricByScrollTop(scrollTop);
+  if (!current) return;
   
   if (!selectLyricLine.value) {
     selectLyricLine.value = current;
@@ -180,10 +180,8 @@ const handleWheel = (event: WheelEvent) => {
   } else {
     scrollTop = lyricContainerEle!.scrollTop - moveDistance;
   }
-  let current = eleScrollTopMap.get(Math.round(scrollTop));
-  if (!current) {
-    return;
-  }
+  const current = findLyricByScrollTop(scrollTop);
+  if (!current) return;
   lyricContainerEle!.scrollTop = scrollTop;
   clearTimeout(clearTriggerScrollTimer);
   clearTriggerScrollTimer = setTimeout(() => {
@@ -226,6 +224,32 @@ const initEleScrollTopMap = () => {
       });
     }
   }
+};
+// 二分查找辅助函数
+const findLyricByScrollTop = (scrollTop: number) => {
+  if (!lyricChildrenValueList.length) return null;
+
+  // 二分查找当前 scrollTop 对应的歌词行
+  let left = 0;
+  let right = lyricChildrenValueList.length - 1;
+
+  while (left <= right) {
+    const mid = Math.floor((left + right) / 2);
+    const midItem = lyricChildrenValueList[mid];
+    const nextItem = lyricChildrenValueList[mid + 1] || { offsetTop: Infinity };
+
+    if (scrollTop >= midItem.offsetTop && scrollTop < nextItem.offsetTop) {
+      return { index: midItem.index, time: midItem.time };
+    } else if (scrollTop < midItem.offsetTop) {
+      right = mid - 1;
+    } else {
+      left = mid + 1;
+    }
+  }
+
+  // 如果没有精确匹配，返回最接近的行（通常是最后一行）
+  const lastItem = lyricChildrenValueList[lyricChildrenValueList.length - 1];
+  return scrollTop >= lastItem.offsetTop ? { index: lastItem.index, time: lastItem.time } : null;
 };
 const setScroll = (time: number, listen = false) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
