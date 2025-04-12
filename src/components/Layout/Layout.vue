@@ -4,7 +4,7 @@ import LayoutLeftMenu from '@/components/Layout/components/LayoutLeftMenu.vue';
 import { useMainStore } from '@/stores/main';
 import { useMessage } from 'naive-ui';
 import { useRoute } from 'vue-router';
-import FooterPlayer from '../Player/FooterPlayer.vue';
+import FooterPlayer from '@/components/Player/FooterPlayer.vue';
 window.$message = useMessage();
 const route = useRoute();
 const mainStore = useMainStore();

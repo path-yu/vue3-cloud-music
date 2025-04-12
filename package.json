@@ -63,6 +63,7 @@
     "vitest": "^2.1.5",
     "vue-tsc": "^2.1.10"
   },
+  "type":"module",
   "repository": {
     "type": "git",
     "url": "https://github.com/path-yu/vue3-cloud-music"
