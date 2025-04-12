@@ -149,7 +149,6 @@ export function parseLyricWithWords(input: string): { lineStartTime: number, lin
   const wordTimeRegex = /\((\d+),(\d+),\d+\)([^\(\)\n]+)/g;
 
   let lineMatch;
-  let lastIndex = 0;
   let index = 0;
   // 使用 lineRegex 匹配每一行的开始和持续时间
   while ((lineMatch = lineRegex.exec(input)) !== null) {
@@ -186,8 +185,6 @@ export function parseLyricWithWords(input: string): { lineStartTime: number, lin
       content: words.map(item => item.content).join('') // 拼接该行的文字内容
     });
     index++;
-    // 更新 lineRegex 的 lastIndex，用于匹配下一个行
-    lastIndex = lineRegex.lastIndex;
   }
 
   return result;
