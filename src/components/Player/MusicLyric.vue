@@ -50,8 +50,9 @@ const containerHeight = computed(() => {
 });
 
 const showLyricLineTop = computed(() => {
-  return hasTlyric.value ? (containerHeight.value - gapHeight.value) - lyricItemHeight / 2 : gapHeight.value - lyricItemHeight;
+  return hasTlyric.value ? (containerHeight.value - gapHeight.value) - lyricItemHeight / 2 : gapHeight.value;
 });
+
 const lyricData = computed(() => {
   let tlyricData: LyricItem[] | undefined;
   if (mainStore.currentPlaySong?.tlyric) {
@@ -182,15 +183,18 @@ const handleWheel = (event: WheelEvent) => {
   triggerScroll = true;
   // 移动距离
   let moveDistance = mainStore.currentPlaySong?.tlyric ? lyricItemHeight * 2 : lyricItemHeight;
+
   let scrollTop: number = 0;
+
   if (event.deltaY > 0) {
     scrollTop = lyricContainerEle!.scrollTop + moveDistance;
   } else {
     scrollTop = lyricContainerEle!.scrollTop - moveDistance;
   }
   const current = findLyricByScrollTop(scrollTop);
+
   if (!current) return;
-  lyricContainerEle!.scrollTop = scrollTop;
+  lyricContainerEle!.scrollTop = Math.floor(scrollTop);
   clearTimeout(clearTriggerScrollTimer);
   clearTriggerScrollTimer = setTimeout(() => {
     triggerScroll = false;
@@ -415,9 +419,10 @@ onMounted(() => {
       <div :style="{ height: gapHeight + 'px' }" />
     </n-scrollbar>
     <!-- 歌词滚动选择 -->
-    <div v-show="showSelectLyric" class="selectLyricContainer" :style="{ top: showLyricLineTop + 'px' }">
+    <div v-show="showSelectLyric" class="selectLyricContainer"
+      :style="{ top: showLyricLineTop + 'px', height: lyricItemHeight + 'px' }">
       <div class="flex items-center">
-        <n-time v-if="selectLyricLine" format="mm:ss" :time="selectLyricLine.time" />
+        <n-time v-if="selectLyricLine" format="mm:ss" :time="selectLyricLine?.time" />
         <div class="ml-2  bg-gradient-to-r from-gray-300 dark:from-gray-500 line" />
       </div>
 
