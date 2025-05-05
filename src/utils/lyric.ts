@@ -30,7 +30,8 @@ export function parseLyric(lrc: string, yrcLyric?: string): LyricItem[] {
 
   let lrcObj: LyricItem[] = [];
   let yrcLyricResult: string | any[] = [];
-  const metadata = paseMetaData(yrcLyric ? yrcLyric : lrc);
+  const metadata = paseMetaData(lrc);
+  
   let metaResult = metadata.map(item => {
     const { t, c } = item;
     let content: string = '';

@@ -24,6 +24,7 @@ const scrollBarRef = ref<{ scrollTo: (data: { left?: number, top?: number, behav
 const scrollContainerRef = ref();
 const footerMaskBackground = ref<CSSProperties>({});
 const topMaskBackground = ref<CSSProperties>({});
+
 const isHover = useElementHover(scrollContainerRef);
 let audioEle: HTMLAudioElement | null = null;
 let animatingId: number;
@@ -37,7 +38,7 @@ const activeLyricStyle = ref({
 let lyricContainerEle: null | HTMLDivElement = null;
 let currentScrollTop = 0;
 let lyricItemHeight = 35;
-let lyricChildrenValueList: { offsetTop: number, index: number, time: number }[] = [];
+let lyricChildrenValueList: { offsetTop: number, index: number, time: number, height: number }[] = [];
 const hasTlyric = computed(() => {
   return mainStore.currentPlaySong?.tlyric !== '' && mainStore.currentPlaySong?.tlyric !== undefined;
 });
@@ -48,7 +49,6 @@ const containerHeight = computed(() => {
   return hasTlyric.value
     ? 350 : 315;
 });
-
 const showLyricLineTop = computed(() => {
   return hasTlyric.value ? (containerHeight.value - gapHeight.value) - lyricItemHeight / 2 : gapHeight.value;
 });
@@ -81,7 +81,6 @@ const lyricData = computed(() => {
 const rangeLyricList = computed(() => {
   return parseRangeLyric(toRaw(lyricData.value));
 });
-// mainStore.currentPlaySong?.yrcLyric && lyricData.value[index].words ? {} : 
 const currentLyricStyle = computed(() => {
   return (index: number) => {
     let isCurrent = index === currentPlayLine.value;
@@ -143,15 +142,11 @@ const handleScroll = (event: Event) => {
   triggerScroll = true;
   let { scrollTop } = target;
   const current = findLyricByScrollTop(scrollTop);
+
   if (!current) return;
 
-  if (!selectLyricLine.value) {
-    selectLyricLine.value = current;
-  } else {
-    if (current && selectLyricLine.value.time !== current.time) {
-      selectLyricLine.value = current;
-    }
-  }
+  selectLyricLine.value = current;
+
   if (!mainStore.currentPlaySong?.isNotLyric) {
     showSelectLyric.value = true;
   }
@@ -180,19 +175,26 @@ const handlePlayIconClick = () => {
 const handleWheel = (event: WheelEvent) => {
   // disabled default scroll 
   event.preventDefault();
+  let deltaY = event.deltaY;
   triggerScroll = true;
-  // 移动距离
-  let moveDistance = mainStore.currentPlaySong?.tlyric ? lyricItemHeight * 2 : lyricItemHeight;
+  let target;
+  if (selectLyricLineIndex == 0 && deltaY < 0) return;
+  if (selectLyricLineIndex == lyricChildrenValueList.length - 1 && deltaY > 0) return;
+  if (deltaY > 0) {
+    target = lyricChildrenValueList[selectLyricLineIndex + 1];
+  } else {
+    target = lyricChildrenValueList[selectLyricLineIndex - 1];
+  }
+  let moveDistance = target.height;
 
   let scrollTop: number = 0;
 
-  if (event.deltaY > 0) {
+  if (deltaY > 0) {
     scrollTop = lyricContainerEle!.scrollTop + moveDistance;
   } else {
     scrollTop = lyricContainerEle!.scrollTop - moveDistance;
   }
   const current = findLyricByScrollTop(scrollTop);
-
   if (!current) return;
   lyricContainerEle!.scrollTop = Math.floor(scrollTop);
   clearTimeout(clearTriggerScrollTimer);
@@ -201,41 +203,18 @@ const handleWheel = (event: WheelEvent) => {
   }, 500);
 };
 const initEleScrollTopMap = () => {
-  if (!lyricContainer.value) return;
-  if (!lyricData.value.length) return;
+  if (!lyricContainer.value || !lyricData.value.length) return;
   eleScrollTopMap.clear();
   let children = Array.from(lyricContainer.value.children) as HTMLElement[];
   lyricChildrenValueList = children.map((child, index) => {
     return {
       offsetTop: child.offsetTop - gapHeight.value,
       index,
-      time: +child.getAttribute('data-time')!
+      time: +child.getAttribute('data-time')!,
+      height: child.offsetHeight,
+      middleTop: gapHeight.value + child.offsetHeight / 2 - lyricItemHeight / 2
     };
   });
-
-  // let currentIndex = 0;
-  // let nextIndex = 1;
-  // while (currentIndex !== lyricChildrenValueList.length - 1) {
-  //   const cur = lyricChildrenValueList[currentIndex];
-  //   const next = lyricChildrenValueList[nextIndex];
-  //   for (let start = cur.offsetTop; start < next.offsetTop; start++) {
-  //     eleScrollTopMap.set(start, {
-  //       index: cur.index,
-  //       time: cur.time
-  //     });
-  //   }
-  //   if (next) {
-  //     currentIndex++;
-  //     nextIndex++;
-  //   }
-  //   if (currentIndex === lyricChildrenValueList.length - 1) {
-  //     let offsetTop = mainStore.currentPlaySong?.tlyric ? next.offsetTop + lyricItemHeight : next.offsetTop;
-  //     eleScrollTopMap.set(offsetTop, {
-  //       index: next.index,
-  //       time: next.time
-  //     });
-  //   }
-  // }
 };
 // 二分查找辅助函数
 const findLyricByScrollTop = (scrollTop: number) => {
@@ -418,10 +397,11 @@ onMounted(() => {
       </div>
       <div :style="{ height: gapHeight + 'px' }" />
     </n-scrollbar>
-    <!-- 歌词滚动选择 -->
+    <!-- 歌词滚动选择  -->
     <div v-show="showSelectLyric" class="selectLyricContainer"
       :style="{ top: showLyricLineTop + 'px', height: lyricItemHeight + 'px' }">
       <div class="flex items-center">
+        <!-- -->
         <n-time v-if="selectLyricLine" format="mm:ss" :time="selectLyricLine?.time" />
         <div class="ml-2  bg-gradient-to-r from-gray-300 dark:from-gray-500 line" />
       </div>

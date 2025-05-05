@@ -147,7 +147,8 @@ export const useMainStore = defineStore({
       localStorage.playList = JSON.stringify(this.playList);
     },
     // 切换播放音乐
-    async changePlayIndex(index: number, target?: any) {
+    async changePlayIndex(index: number) {
+      let target = this.playList[index];
       // 无音源 跳过
       if (target['fee'] === 0) return;
       

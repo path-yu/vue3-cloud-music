@@ -241,11 +241,12 @@ const handleWaiting = () => {
 const handlePlaying = () => {
   mainStore.playWaiting = false;
 };
-const MAX_RETRY_COUNT = 3; // 最大重试次数 
+const MAX_RETRY_COUNT = 1; // 最大重试次数 
 let retryCount = 0; // 当前重试次数
 const handleError = () => {
   // 判断url 是否为blob格式 blob 
   if (mainStore.currentPlaySong.url?.startsWith('blob:')) {
+    console.log(mainStore.currentPlaySong.url);
     // 读取缓存数据
     getOpusBlobDataByIdUsingIndex(mainStore.currentPlaySong?.id).then((res: AudioIndexedData) => {
       // 创建一个指向 Blob 数据的临时 URL
@@ -253,6 +254,7 @@ const handleError = () => {
         const url = window.URL.createObjectURL(res.blob);
         if (res.id === mainStore.currentPlaySong.id) {
           mainStore.currentPlaySong.url = url;
+
         }
       } else {
         requestSongData();
@@ -441,7 +443,7 @@ onUnmounted(() => {
         </div>
         <div class="flex items-center mt-1">
           <span v-show="isShow" class="mr-2 text-xs opacity-50">{{ currentPlayTime
-            }}</span>
+          }}</span>
           <div class="flex flex-1 items-center" :style="{ width: progressWidth + 'px' }">
             <slider-bar v-model="percentage" :load-value="progressValue" @on-done="handleSliderDone"
               @change="handleSliderChange" />
