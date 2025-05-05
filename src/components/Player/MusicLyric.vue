@@ -376,7 +376,7 @@ onMounted(() => {
 
 <template>
   <div ref="scrollContainerRef" class="relative mt-10 scrollContainer"> <n-scrollbar ref="scrollBarRef"
-      :style="{ height: containerHeight + 'px', width: '550px' }" :on-scroll="handleScroll" @wheel="handleWheel">
+      :style="{ height: containerHeight + 'px', }" :on-scroll="handleScroll" @wheel="handleWheel">
       <div :style="{ height: gapHeight + 'px' }" />
       <div v-if="!mainStore.currentPlaySong?.isNotLyric" ref="lyricContainer">
         <div v-for="(item, index) in lyricData" :id="'time' + item.time" :key="index" class="text-center lyric-item"

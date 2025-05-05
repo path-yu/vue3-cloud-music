@@ -7,7 +7,7 @@ module.exports = {
         'secondBack': '#202020',
         'white': 'rgba(255, 255, 255, 0.82);'
       },
-      screens: { 'sm': { 'min': '350px', 'max': '767px' } },
+      screens: { 'sm': { 'min': '350px', 'max': '767px' } , 'max': '1900px','3xl':'1750px'},
       height: { 'main': 'calc(100vh - 3.5rem)' },
       transitionProperty: {
         'height': 'height',

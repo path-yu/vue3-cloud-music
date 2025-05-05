@@ -1,9 +1,9 @@
 <script setup lang="ts">
-import { ref, type Ref, watch, reactive, nextTick, type CSSProperties, onMounted } from 'vue';
+import { ref, type Ref, watch, reactive, nextTick, type CSSProperties, onMounted, onBeforeUnmount } from 'vue';
 // @ts-ignore
 // import analyze from 'rgbaster';
 import { BackToTop, Edit } from '@vicons/carbon';
-import { formateSongsAuthor, getArrLast } from '@/utils';
+import { debounce, formateSongsAuthor, getArrLast, throttle } from '@/utils';
 import { KeyboardArrowDownOutlined, FullscreenOutlined, FullscreenExitOutlined } from '@vicons/material';
 import color from 'color';
 import { useMainStore } from '@/stores/main';
@@ -229,15 +229,25 @@ watch(pageParams, () => {
   }
 });
 onMounted(() => {
-  document.addEventListener("fullscreenchange", () => {
-    fullScreen.value = !!document.fullscreenElement;
-    setTimeout(() => {
-      fillBackground(true);
-    });
-  });
+  document.addEventListener("fullscreenchange", handleFullscreenchange);
 
+  window.addEventListener('resize', handleResize);
 })
-
+onBeforeUnmount(() => {
+  window.removeEventListener('resize', handleResize);
+  document.removeEventListener("fullscreenchange", handleFullscreenchange);
+},)
+const handleResize = throttle(() => {
+  if (mainStore.showMusicDetail) {
+    fillBackground(true);
+  }
+}, 300);
+const handleFullscreenchange = () => {
+  fullScreen.value = !!document.fullscreenElement;
+  setTimeout(() => {
+    fillBackground(true);
+  });
+};
 </script>
 
 <template>
@@ -259,7 +269,7 @@ onMounted(() => {
           <layout-header-search />
         </div>
         <transition v-show="showTopLyric" name="slide">
-          <div class="ml-20 text-left" style="width:550px">
+          <div class="ml-20 text-left" style="width:520px">
             <p>
               {{ mainStore.currentPlaySong.name }}
             </p>
@@ -269,108 +279,113 @@ onMounted(() => {
           </div>
         </transition>
       </div>
-      <div ref="scrollContainerRef" class="flex px-10 pt-5 detail-content" @scroll="handleScroll">
-        <rotate-cd />
-        <div class="ml-10">
-          <div style="width:550px">
-            <div class="relative">
-              <div class=" text-center">
-                <div ref="titleRef" style="display:inline-block">
-                  <span class="text-3xl"> {{ mainStore.currentPlaySong.name }}</span>
-                  <span class="tex-base opacity-50 pl-1" v-if="mainStore.currentPlaySong.tns">( {{
-                    mainStore.currentPlaySong.tns[0]
-                  }} )</span>
-                </div>
-                <div class="absolute" :style="tagPositionStyle">
-                  <n-tag v-if="mainStore.currentPlaySong.mv !== 0 && mainStore.currentPlaySong.mvid !== 0" size="small"
-                    :color="tagColor" @click="handleMvTagClick">
-                    MV
-                  </n-tag>
-                </div>
-              </div>
-            </div>
-            <p v-if="mainStore.currentPlaySong.alia" class="mt-2 text-sm text-center opacity-50">
-              {{ mainStore.currentPlaySong.alia[0] }}
-            </p>
-            <p class="mt-2 text-sm text-center opacity-50">
-              {{ mainStore.currentPlaySong.al.name }}
-              <span>-</span>
-              {{ formateSongsAuthor(mainStore.currentPlaySong.ar || []) }}
-            </p>
-          </div>
-          <div class="flex">
-            <div>
-              <music-lyric />
-              <!-- 评论-->
-              <div style="width:550px;height:300px;" class="mt-5">
-                <n-spin :show="commentLoading" description="加载中">
-                  <div v-show="commentLoading" class="h-80" />
-                  <comment-list :type="0" :comment-total-num="musicComment.total"
-                    :resource-id="mainStore.currentPlaySong.id" title="精彩评论" :list="musicComment.hotComments || []"
-                    @update-comment-list="updateCommentList"
-                    @update-comment-liked="(data: any) => updateCommentLiked(data, true)" />
-                  <!-- 最新评论 -->
-                  <comment-list :resource-id="mainStore.currentPlaySong.id" :type="0"
-                    :comment-total-num="musicComment.total" title="最新评论" :list="musicComment.comments || []"
-                    @update-comment-list="updateCommentList"
-                    @update-comment-liked="(data: any) => updateCommentLiked(data, false)" />
-                </n-spin>
-                <p v-if="!musicComment.comments?.length && !commentLoading" class="text-center opacity-50">
-                  还没有评论, 快来抢沙发~
-                </p>
-                <div v-if="pageParams.pageCount > 1 && musicComment.comments" class="flex justify-end mt-6">
-                  <n-pagination v-model:page="pageParams.page" v-model:page-size="pageParams.pageSize"
-                    :page-count="pageParams.pageCount" show-size-picker :page-sizes="[10, 20, 30, 40, 50]" />
-                </div>
-                <div class="h-20" />
-              </div>
-            </div>
-            <n-scrollbar style="max-height: 350px;padding-right:20px;" class="pt-10 ml-20">
-              <h3 v-if="similarPlaylist.length" class="m-0 text-left">
-                包含这首歌的歌单
-              </h3>
-              <n-divider v-if="similarPlaylist.length" />
-              <n-spin :show="fetchSimiPlayListLoading" size="small">
-                <div v-show="fetchSimiPlayListLoading" class="w-80 h-32" />
-                <!-- 相似歌单推荐 -->
-                <div v-for="item in similarPlaylist" v-show="!fetchSimiPlayListLoading" :key="item.id"
-                  class="flex items-center p-2 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
-                  @click="handleSimiPlayListItem(item.id)">
-                  <img crossorigin="anonymous" width="45" height="45" class="rounded-md" :src="item.coverImgUrl" />
-                  <div class="ml-4">
-                    <p class="w-60 text-sm text-left truncate">
-                      {{ item.name }}
-                    </p>
-                    <p class="mt-2 w-60 text-sm text-left truncate">
-                      <span class="opacity-50">by</span> <span class="opacity-80"> {{ item.creator.nickname }}</span>
-                    </p>
+      <div ref="scrollContainerRef" class="px-10 pt-5 detail-content" @scroll="handleScroll">
+        <div class="flex ">
+          <rotate-cd />
+          <div class="max:ml-10 2xl:ml-3">
+            <div style="width:520px">
+              <div class="relative">
+                <div class=" text-center">
+                  <div ref="titleRef" style="display:inline-block">
+                    <span class="text-3xl"> {{ mainStore.currentPlaySong.name }}</span>
+                    <span class="tex-base opacity-50 pl-1" v-if="mainStore.currentPlaySong.tns">( {{
+                      mainStore.currentPlaySong.tns[0]
+                    }} )</span>
+                  </div>
+                  <div class="absolute" :style="tagPositionStyle">
+                    <n-tag v-if="mainStore.currentPlaySong.mv !== 0 && mainStore.currentPlaySong.mvid !== 0"
+                      size="small" :color="tagColor" @click="handleMvTagClick">
+                      MV
+                    </n-tag>
                   </div>
                 </div>
-              </n-spin>
-              <div class="mt-2">
-                <h3 v-if="similarMusicList.length" class="m-0 text-left">
-                  喜欢这首歌的也喜欢听
+              </div>
+              <p v-if="mainStore.currentPlaySong.alia" class="mt-2 text-sm text-center opacity-50">
+                {{ mainStore.currentPlaySong.alia[0] }}
+              </p>
+              <p class="mt-2 text-sm text-center opacity-50">
+                {{ mainStore.currentPlaySong.al.name }}
+                <span>-</span>
+                {{ formateSongsAuthor(mainStore.currentPlaySong.ar || []) }}
+              </p>
+            </div>
+            <div class="flex">
+              <div>
+                <music-lyric />
+
+              </div>
+              <n-scrollbar style="max-height: 350px;" class="pt-10 ml-10 hidden md:block 3xl:ml-0">
+                <h3 v-if="similarPlaylist.length" class="m-0 text-left">
+                  包含这首歌的歌单
                 </h3>
-                <n-divider v-if="similarMusicList.length" />
-              </div>
-              <!-- 相似歌曲 -->
-              <n-spin :show="fetchSimilarSongIsLoading">
-                <div v-show="fetchSimilarSongIsLoading" class="w-80 h-40" />
-                <div v-for="item in similarMusicList" v-show="!fetchSimilarSongIsLoading" :key="item.id"
-                  class="flex items-center p-1 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
-                  @click="mainStore.insertPlay(item)">
-                  <img crossorigin="anonymous" width="45" height="45" class="rounded-md" :src="item.album.picUrl" />
-                  <div class="ml-4">
-                    <p class="w-60 text-sm text-left truncate">
-                      {{ item.name }}
-                    </p>
-                    <p class="mt-2 w-60 text-sm text-left truncate opacity-50">
-                      {{ formateSongsAuthor(item.artists) }}
-                    </p>
+                <n-divider v-if="similarPlaylist.length" />
+                <n-spin :show="fetchSimiPlayListLoading" size="small">
+                  <div v-show="fetchSimiPlayListLoading" class="w-80 h-32" />
+                  <!-- 相似歌单推荐 -->
+                  <div v-for="item in similarPlaylist" v-show="!fetchSimiPlayListLoading" :key="item.id"
+                    class="flex items-center p-2 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
+                    @click="handleSimiPlayListItem(item.id)">
+                    <img crossorigin="anonymous" width="45" height="45" class="rounded-md" :src="item.coverImgUrl" />
+                    <div class="ml-4">
+                      <p class="w-60 text-sm text-left truncate">
+                        {{ item.name }}
+                      </p>
+                      <p class="mt-2 w-60 text-sm text-left truncate">
+                        <span class="opacity-50">by</span> <span class="opacity-80"> {{ item.creator.nickname }}</span>
+                      </p>
+                    </div>
                   </div>
+                </n-spin>
+                <div class="mt-2">
+                  <h3 v-if="similarMusicList.length" class="m-0 text-left">
+                    喜欢这首歌的也喜欢听
+                  </h3>
+                  <n-divider v-if="similarMusicList.length" />
                 </div>
-              </n-spin>
-            </n-scrollbar>
+                <!-- 相似歌曲 -->
+                <n-spin :show="fetchSimilarSongIsLoading">
+                  <div v-show="fetchSimilarSongIsLoading" class="w-80 h-40" />
+                  <div v-for="item in similarMusicList" v-show="!fetchSimilarSongIsLoading" :key="item.id"
+                    class="flex items-center p-1 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
+                    @click="mainStore.insertPlay(item)">
+                    <img crossorigin="anonymous" width="45" height="45" class="rounded-md" :src="item.album.picUrl" />
+                    <div class="ml-4">
+                      <p class="w-60 text-sm text-left truncate">
+                        {{ item.name }}
+                      </p>
+                      <p class="mt-2 w-60 text-sm text-left truncate opacity-50">
+                        {{ formateSongsAuthor(item.artists) }}
+                      </p>
+                    </div>
+                  </div>
+                </n-spin>
+              </n-scrollbar>
+            </div>
+          </div>
+        </div>
+        <div class="flex justify-center">
+          <!-- 评论-->
+          <div style="width:520px;height:300px;" class="mt-5">
+            <n-spin :show="commentLoading" description="加载中">
+              <div v-show="commentLoading" class="h-80" />
+              <comment-list :type="0" :comment-total-num="musicComment.total"
+                :resource-id="mainStore.currentPlaySong.id" title="精彩评论" :list="musicComment.hotComments || []"
+                @update-comment-list="updateCommentList"
+                @update-comment-liked="(data: any) => updateCommentLiked(data, true)" />
+              <!-- 最新评论 -->
+              <comment-list :resource-id="mainStore.currentPlaySong.id" :type="0"
+                :comment-total-num="musicComment.total" title="最新评论" :list="musicComment.comments || []"
+                @update-comment-list="updateCommentList"
+                @update-comment-liked="(data: any) => updateCommentLiked(data, false)" />
+            </n-spin>
+            <p v-if="!musicComment.comments?.length && !commentLoading" class="text-center opacity-50">
+              还没有评论, 快来抢沙发~
+            </p>
+            <div v-if="pageParams.pageCount > 1 && musicComment.comments" class="flex justify-end mt-6">
+              <n-pagination v-model:page="pageParams.page" v-model:page-size="pageParams.pageSize"
+                :page-count="pageParams.pageCount" show-size-picker :page-sizes="[10, 20, 30, 40, 50]" />
+            </div>
+            <div class="h-20" />
           </div>
         </div>
       </div>
@@ -418,6 +433,7 @@ onMounted(() => {
   height: calc(100vh - 68px - 77px);
   box-sizing: border-box;
   overflow-y: scroll;
+  overflow-x: hidden;
 }
 
 .background {

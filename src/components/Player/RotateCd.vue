@@ -41,7 +41,7 @@ const loopSetRotate = (timestamp: number) => {
 </script>
 
 <template>
-  <div class="wrapContainer">
+  <div class="wrapContainer hidden 2xl:block flex-none">
     <div class="playerBarContainer" :style="{ transform: mainStore.playing ? 'rotate(0deg)' : 'rotate(-40deg)' }">
       <img :src="playBar" class="playBar">
       <div class="playBarSupport">
@@ -50,7 +50,7 @@ const loopSetRotate = (timestamp: number) => {
         </div>
       </div>
     </div>
-    <div class="cd" :style="{ background: mainStore.isDark ? 'rgb(34,34,39)' : '#DBDCDA' }">
+    <div class="cd" :style="{ background: mainStore.isDark ? 'rgb(34,34,39)' : '#DBDCDA', zIndex: 666 }">
       <div class="transition-all  blackCenter" :style="{ transform: `rotate(${rotate}deg)` }">
         <div v-for="item in maxCircleLine" :key="item" class="rounded-full circleItem"
           :style="computedCircleStyle(item)" />
