@@ -16,7 +16,6 @@ export function getSingerSong(id: number) {
 export function getLikeList(uid: number) {
   const query = qs.stringify({
     uid,
-    timestamp: Date.now()
   });
   return service.get(`/likelist?${query}`);
 }
@@ -50,7 +49,6 @@ export function getMusicComment(data:{
   before?:string;}) {
   const query = qs.stringify({
     ...data,
-    timestamp:Date.now()
   });
   return service.get('/comment/music?'+query);
 }

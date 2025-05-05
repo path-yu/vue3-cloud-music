@@ -17,7 +17,7 @@ const mainStore = useMainStore();
 const themeVars = useThemeVars();
 const currentPlayLine = ref(0);
 const eleScrollTopMap = new Map();// 歌词元素对应的scrollTop 集合
-const selectLyricLine = ref<{ time: number; index: number } | null>();// 当前滚动选择的歌词
+const selectLyricLine = ref<{ time: number; index: number, middleTop: number } | null>();// 当前滚动选择的歌词
 const showSelectLyric = ref(false);
 const lyricContainer = ref<HTMLDivElement>();
 const scrollBarRef = ref<{ scrollTo: (data: { left?: number, top?: number, behavior: string }) => void }>();
@@ -38,7 +38,7 @@ const activeLyricStyle = ref({
 let lyricContainerEle: null | HTMLDivElement = null;
 let currentScrollTop = 0;
 let lyricItemHeight = 35;
-let lyricChildrenValueList: { offsetTop: number, index: number, time: number, height: number }[] = [];
+let lyricChildrenValueList: { offsetTop: number, index: number, time: number, height: number, middleTop: number }[] = [];
 const hasTlyric = computed(() => {
   return mainStore.currentPlaySong?.tlyric !== '' && mainStore.currentPlaySong?.tlyric !== undefined;
 });
@@ -49,9 +49,8 @@ const containerHeight = computed(() => {
   return hasTlyric.value
     ? 350 : 315;
 });
-const showLyricLineTop = computed(() => {
-  return hasTlyric.value ? (containerHeight.value - gapHeight.value) - lyricItemHeight / 2 : gapHeight.value;
-});
+
+
 
 const lyricData = computed(() => {
   let tlyricData: LyricItem[] | undefined;
@@ -186,6 +185,7 @@ const handleWheel = (event: WheelEvent) => {
     target = lyricChildrenValueList[selectLyricLineIndex - 1];
   }
   let moveDistance = target.height;
+  console.log(moveDistance);
 
   let scrollTop: number = 0;
 
@@ -212,9 +212,11 @@ const initEleScrollTopMap = () => {
       index,
       time: +child.getAttribute('data-time')!,
       height: child.offsetHeight,
-      middleTop: gapHeight.value + child.offsetHeight / 2 - lyricItemHeight / 2
+      middleTop: child.offsetHeight <= lyricItemHeight ? gapHeight.value + child.offsetHeight / 2 - lyricItemHeight / 2 : gapHeight.value - lyricItemHeight / 2
     };
   });
+  console.log(lyricChildrenValueList, 55);
+
 };
 // 二分查找辅助函数
 const findLyricByScrollTop = (scrollTop: number) => {
@@ -230,7 +232,7 @@ const findLyricByScrollTop = (scrollTop: number) => {
     const nextItem = lyricChildrenValueList[mid + 1] || { offsetTop: Infinity };
 
     if (scrollTop >= midItem.offsetTop && scrollTop < nextItem.offsetTop) {
-      return { index: midItem.index, time: midItem.time };
+      return { index: midItem.index, time: midItem.time, middleTop: midItem.middleTop };
     } else if (scrollTop < midItem.offsetTop) {
       right = mid - 1;
     } else {
@@ -240,7 +242,7 @@ const findLyricByScrollTop = (scrollTop: number) => {
 
   // 如果没有精确匹配，返回最接近的行（通常是最后一行）
   const lastItem = lyricChildrenValueList[lyricChildrenValueList.length - 1];
-  return scrollTop >= lastItem.offsetTop ? { index: lastItem.index, time: lastItem.time } : null;
+  return scrollTop >= lastItem.offsetTop ? { index: lastItem.index, time: lastItem.time, middleTop: lastItem.middleTop } : null;
 };
 const setScroll = (time: number, listen = false) => {
   let targetELe = document.querySelector(`#time${time}`) as HTMLElement;
@@ -398,8 +400,8 @@ onMounted(() => {
       <div :style="{ height: gapHeight + 'px' }" />
     </n-scrollbar>
     <!-- 歌词滚动选择  -->
-    <div v-show="showSelectLyric" class="selectLyricContainer"
-      :style="{ top: showLyricLineTop + 'px', height: lyricItemHeight + 'px' }">
+    <div v-if="showSelectLyric" class="selectLyricContainer"
+      :style="{ top: selectLyricLine.middleTop + 'px', height: lyricItemHeight + 'px' }">
       <div class="flex items-center">
         <!-- -->
         <n-time v-if="selectLyricLine" format="mm:ss" :time="selectLyricLine?.time" />
