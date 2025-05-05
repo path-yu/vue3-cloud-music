@@ -185,7 +185,6 @@ const handleWheel = (event: WheelEvent) => {
     target = lyricChildrenValueList[selectLyricLineIndex - 1];
   }
   let moveDistance = target.height;
-  console.log(moveDistance);
 
   let scrollTop: number = 0;
 
@@ -215,7 +214,6 @@ const initEleScrollTopMap = () => {
       middleTop: child.offsetHeight <= lyricItemHeight ? gapHeight.value + child.offsetHeight / 2 - lyricItemHeight / 2 : gapHeight.value - lyricItemHeight / 2
     };
   });
-  console.log(lyricChildrenValueList, 55);
 
 };
 // 二分查找辅助函数

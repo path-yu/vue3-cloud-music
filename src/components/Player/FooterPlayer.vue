@@ -246,7 +246,6 @@ let retryCount = 0; // 当前重试次数
 const handleError = () => {
   // 判断url 是否为blob格式 blob 
   if (mainStore.currentPlaySong.url?.startsWith('blob:')) {
-    console.log(mainStore.currentPlaySong.url);
     // 读取缓存数据
     getOpusBlobDataByIdUsingIndex(mainStore.currentPlaySong?.id).then((res: AudioIndexedData) => {
       // 创建一个指向 Blob 数据的临时 URL
