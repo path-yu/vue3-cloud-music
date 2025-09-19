@@ -283,7 +283,7 @@ const handleFullscreenchange = () => {
         <div class="flex ">
           <rotate-cd />
           <div class="max:ml-10 2xl:ml-3">
-            <div style="width:520px">
+            <div style="width:560px">
               <div class="relative">
                 <div class=" text-center">
                   <div ref="titleRef" style="display:inline-block">
@@ -320,17 +320,17 @@ const handleFullscreenchange = () => {
                 </h3>
                 <n-divider v-if="similarPlaylist.length" />
                 <n-spin :show="fetchSimiPlayListLoading" size="small">
-                  <div v-show="fetchSimiPlayListLoading" class="w-80 h-32" />
+                  <div v-show="fetchSimiPlayListLoading" class=" h-32" />
                   <!-- 相似歌单推荐 -->
                   <div v-for="item in similarPlaylist" v-show="!fetchSimiPlayListLoading" :key="item.id"
                     class="flex items-center p-2 hover:bg-neutral-50 dark:hover:bg-neutral-50/20 cursor-pointer"
                     @click="handleSimiPlayListItem(item.id)">
                     <img crossorigin="anonymous" width="45" height="45" class="rounded-md" :src="item.coverImgUrl" />
                     <div class="ml-4">
-                      <p class="w-60 text-sm text-left truncate">
+                      <p class="w-40 text-sm text-left truncate">
                         {{ item.name }}
                       </p>
-                      <p class="mt-2 w-60 text-sm text-left truncate">
+                      <p class="mt-2 w-40 text-sm text-left truncate">
                         <span class="opacity-50">by</span> <span class="opacity-80"> {{ item.creator.nickname }}</span>
                       </p>
                     </div>
@@ -423,7 +423,7 @@ const handleFullscreenchange = () => {
 <style scoped>
 .music-detail {
   bottom: 68px;
-  width: 75vw;
+  width: 82vw;
   height: calc(100vh - 68px);
   z-index: 1000;
   overflow: hidden;
@@ -438,7 +438,7 @@ const handleFullscreenchange = () => {
 
 .background {
   position: fixed;
-  width: 75vw;
+  width: 82vw;
   height: calc(100vh - 68px);
   bottom: 68px;
   left: 0;

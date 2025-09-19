@@ -16,3 +16,12 @@ export function getQrCodeStatus(key:string) {
 export function logout() {
   return service.get('/logout?timestamp=' + new Date().getTime());
 }
+// 发送验证码
+export function sendCaptchaApi(phone: string) {
+  return service.get('/captcha/sent', { params: { phone } });
+}
+
+// 手机号+验证码登录
+export function loginCellphoneApi(phone: string, captcha: string) {
+  return service.get('/login/cellphone', { params: { phone, captcha } });
+}
