@@ -11,7 +11,7 @@ const mainStore = useMainStore();
 </script>
 
 <template>
-  <div id="layout-container" style="width: 75vw;margin: auto;">
+  <div id="layout-container" style="width: 82vw;margin: auto;">
     <n-layout>
       <base-header />
       <layout-left-menu />
